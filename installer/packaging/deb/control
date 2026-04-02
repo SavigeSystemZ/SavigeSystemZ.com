@@ -1,0 +1,7 @@
+Package: savigesystemz
+Version: 0.1.0
+Section: web
+Priority: optional
+Architecture: amd64
+Maintainer: Michael Spaulding <mtspaulding87@gmail.com>
+Description: SavigeSystemZ desktop launcher and web platform package scaffold

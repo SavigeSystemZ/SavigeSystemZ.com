@@ -1,0 +1,13 @@
+{
+  "name": "@savige/workers",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js",
+    "build": "echo workers build",
+    "lint": "echo workers lint",
+    "typecheck": "echo workers typecheck",
+    "test": "echo workers test"
+  }
+}

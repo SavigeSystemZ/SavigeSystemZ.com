@@ -1,0 +1,14 @@
+{
+  "name": "@savige/domain",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "lint": "echo domain lint",
+    "typecheck": "tsc --noEmit",
+    "test": "echo domain test",
+    "build": "tsc --noEmit"
+  }
+}

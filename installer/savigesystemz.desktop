@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=SavigeSystemZ
+Comment=SavigeSystemZ Platform Launcher
+Exec=/opt/savigesystemz/start.sh
+Icon=savigesystemz
+Terminal=false
+Categories=Development;Utility;

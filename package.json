@@ -1,0 +1,22 @@
+{
+  "name": "savigesystemz-com",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SavigeSystemZ flagship platform monorepo",
+  "packageManager": "pnpm@10.8.1",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "turbo run test:e2e",
+    "format": "turbo run format",
+    "audit:deps": "pnpm audit --prod || true",
+    "check:all": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.2"
+  }
+}
