@@ -55,3 +55,17 @@ export const updateProjectRequestSchema = z
   .refine((data) => data.status !== undefined || data.archived !== undefined, {
     message: "at_least_one_field",
   });
+
+/** Vault metadata; optional S3 pointer must be a pair (use keys from POST /api/vault/s3-upload-url only). */
+export const vaultPlaceholderSchema = z
+  .object({
+    note: z.string().trim().max(2000).optional(),
+    tags: z.array(z.string().trim().min(1).max(64)).max(12).optional(),
+    s3Bucket: z.string().trim().min(1).max(255).optional(),
+    s3Key: z.string().trim().min(1).max(1024).optional(),
+  })
+  .refine(
+    (d) =>
+      (!d.s3Bucket && !d.s3Key) || (Boolean(d.s3Bucket?.length) && Boolean(d.s3Key?.length)),
+    { message: "s3_bucket_and_key_required_together", path: ["s3Key"] },
+  );

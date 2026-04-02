@@ -1,0 +1,10 @@
+# Optional Redis for distributed vault mutation rate limits (see docs/RATE_LIMITS.md).
+# Start: docker compose -f docker-compose.redis.yml up -d
+# apps/web/.env.local: REDIS_URL=redis://127.0.0.1:6379
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]

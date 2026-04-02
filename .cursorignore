@@ -1,0 +1,10 @@
+# Cursor index exclusions
+node_modules
+.turbo
+.next
+dist
+coverage
+**/*.db
+**/test-results
+**/playwright-report
+pnpm-lock.yaml

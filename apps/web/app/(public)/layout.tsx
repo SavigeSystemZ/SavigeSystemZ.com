@@ -17,7 +17,13 @@ export default function PublicLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <div className="flex flex-1 flex-col">{children}</div>
+      <div
+        id="main-content"
+        tabIndex={-1}
+        className="flex flex-1 flex-col outline-none focus:outline-none"
+      >
+        {children}
+      </div>
       <SiteFooter />
     </div>
   );

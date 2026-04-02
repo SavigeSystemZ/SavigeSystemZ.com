@@ -12,15 +12,26 @@ type AuditRow = {
   actor: { id: string; email: string; role: string } | null;
 };
 
+const PRESETS: readonly { label: string; action: string; targetType: string }[] = [
+  { label: "All", action: "", targetType: "" },
+  { label: "Vault placeholder", action: "vault.placeholder.submit", targetType: "" },
+  { label: "Vault (target type)", action: "", targetType: "vault" },
+  { label: "Licenses", action: "license.grant", targetType: "" },
+  { label: "Passkeys", action: "passkey.login", targetType: "" },
+];
+
 export function AuditViewer() {
   const [items, setItems] = useState<AuditRow[]>([]);
   const [error, setError] = useState("");
   const [actionDraft, setActionDraft] = useState("");
+  const [targetTypeDraft, setTargetTypeDraft] = useState("");
   const [appliedAction, setAppliedAction] = useState("");
+  const [appliedTargetType, setAppliedTargetType] = useState("");
 
   useEffect(() => {
     const qs = new URLSearchParams();
     if (appliedAction.trim()) qs.set("action", appliedAction.trim());
+    if (appliedTargetType.trim()) qs.set("targetType", appliedTargetType.trim());
     fetch(`/api/admin/audit-logs?${qs.toString()}`, { credentials: "include" })
       .then(async (res) => {
         if (!res.ok) {
@@ -31,18 +42,49 @@ export function AuditViewer() {
         setItems(data.items);
       })
       .catch(() => setError("Failed to load audit logs. Owner login required."));
-  }, [appliedAction]);
+  }, [appliedAction, appliedTargetType]);
+
+  function applyPreset(p: { action: string; targetType: string }) {
+    setActionDraft(p.action);
+    setTargetTypeDraft(p.targetType);
+    setAppliedAction(p.action);
+    setAppliedTargetType(p.targetType);
+  }
+
+  function applyManualFilters() {
+    setAppliedAction(actionDraft.trim());
+    setAppliedTargetType(targetTypeDraft.trim());
+  }
 
   return (
     <section className="rounded-lg border border-zinc-800 p-4">
-      <div className="flex flex-wrap items-end gap-2">
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Quick filters">
+        {PRESETS.map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            onClick={() => applyPreset(p)}
+            className={`rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+              appliedAction === p.action && appliedTargetType === p.targetType
+                ? "border-cyan-600 bg-cyan-950/80 text-cyan-200"
+                : "border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-600"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+      <div className="mt-4 flex flex-wrap items-end gap-2">
         <div>
-          <label className="text-xs text-zinc-400">Filter by action</label>
+          <label htmlFor="audit-filter-action" className="text-xs text-zinc-400">
+            Filter by action
+          </label>
           <input
+            id="audit-filter-action"
             className="mt-1 block rounded border border-zinc-700 bg-zinc-950 p-2 text-sm"
             value={actionDraft}
             onChange={(event) => setActionDraft(event.target.value)}
-            placeholder="e.g. license.grant, passkey.login"
+            placeholder="e.g. license.grant, vault.placeholder.submit"
             list="audit-action-suggestions"
           />
           <datalist id="audit-action-suggestions">
@@ -55,11 +97,25 @@ export function AuditViewer() {
             <option value="passkey.revoke" />
             <option value="license.grant" />
             <option value="release_asset.create" />
+            <option value="vault.placeholder.submit" />
+            <option value="application.create" />
           </datalist>
+        </div>
+        <div>
+          <label htmlFor="audit-filter-target-type" className="text-xs text-zinc-400">
+            Filter by target type
+          </label>
+          <input
+            id="audit-filter-target-type"
+            className="mt-1 block rounded border border-zinc-700 bg-zinc-950 p-2 text-sm"
+            value={targetTypeDraft}
+            onChange={(event) => setTargetTypeDraft(event.target.value)}
+            placeholder="e.g. vault, application"
+          />
         </div>
         <button
           type="button"
-          onClick={() => setAppliedAction(actionDraft.trim())}
+          onClick={() => applyManualFilters()}
           className="rounded bg-cyan-400 px-3 py-2 text-sm font-medium text-zinc-950"
         >
           Apply

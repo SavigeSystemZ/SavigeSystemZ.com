@@ -14,7 +14,10 @@ export default function AuditPage() {
         <AuditViewer />
       </div>
       <p className="mt-4 text-xs text-zinc-500">
-        Export: GET <code className="text-cyan-400">/api/admin/audit-logs?limit=200</code> with owner session.
+        Export: GET{" "}
+        <code className="text-cyan-400">/api/admin/audit-logs?limit=200</code> with owner session. Optional query
+        params: <code className="text-cyan-400">action</code>, <code className="text-cyan-400">targetType</code> (e.g.{" "}
+        <code className="text-cyan-400">vault</code>).
       </p>
     </main>
   );

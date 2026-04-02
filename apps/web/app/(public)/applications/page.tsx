@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { appCatalog } from "@/lib/catalog";
+import { getPublicCatalog } from "@/lib/catalog-resolver";
+
+/** Catalog reads the DB when available; avoid build-time Prisma without DATABASE_URL. */
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Applications",
   description: "Browse the SavigeSystemZ software catalog and product detail pages.",
 };
 
-export default function ApplicationsPage() {
+export default async function ApplicationsPage() {
+  const appCatalog = await getPublicCatalog();
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10">
       <h1 className="text-3xl font-bold">Applications Catalog</h1>

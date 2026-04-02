@@ -1,0 +1,7 @@
+# Postgres + Redis for local experiments (catalog stays SQLite until you flip Prisma).
+# Start: docker compose -f docker-compose.dev.yml up -d
+# See docs/POSTGRES_LOCAL.md and docs/RATE_LIMITS.md
+
+include:
+  - docker-compose.postgres.yml
+  - docker-compose.redis.yml

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,7 +17,10 @@
     "format": "node -e \"console.log('format placeholder')\"",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:push": "prisma db push"
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:seed": "prisma db seed",
+    "prisma:push": "prisma db push",
+    "vault:reencrypt": "tsx scripts/vault-reencrypt.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1022.0",
@@ -26,6 +32,7 @@
     "@savige/ui": "workspace:*",
     "@simplewebauthn/browser": "^13.3.0",
     "@simplewebauthn/server": "^13.3.0",
+    "ioredis": "^5.10.1",
     "next": "16.2.2",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -33,6 +40,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10",
     "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
@@ -42,6 +50,7 @@
     "eslint-config-next": "16.2.2",
     "prisma": "^6.8.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5",
     "vitest": "^4.1.2"
   }

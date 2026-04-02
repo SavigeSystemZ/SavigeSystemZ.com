@@ -10,9 +10,13 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const limit = Math.min(Math.max(Number(searchParams.get("limit") ?? "50"), 1), 200);
   const action = searchParams.get("action");
+  const targetType = searchParams.get("targetType");
 
   const items = await db.auditLog.findMany({
-    where: action ? { action } : undefined,
+    where: {
+      ...(action ? { action } : {}),
+      ...(targetType ? { targetType } : {}),
+    },
     orderBy: { createdAt: "desc" },
     take: limit,
     include: {

@@ -6,6 +6,7 @@ import {
   createVersionSchema,
   projectRequestSchema,
   updateProjectRequestSchema,
+  vaultPlaceholderSchema,
 } from "@/lib/validation";
 
 describe("createApplicationSchema", () => {
@@ -109,6 +110,42 @@ describe("release schemas", () => {
       fileName: "installer.AppImage",
       fileUrl: "https://example.com/installer.AppImage",
       visibility: "ENTITLED",
+    });
+    expect(result.success).toBe(true);
+  });
+});
+
+describe("vaultPlaceholderSchema", () => {
+  it("accepts empty object", () => {
+    const result = vaultPlaceholderSchema.safeParse({});
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts note and tags", () => {
+    const result = vaultPlaceholderSchema.safeParse({
+      note: "Internal reference",
+      tags: ["draft", "q1"],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects too many tags", () => {
+    const result = vaultPlaceholderSchema.safeParse({
+      tags: Array.from({ length: 20 }, (_, i) => `t${i}`),
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects s3Bucket without s3Key", () => {
+    const result = vaultPlaceholderSchema.safeParse({ s3Bucket: "my-bucket" });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts paired s3 fields", () => {
+    const result = vaultPlaceholderSchema.safeParse({
+      note: "with object",
+      s3Bucket: "b",
+      s3Key: "vault/user1/k",
     });
     expect(result.success).toBe(true);
   });

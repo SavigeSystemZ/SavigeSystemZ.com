@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SavigeSystemZ">
+  <defs>
+    <linearGradient id="sszG" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d9ff"/>
+      <stop offset="100%" stop-color="#b300ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#0a0a0f"/>
+  <path fill="url(#sszG)" d="M16 20h20v6H22v6h10v6H16v-6h12v-6H16v-6zm12 14h20v6H28v12h-6V34h6v-6h-6v-6z"/>
+</svg>

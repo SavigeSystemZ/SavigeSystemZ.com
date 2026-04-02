@@ -36,8 +36,8 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
-      - name: Prisma generate and SQLite schema
-        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma db push
+      - name: Prisma migrate, seed, and generate
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm --filter web exec prisma db seed
         env:
           DATABASE_URL: file:./dev.db
       - name: Install Playwright browser
@@ -50,3 +50,4 @@ jobs:
           OWNER_LOGIN_SECRET: e2e-owner-secret-change-me-32chars
           DATABASE_URL: file:./dev.db
           E2E_PORT: "3456"
+          VAULT_ENCRYPTION_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"

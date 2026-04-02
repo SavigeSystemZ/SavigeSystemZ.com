@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe-client";
-import { completePurchaseFromSessionId } from "@/lib/checkout-complete";
+import { processStripeWebhookEvent } from "@/lib/stripe-webhook-processor";
 
 export async function POST(request: Request) {
   const stripe = getStripe();
@@ -23,12 +23,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    if (session.id) {
-      await completePurchaseFromSessionId(session.id);
-    }
-  }
+  await processStripeWebhookEvent(event);
 
   return NextResponse.json({ received: true });
 }

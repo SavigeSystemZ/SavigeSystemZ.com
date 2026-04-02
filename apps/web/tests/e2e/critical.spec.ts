@@ -54,6 +54,15 @@ test.describe("owner and public shell", () => {
     await expect(page.getByRole("heading", { name: "Owner Admin Console" })).toBeVisible();
   });
 
+  test("owner can open vault page from admin shell", async ({ page }) => {
+    await page.goto("/owner/login");
+    await page.getByPlaceholder("Owner access code").fill("e2e-owner-code");
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await page.waitForURL("**/admin**");
+    await page.getByRole("navigation", { name: "Admin sections" }).getByRole("link", { name: "Vault" }).click();
+    await expect(page.getByRole("heading", { name: "Private Vault Manager" })).toBeVisible();
+  });
+
   test("admin shell navigates to audit log", async ({ page }) => {
     await page.goto("/owner/login");
     await page.getByPlaceholder("Owner access code").fill("e2e-owner-code");

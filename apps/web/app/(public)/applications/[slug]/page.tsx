@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { appCatalog } from "@/lib/catalog";
+import { CheckoutCta } from "@/components/checkout-cta";
+import { getPublicApplicationBySlug } from "@/lib/catalog-resolver";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(props: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const params = await props.params;
-  const app = appCatalog.find((item) => item.slug === params.slug);
+  const app = await getPublicApplicationBySlug(params.slug);
   if (!app) return { title: "Not found" };
   return {
     title: app.name,
@@ -16,7 +19,7 @@ export async function generateMetadata(props: {
 
 export default async function ApplicationDetailPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const app = appCatalog.find((item) => item.slug === params.slug);
+  const app = await getPublicApplicationBySlug(params.slug);
   if (!app) notFound();
 
   return (
@@ -38,7 +41,11 @@ export default async function ApplicationDetailPage(props: { params: Promise<{ s
       <section className="mt-8 grid gap-4 md:grid-cols-3">
         <div className="rounded-lg border border-zinc-800 p-4">Release timeline scaffold</div>
         <div className="rounded-lg border border-zinc-800 p-4">Media gallery scaffold</div>
-        <div className="rounded-lg border border-zinc-800 p-4">Downloads and entitlement scaffold</div>
+        <div className="rounded-lg border border-zinc-800 p-4">
+          <p className="text-sm font-medium text-zinc-200">Purchase</p>
+          <p className="mt-1 text-xs text-zinc-500">Mock or Stripe checkout from this catalog entry.</p>
+          <CheckoutCta applicationId={app.id} />
+        </div>
       </section>
     </main>
   );

@@ -17,7 +17,13 @@ export default function AdminSectionLayout({
   return (
     <div className="min-h-screen bg-zinc-950">
       <AdminShell />
-      {children}
+      <div
+        id="main-content"
+        tabIndex={-1}
+        className="outline-none focus:outline-none"
+      >
+        {children}
+      </div>
     </div>
   );
 }

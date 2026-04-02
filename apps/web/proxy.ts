@@ -1,29 +1,40 @@
-import { securityHeaders } from "@savige/security";
-import { createHmac, timingSafeEqual } from "node:crypto";
+import { buildSecurityHeaders } from "@savige/security";
 import { NextResponse, type NextRequest } from "next/server";
+import { hmacSha256HexWeb, timingSafeEqualHex } from "@/lib/hmac-web";
 
-function verifyOwnerSession(token: string | undefined): boolean {
+async function verifyOwnerSession(token: string | undefined): Promise<boolean> {
   if (!token || !token.includes(".")) return false;
   const [base, sig] = token.split(".");
   const secret = process.env.OWNER_LOGIN_SECRET ?? "change-me-in-production";
-  const expected = createHmac("sha256", secret).update(base).digest("hex");
-  const sigBuf = Buffer.from(sig);
-  const expectedBuf = Buffer.from(expected);
-  if (sigBuf.length !== expectedBuf.length) return false;
-  if (!timingSafeEqual(sigBuf, expectedBuf)) return false;
-  return base.length > 0;
+  const expected = await hmacSha256HexWeb(secret, base);
+  return sig.length === expected.length && timingSafeEqualHex(sig, expected);
 }
 
-export function proxy(request: NextRequest) {
+function productionOwnerSecretIsStrong(): boolean {
+  if (process.env.NODE_ENV !== "production") return true;
+  const secret = process.env.OWNER_LOGIN_SECRET;
+  if (!secret || secret.length < 32) return false;
+  if (secret === "change-me-in-production") return false;
+  return true;
+}
+
+export async function proxy(request: NextRequest) {
   const response = NextResponse.next();
 
-  for (const [key, value] of Object.entries(securityHeaders)) {
+  const headers = buildSecurityHeaders(request);
+  for (const [key, value] of Object.entries(headers)) {
     response.headers.set(key, value);
   }
 
   if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (!productionOwnerSecretIsStrong()) {
+      return new NextResponse(
+        "Server misconfiguration: set OWNER_LOGIN_SECRET to a unique value of at least 32 characters in production.",
+        { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } },
+      );
+    }
     const session = request.cookies.get("sz_session")?.value;
-    if (!verifyOwnerSession(session)) {
+    if (!(await verifyOwnerSession(session))) {
       return NextResponse.redirect(new URL("/owner/login", request.url));
     }
   }

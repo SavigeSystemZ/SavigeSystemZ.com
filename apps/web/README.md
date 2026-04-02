@@ -8,7 +8,7 @@ Next.js application (App Router). **License:** MIT (see repository root `LICENSE
 pnpm install
 cp apps/web/.env.example apps/web/.env.local
 # Edit apps/web/.env.local — see root README for field notes
-cd apps/web && pnpm exec prisma generate && pnpm exec prisma db push && cd ../..
+cd apps/web && pnpm exec prisma generate && pnpm exec prisma migrate deploy && pnpm exec prisma db seed && cd ../..
 pnpm dev:web
 ```
 
@@ -21,7 +21,9 @@ Browse to the URL in the terminal (default **http://localhost:3000**). For passk
 | `pnpm dev` | Next.js dev server |
 | `pnpm build` / `pnpm start` | Production build and server |
 | `pnpm prisma:generate` | Regenerate Prisma Client |
-| `pnpm prisma:push` | Sync schema to DB (dev; SQLite or Postgres) |
+| `pnpm prisma:deploy` | Apply SQL migrations (`migrate deploy`) |
+| `pnpm prisma:seed` | Seed demo catalog rows |
+| `pnpm prisma:push` | Emergency dev sync only — prefer `migrate deploy` |
 | `pnpm test` | Vitest unit tests |
 | `pnpm test:e2e` | Playwright (set `CI=1` for clean server) |
 

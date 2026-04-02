@@ -2,6 +2,8 @@
 
 This project is open source under the [MIT License](LICENSE).
 
+Before large changes, read [`AGENTS.md`](AGENTS.md), [`.cursor/README.md`](.cursor/README.md), and the namespaced rules under [`.cursor/rules/`](.cursor/rules/) (`ssz-*.mdc` — Cursor / AI context).
+
 ## Local checks
 
 From the repository root:

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { VaultClientPanel } from "@/components/vault-client-panel";
 
 export const metadata: Metadata = {
   title: "Vault",
@@ -30,11 +31,15 @@ export default function VaultAdminPage() {
         </li>
       </ul>
       <section className="mt-8 rounded-lg border border-dashed border-zinc-700 p-4 text-sm text-zinc-500">
-        <p className="font-medium text-zinc-400">Implementation note</p>
+        <p className="font-medium text-zinc-400">Encrypted vault (at rest)</p>
         <p className="mt-2">
-          Connect <code className="text-zinc-400">/api/vault</code> to encrypted object storage and row-level ACLs. Keep
-          download signing and audit hooks aligned with release assets.
+          With <code className="text-zinc-400">VAULT_ENCRYPTION_KEY</code>, note + tags are stored as AES-256-GCM
+          ciphertext. Audit entries still record lengths only, plus <code className="text-zinc-400">persisted</code> and
+          artifact id when a row is written. S3/KMS can layer on later.
         </p>
+        <div className="mt-4 text-zinc-300">
+          <VaultClientPanel />
+        </div>
       </section>
     </main>
   );

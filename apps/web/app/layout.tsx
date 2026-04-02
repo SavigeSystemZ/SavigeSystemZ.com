@@ -53,9 +53,7 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <div id="main-content" tabIndex={-1} className="flex min-h-full flex-1 flex-col outline-none">
-          {children}
-        </div>
+        <div className="flex min-h-full flex-1 flex-col">{children}</div>
         <AiDock />
       </body>
     </html>

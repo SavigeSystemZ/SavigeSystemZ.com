@@ -1,0 +1,13 @@
+---
+description: "ssz — Prisma schema, migrations, seed"
+globs: apps/web/prisma/**/*
+alwaysApply: false
+---
+
+# Prisma and database
+
+- **Schema:** `apps/web/prisma/schema.prisma`. SQLite locally; production target is Postgres — see `docs/DATABASE.md`.
+- **DATABASE_URL:** Use `file:./dev.db` in env — resolves to `apps/web/prisma/dev.db`. Avoid `file:./prisma/dev.db` (wrong nested path).
+- **Migrations:** SQL in `prisma/migrations/`. Use `prisma migrate deploy` in CI and production.
+- **Seed:** `prisma/seed.ts` via `pnpm prisma db seed`; idempotent upserts.
+- **Client:** Import `db` only from `@/lib/db`.

@@ -4,6 +4,13 @@ Flagship software-foundry website and operations platform, built as a Next.js mo
 
 **License:** [MIT](LICENSE) — open source; use and modify under the terms of that license.
 
+## AI assistants (Cursor / IDE)
+
+- **Project rules:** `.cursor/rules/ssz-*.mdc` — namespaced SavigeSystemZ pack (monorepo, `apps/web`, Prisma, security). See [`.cursor/README.md`](.cursor/README.md) and [`.cursor/apps/savigesystemz/APP_PACK.md`](.cursor/apps/savigesystemz/APP_PACK.md).
+- **Agent entrypoints:** root [`AGENTS.md`](AGENTS.md) and [`apps/web/AGENTS.md`](apps/web/AGENTS.md).
+- **Indexing:** `.cursorignore` trims noisy paths from Cursor’s index.
+- **VS Code:** [`.vscode/settings.json`](.vscode/settings.json) and [`.vscode/extensions.json`](.vscode/extensions.json) for ESLint + Prisma.
+
 ## Requirements
 
 - **Node.js** 20.x or newer (LTS recommended)
@@ -34,12 +41,13 @@ Edit `apps/web/.env.local`:
   - `PASSKEY_RP_ID=127.0.0.1`
   - `PASSKEY_ORIGIN=http://127.0.0.1:3000`
 
-Apply the schema and start the dev server:
+Apply migrations and start the dev server:
 
 ```bash
 cd apps/web
 pnpm exec prisma generate
-pnpm exec prisma db push
+pnpm exec prisma migrate deploy
+pnpm exec prisma db seed
 cd ../..
 pnpm dev:web
 ```
@@ -54,6 +62,16 @@ pnpm start:web
 ```
 
 Use the same `apps/web/.env.local` (or production env vars) and ensure `DATABASE_URL` points at your real database for production.
+
+See **`docs/DATABASE.md`** for migrations, seeding, and production Postgres notes.
+
+**Optional local data services:** `docker compose -f docker-compose.postgres.yml up -d` and/or **`docker compose -f docker-compose.dev.yml up -d`** (Postgres + Redis) — see **`docs/POSTGRES_LOCAL.md`** and **`docs/RATE_LIMITS.md`**.
+
+**Vault key rotation (offline):** after backup, `pnpm --filter web vault:reencrypt -- --dry-run` then without `--dry-run` — see **`docs/VAULT_KEY_ROTATION.md`**. Rate limits: **`docs/RATE_LIMITS.md`** (optional **`REDIS_URL`** + **`docker-compose.redis.yml`** for multi-instance). **`GET /api/health?probe=redis`** checks Redis when configured.
+
+## Desktop shortcut (local)
+
+After **`pnpm dev:web`**, open the site from your Desktop: run **`./installer/desktop/install-desktop-launcher.sh`** (see **`installer/desktop/README.md`**).
 
 ## Monorepo layout
 
@@ -71,7 +89,7 @@ pnpm check:all
 pnpm --filter web test:e2e
 ```
 
-Set `CI=1` for E2E if you want Playwright to always start a dedicated dev server (see `apps/web/playwright.config.ts`).
+Set `CI=1` for E2E if you want Playwright to always start a dedicated dev server (see `apps/web/playwright.config.ts`). The suite includes **axe** scans on key public routes (`tests/e2e/a11y.spec.ts`) and **API authz** checks including owner-only `/api/vault` (with **AES-256-GCM** persistence when `VAULT_ENCRYPTION_KEY` is set — see `docs/VAULT.md`). Stripe webhook behavior is covered by unit tests (`tests/unit/stripe-webhook-*.ts`), a **501** guard E2E, and an **optional** signed POST spec (`tests/e2e/stripe-webhook-signed.spec.ts`, skipped without secrets). See `docs/STRIPE_WEBHOOK_TESTING.md` and workflow `.github/workflows/stripe-webhook-smoke.yml`.
 
 ## Commerce and downloads
 
@@ -82,7 +100,7 @@ Set `CI=1` for E2E if you want Playwright to always start a dedicated dev server
 
 ## Security baseline
 
-- Hardened headers via `proxy.ts`
+- Hardened headers and `/admin` HTML protection via `apps/web/proxy.ts` (Next.js 16 “Proxy”; see `docs/SECURITY_HARDENING.md`)
 - Owner session cookie backed by DB `Session` rows
 - Audit log API: `GET /api/admin/audit-logs` (owner), UI at `/admin/audit`
 - Private route and upload flows are scaffolded with zero-trust defaults

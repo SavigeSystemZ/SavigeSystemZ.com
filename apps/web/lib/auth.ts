@@ -1,4 +1,4 @@
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
@@ -57,16 +57,12 @@ export async function getAuthContext(): Promise<AuthContext> {
     }
   }
 
-  const h = await headers();
-  const userId = h.get("x-user-id");
-  const roleHeader = h.get("x-user-role");
-  const role: AuthContext["role"] =
-    roleHeader === "owner" ? "owner" : roleHeader === "user" ? "user" : "anonymous";
-  return { userId, role };
+  // Never trust client-supplied x-user-* headers (trivially spoofable). Session cookie + DB only.
+  return { userId: null, role: "anonymous" };
 }
 
 export function requireOwner(context: AuthContext): NextResponse | null {
-  if (context.role !== "owner") {
+  if (context.role !== "owner" || !context.userId) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   return null;

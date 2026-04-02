@@ -1,0 +1,12 @@
+---
+description: "ssz — API security, rate limits, webhooks"
+globs: apps/web/app/api/**/*
+alwaysApply: false
+---
+
+# Security (web APIs)
+
+- **Owner/admin:** `requireOwner()` after `getAuthContext()`; never header-based impersonation.
+- **Rate limits:** Use `lib/rate-limit.ts` / `lib/auth-rate-limit.ts` on abuse-prone public endpoints.
+- **Stripe webhook:** Verify `stripe-signature` before mutations.
+- **Downloads:** Validate signed tokens and entitlements in handlers (`lib/signed-download.ts`, `lib/entitlements.ts`).

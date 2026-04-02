@@ -1,0 +1,16 @@
+---
+description: "ssz — SavigeSystemZ.com monorepo (pnpm, CI, DB, secrets)"
+alwaysApply: true
+---
+
+# SavigeSystemZ.com — monorepo
+
+**Namespace `ssz-`:** Rules in this repo apply only when the workspace root is **`SavigeSystemZ.com`** (not the parent `MyAppZ` folder). See `.cursor/README.md`.
+
+- **Package manager:** `pnpm` only (see root `package.json` `packageManager`).
+- **Web app:** `apps/web` (Next.js 16 App Router). Shared libs: `packages/*`.
+- **Before PR / merge:** run `pnpm check:all` from repo root (`lint`, `typecheck`, `test`, `build`).
+- **Web E2E:** `pnpm --filter web test:e2e` with `DATABASE_URL=file:./dev.db` (→ `apps/web/prisma/dev.db`), `CI=1` for deterministic Playwright.
+- **DB:** Prefer `prisma migrate deploy` + `prisma db seed`, not `db push`, for anything shared or CI. See `docs/DATABASE.md`.
+- **Secrets:** Never commit `.env*`, `*.db`, or real keys. Use `apps/web/.env.example` as template.
+- **License:** MIT — see root `LICENSE`.

@@ -1,0 +1,23 @@
+# Optional local PostgreSQL for SavigeSystemZ (see docs/POSTGRES_LOCAL.md).
+# Start: docker compose -f docker-compose.postgres.yml up -d
+# Stop:  docker compose -f docker-compose.postgres.yml down
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: ssz
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: savige
+    volumes:
+      - ssz_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ssz -d savige"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  ssz_pg_data:
