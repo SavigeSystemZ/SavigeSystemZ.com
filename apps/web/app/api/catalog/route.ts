@@ -1,22 +1,12 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 
 /**
- * Public read-only list of catalog applications (PUBLIC visibility).
- * Used by storefront integrations and E2E to resolve `applicationId` without admin auth.
+ * Public read-only list of catalog applications (PUBLIC visibility) with
+ * release and media context for richer storefront rendering.
  */
 export async function GET() {
-  const items = await db.application.findMany({
-    where: { visibility: "PUBLIC" },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      summary: true,
-      featured: true,
-    },
-    orderBy: [{ featured: "desc" }, { name: "asc" }],
-  });
+  const items = await getPublicCatalogWithReleases();
 
   return NextResponse.json(
     { items },

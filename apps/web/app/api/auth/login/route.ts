@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { allowAuthRequest } from "@/lib/auth-rate-limit";
-import { buildSessionCookie, createOwnerSession, getSessionCookieName, isValidOwnerAccessCode } from "@/lib/auth";
+import {
+  buildSessionCookie,
+  createOwnerSession,
+  getSessionCookieName,
+  getSessionMaxAgeSeconds,
+  isValidOwnerAccessCode,
+} from "@/lib/auth";
 import { db } from "@/lib/db";
 
 const LOGIN_WINDOW_MS = 60_000;
@@ -35,7 +41,7 @@ export async function POST(request: Request) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 12,
+    maxAge: getSessionMaxAgeSeconds(),
   });
   return response;
 }

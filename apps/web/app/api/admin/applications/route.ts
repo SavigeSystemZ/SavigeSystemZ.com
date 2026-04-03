@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getAuthContext, requireOwner } from "@/lib/auth";
+import { evaluateApplicationLaunchReadiness } from "@/lib/launch-readiness";
 import { createApplicationSchema } from "@/lib/validation";
 import { writeAuditLog } from "@/lib/audit";
 
@@ -11,9 +12,32 @@ export async function GET() {
 
   const items = await db.application.findMany({
     orderBy: { createdAt: "desc" },
-    include: { versions: true },
+    include: {
+      media: {
+        select: {
+          id: true,
+          featured: true,
+        },
+      },
+      versions: {
+        include: {
+          assets: {
+            select: {
+              id: true,
+              visibility: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
-  return NextResponse.json({ items });
+  return NextResponse.json({
+    items: items.map((item) => ({
+      ...item,
+      launchReadiness: evaluateApplicationLaunchReadiness(item),
+    })),
+  });
 }
 
 export async function POST(request: Request) {

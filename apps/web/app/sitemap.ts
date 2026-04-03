@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
+import { archiveCatalog } from "@/lib/archive-catalog";
 import { appCatalog } from "@/lib/catalog";
 import { getSiteUrl } from "@/lib/site-url";
 
 const STATIC_PATHS = [
   "",
   "/applications",
+  "/archive",
   "/downloads",
   "/pricing",
   "/bio",
@@ -28,5 +30,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
   }));
 
-  return [...staticEntries, ...catalogEntries];
+  const archiveEntries: MetadataRoute.Sitemap = archiveCatalog.map((entry) => ({
+    url: `${base}/archive/${entry.slug}`,
+    lastModified: now,
+  }));
+
+  return [...staticEntries, ...catalogEntries, ...archiveEntries];
 }

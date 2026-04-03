@@ -1,0 +1,49 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="72" x2="1451" y2="846" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#09131D"/>
+      <stop offset="0.48" stop-color="#0C1A29"/>
+      <stop offset="1" stop-color="#04080F"/>
+    </linearGradient>
+    <radialGradient id="cyan" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1231 173) rotate(133.232) scale(569.479 610.674)">
+      <stop stop-color="#66F2FF" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#66F2FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="green" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(251 714) rotate(-18.8756) scale(424.635 272.121)">
+      <stop stop-color="#7DF2C7" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#7DF2C7" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#cyan)"/>
+  <rect width="1600" height="900" fill="url(#green)"/>
+  <rect x="104" y="112" width="1392" height="676" rx="36" fill="#07111B" fill-opacity="0.8" stroke="#6BEAFF" stroke-opacity="0.16"/>
+  <rect x="146" y="154" width="468" height="592" rx="28" fill="#0B1823" stroke="#74E7FF" stroke-opacity="0.2"/>
+  <rect x="650" y="154" width="394" height="274" rx="24" fill="#0B1823" stroke="#74E7FF" stroke-opacity="0.2"/>
+  <rect x="1078" y="154" width="376" height="274" rx="24" fill="#0B1823" stroke="#74E7FF" stroke-opacity="0.2"/>
+  <rect x="650" y="462" width="804" height="284" rx="28" fill="#0B1823" stroke="#74E7FF" stroke-opacity="0.2"/>
+  <g opacity="0.82">
+    <rect x="198" y="228" width="364" height="50" rx="16" fill="#102432"/>
+    <rect x="198" y="300" width="278" height="14" rx="7" fill="#6BEAFF" fill-opacity="0.28"/>
+    <rect x="198" y="338" width="334" height="14" rx="7" fill="#6BEAFF" fill-opacity="0.18"/>
+    <rect x="198" y="376" width="312" height="14" rx="7" fill="#6BEAFF" fill-opacity="0.18"/>
+    <rect x="198" y="455" width="160" height="130" rx="20" fill="#102432"/>
+    <rect x="378" y="455" width="160" height="130" rx="20" fill="#102432"/>
+    <rect x="198" y="607" width="340" height="82" rx="22" fill="#102432"/>
+  </g>
+  <g opacity="0.92">
+    <path d="M714 539H1392" stroke="#6BEAFF" stroke-opacity="0.18"/>
+    <path d="M714 605H1392" stroke="#6BEAFF" stroke-opacity="0.18"/>
+    <path d="M714 671H1392" stroke="#6BEAFF" stroke-opacity="0.18"/>
+    <rect x="720" y="491" width="148" height="24" rx="12" fill="#6BEAFF" fill-opacity="0.16"/>
+    <rect x="886" y="491" width="188" height="24" rx="12" fill="#F6B75E" fill-opacity="0.16"/>
+    <rect x="1094" y="491" width="170" height="24" rx="12" fill="#7DF2C7" fill-opacity="0.16"/>
+  </g>
+  <text x="184" y="204" fill="#B7DFFF" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.5">STACK LAUNCHER</text>
+  <text x="184" y="272" fill="white" font-family="'Space Grotesk', sans-serif" font-size="68" font-weight="700">Build the control plane first.</text>
+  <text x="184" y="326" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="24">A launcher for repeatable environments, service bundles, and workstation kits.</text>
+  <text x="684" y="212" fill="#F6B75E" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.2">SERVICE STACK</text>
+  <text x="1112" y="212" fill="#7DF2C7" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.2">INSTALL CHANNEL</text>
+  <text x="684" y="524" fill="#B7DFFF" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.2">RUNTIME MATRIX</text>
+  <text x="684" y="720" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="22">Launch local environments with versioned control instead of setup drift.</text>
+</svg>

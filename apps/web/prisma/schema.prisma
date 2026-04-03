@@ -27,15 +27,67 @@ model Application {
   slug        String               @unique
   name        String
   summary     String
+  label       String?
+  tagline     String?
+  audience    String?
+  priceLabel  String?
+  releaseChannel String?
+  details     String?
+  highlights  String?
+  surfaceAreas String?
+  stackItems  String?
   visibility  ApplicationVisibility @default(DRAFT)
   featured    Boolean              @default(false)
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   versions    ApplicationVersion[]
+  media       ApplicationMedia[]
   licenses    License[]
   purchases   Purchase[]
 
   @@index([visibility, featured])
+}
+
+model ArchiveEntry {
+  id                  String                @id @default(cuid())
+  slug                String                @unique
+  title               String
+  summary             String
+  category            ArchiveCategory
+  visibility          ApplicationVisibility @default(DRAFT)
+  featured            Boolean               @default(false)
+  stageLabel          String?
+  artifactFormat      String?
+  previewImageUrl     String?
+  previewThumbnailUrl String?
+  details             String?
+  tags                String?
+  stackItems          String?
+  artifactUrl         String?
+  artifactLabel       String?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+
+  @@index([visibility, featured, category])
+}
+
+model ApplicationMedia {
+  id            String      @id @default(cuid())
+  applicationId String
+  title         String
+  altText       String
+  description   String?
+  mediaUrl      String
+  thumbnailUrl  String?
+  s3Bucket      String?
+  s3Key         String?
+  featured      Boolean     @default(false)
+  sortOrder     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, sortOrder, createdAt])
 }
 
 model ApplicationVersion {
@@ -199,6 +251,33 @@ model ProjectRequest {
   @@index([createdAt])
 }
 
+model CreatorSubmission {
+  id                String                   @id @default(cuid())
+  title             String
+  summary           String
+  details           String
+  type              CreatorSubmissionType
+  plannedVisibility ApplicationVisibility   @default(DRAFT)
+  status            CreatorSubmissionStatus @default(PENDING)
+  contactEmail      String?
+  repoUrl           String?
+  artifactUrl       String?
+  ownerNotes        String?
+  promotedTargetType CreatorPromotionTarget?
+  promotedTargetId   String?
+  promotedTargetSlug String?
+  promotedAt         DateTime?
+  sourceIp          String?
+  deletedAt         DateTime?
+  createdAt         DateTime                 @default(now())
+  updatedAt         DateTime                 @updatedAt
+
+  @@index([status, createdAt])
+  @@index([type, createdAt])
+  @@index([deletedAt])
+  @@index([promotedTargetType, promotedTargetId])
+}
+
 enum ProjectRequestStatus {
   PENDING
   REVIEWING
@@ -214,6 +293,18 @@ enum ApplicationVisibility {
   PUBLIC
   PRIVATE
   DRAFT
+}
+
+enum ArchiveCategory {
+  OPERATING_SYSTEM
+  AUTOMATION
+  CONFIGURATION
+  CONTAINER_STACK
+  VIRTUAL_MACHINE
+  MODEL
+  RESEARCH
+  WRITING
+  SECURITY_TOOL
 }
 
 enum AssetVisibility {
@@ -232,4 +323,28 @@ enum PurchaseStatus {
   PENDING
   COMPLETED
   FAILED
+}
+
+enum CreatorSubmissionType {
+  APPLICATION
+  ARCHIVE_ENTRY
+  CONFIG_PACK
+  CONTAINER_STACK
+  MODEL
+  RESEARCH
+  SECURITY_TOOL
+  AUTOMATION
+}
+
+enum CreatorSubmissionStatus {
+  PENDING
+  REVIEWING
+  APPROVED
+  HOLD
+  REJECTED
+}
+
+enum CreatorPromotionTarget {
+  APPLICATION
+  ARCHIVE_ENTRY
 }

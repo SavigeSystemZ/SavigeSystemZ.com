@@ -44,6 +44,10 @@ export function getSessionCookieName(): string {
   return SESSION_COOKIE;
 }
 
+export function getSessionMaxAgeSeconds(): number {
+  return SESSION_TTL_SECONDS;
+}
+
 export async function getAuthContext(): Promise<AuthContext> {
   const c = await cookies();
   const rawToken = decodeSessionToken(c.get(SESSION_COOKIE)?.value);
@@ -77,7 +81,7 @@ export function isValidOwnerAccessCode(input: string): boolean {
   return timingSafeEqual(inputBuf, expectedBuf);
 }
 
-export async function createOwnerSession(userId: string): Promise<string> {
+export async function createSessionForUser(userId: string): Promise<string> {
   const rawToken = randomBytes(32).toString("hex");
   await db.session.create({
     data: {
@@ -87,6 +91,10 @@ export async function createOwnerSession(userId: string): Promise<string> {
     },
   });
   return rawToken;
+}
+
+export async function createOwnerSession(userId: string): Promise<string> {
+  return createSessionForUser(userId);
 }
 
 export async function revokeSessionByCookieValue(cookieValue: string | undefined): Promise<void> {

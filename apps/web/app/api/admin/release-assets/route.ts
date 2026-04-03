@@ -10,7 +10,13 @@ export async function GET() {
   if (forbidden) return forbidden;
   const items = await db.releaseAsset.findMany({
     orderBy: { createdAt: "desc" },
-    include: { version: true },
+    include: {
+      version: {
+        include: {
+          application: true,
+        },
+      },
+    },
   });
   return NextResponse.json({ items });
 }

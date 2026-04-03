@@ -17,6 +17,9 @@ const PRESETS: readonly { label: string; action: string; targetType: string }[] 
   { label: "Vault placeholder", action: "vault.placeholder.submit", targetType: "" },
   { label: "Vault (target type)", action: "", targetType: "vault" },
   { label: "Licenses", action: "license.grant", targetType: "" },
+  { label: "Promotions", action: "creator_submission.promote", targetType: "" },
+  { label: "Launch composer", action: "application.launch_compose", targetType: "" },
+  { label: "Launch publishes", action: "application.publish", targetType: "" },
   { label: "Passkeys", action: "passkey.login", targetType: "" },
 ];
 
@@ -99,6 +102,11 @@ export function AuditViewer() {
             <option value="release_asset.create" />
             <option value="vault.placeholder.submit" />
             <option value="application.create" />
+            <option value="application.launch_compose" />
+            <option value="application.launch_compose.upload_url.create" />
+            <option value="application.publish" />
+            <option value="archive_entry.publish" />
+            <option value="creator_submission.promote" />
           </datalist>
         </div>
         <div>

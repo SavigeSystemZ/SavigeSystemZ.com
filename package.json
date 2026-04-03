@@ -7,8 +7,8 @@
   "packageManager": "pnpm@10.8.1",
   "scripts": {
     "dev": "turbo run dev --parallel",
-    "dev:web": "pnpm --filter web dev",
-    "build:web": "pnpm --filter web build",
+    "dev:web": "node scripts/dev-web.mjs",
+    "build:web": "node scripts/build-web.mjs",
     "start:web": "pnpm --filter web start",
     "build": "turbo run build",
     "lint": "turbo run lint",

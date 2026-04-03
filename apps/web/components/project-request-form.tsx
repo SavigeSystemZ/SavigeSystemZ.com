@@ -62,16 +62,19 @@ export function ProjectRequestForm() {
   }
 
   return (
-    <form onSubmit={(e) => void onSubmit(e)} className="mt-6 grid gap-3 rounded-lg border border-zinc-800 p-4">
-      <p className="text-xs leading-relaxed text-zinc-500">
+    <form
+      onSubmit={(e) => void onSubmit(e)}
+      className="surface-panel mt-6 grid gap-4 rounded-[1.6rem] p-5 sm:p-6"
+    >
+      <p className="text-xs leading-relaxed text-slate-500">
         Submissions are stored for review. Optional email is only used to follow up about your request. Do not include
         passwords or other secrets in the description.
       </p>
       <label className="grid gap-1 text-sm">
-        <span className="text-zinc-400">Project title</span>
+        <span className="text-slate-300">Project title</span>
         <input
           required
-          className="rounded border border-zinc-700 bg-zinc-950 p-2"
+          className="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-300/40"
           placeholder="e.g. Internal tooling for release automation"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -79,21 +82,21 @@ export function ProjectRequestForm() {
         />
       </label>
       <label className="grid gap-1 text-sm">
-        <span className="text-zinc-400">Requirements</span>
+        <span className="text-slate-300">Requirements</span>
         <textarea
           required
           minLength={10}
-          className="min-h-36 rounded border border-zinc-700 bg-zinc-950 p-2"
+          className="min-h-36 rounded-[1.4rem] border border-white/10 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-300/40"
           placeholder="Objectives, constraints, timeline, budget range, and success criteria."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
       <label className="grid gap-1 text-sm">
-        <span className="text-zinc-400">Contact email (optional)</span>
+        <span className="text-slate-300">Contact email (optional)</span>
         <input
           type="email"
-          className="rounded border border-zinc-700 bg-zinc-950 p-2"
+          className="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none placeholder:text-slate-500 focus:border-cyan-300/40"
           placeholder="you@company.com"
           value={contactEmail}
           onChange={(e) => setContactEmail(e.target.value)}
@@ -111,14 +114,18 @@ export function ProjectRequestForm() {
         />
       </label>
       {message ? (
-        <p className={`text-sm ${status === "ok" ? "text-cyan-300" : status === "err" ? "text-red-400" : "text-zinc-400"}`}>
+        <p
+          className={`text-sm ${
+            status === "ok" ? "text-cyan-200" : status === "err" ? "text-red-300" : "text-slate-400"
+          }`}
+        >
           {message}
         </p>
       ) : null}
       <button
         type="submit"
         disabled={status === "loading"}
-        className="rounded bg-cyan-500 px-4 py-2 font-medium text-zinc-950 disabled:opacity-50"
+        className="action-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === "loading" ? "Submitting…" : "Submit request"}
       </button>

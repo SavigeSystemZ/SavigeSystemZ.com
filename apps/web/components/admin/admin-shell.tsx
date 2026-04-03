@@ -7,6 +7,8 @@ const NAV_LINKS = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/requests", label: "Requests" },
   { href: "/admin/releases", label: "Releases" },
+  { href: "/admin/media", label: "Media" },
+  { href: "/admin/archive", label: "Archive" },
   { href: "/admin/audit", label: "Audit" },
   { href: "/admin/vault", label: "Vault" },
   { href: "/admin/moderation", label: "Moderation" },
@@ -27,37 +29,41 @@ export function AdminShell() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-950/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Owner</span>
-          <nav className="flex flex-wrap gap-1" aria-label="Admin sections">
-            {NAV_LINKS.map((link) => {
-              const active = linkIsActive(pathname, link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
-                    active
-                      ? "bg-cyan-950/80 text-cyan-200 ring-1 ring-cyan-800/60"
-                      : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
+    <header className="sticky top-0 z-40 border-b border-white/8 bg-slate-950/70 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
+        <div className="surface-panel flex flex-wrap items-center justify-between gap-4 rounded-full px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span className="rounded-full border border-cyan-300/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-cyan-100/80">
+              Owner
+            </span>
+            <nav className="flex flex-wrap gap-1" aria-label="Admin sections">
+              {NAV_LINKS.map((link) => {
+                const active = linkIsActive(pathname, link.href);
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    aria-current={active ? "page" : undefined}
+                    className={`rounded-full px-3 py-2 text-sm transition-colors ${
+                      active
+                        ? "bg-cyan-400/14 text-white ring-1 ring-cyan-300/30"
+                        : "text-slate-400 hover:bg-white/[0.05] hover:text-white"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="action-secondary text-xs"
+          >
+            Sign out
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => void signOut()}
-          className="rounded-md border border-zinc-700 px-3 py-1.5 text-sm text-zinc-300 hover:bg-zinc-900"
-        >
-          Sign out
-        </button>
       </div>
     </header>
   );

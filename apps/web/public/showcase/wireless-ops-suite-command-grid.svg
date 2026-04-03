@@ -1,0 +1,79 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="90" x2="1420" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071722"/>
+      <stop offset="0.45" stop-color="#0B2132"/>
+      <stop offset="1" stop-color="#040810"/>
+    </linearGradient>
+    <radialGradient id="flare" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 190) rotate(132.921) scale(624.788 701.54)">
+      <stop stop-color="#63F4FF" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#63F4FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="amber" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(310 740) rotate(-17.2415) scale(512.814 348.813)">
+      <stop stop-color="#F6B75E" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#F6B75E" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#flare)"/>
+  <rect width="1600" height="900" fill="url(#amber)"/>
+  <g opacity="0.2">
+    <path d="M0 112.5H1600" stroke="#85C8FF"/>
+    <path d="M0 225H1600" stroke="#85C8FF"/>
+    <path d="M0 337.5H1600" stroke="#85C8FF"/>
+    <path d="M0 450H1600" stroke="#85C8FF"/>
+    <path d="M0 562.5H1600" stroke="#85C8FF"/>
+    <path d="M0 675H1600" stroke="#85C8FF"/>
+    <path d="M0 787.5H1600" stroke="#85C8FF"/>
+    <path d="M200 0V900" stroke="#85C8FF"/>
+    <path d="M400 0V900" stroke="#85C8FF"/>
+    <path d="M600 0V900" stroke="#85C8FF"/>
+    <path d="M800 0V900" stroke="#85C8FF"/>
+    <path d="M1000 0V900" stroke="#85C8FF"/>
+    <path d="M1200 0V900" stroke="#85C8FF"/>
+    <path d="M1400 0V900" stroke="#85C8FF"/>
+  </g>
+  <g>
+    <rect x="115" y="116" width="598" height="316" rx="26" fill="#08131C" fill-opacity="0.88" stroke="#6DEAFF" stroke-opacity="0.35"/>
+    <rect x="146" y="154" width="252" height="145" rx="18" fill="#0C202B" stroke="#72E6FF" stroke-opacity="0.22"/>
+    <rect x="420" y="154" width="262" height="74" rx="18" fill="#0C202B" stroke="#72E6FF" stroke-opacity="0.22"/>
+    <rect x="420" y="243" width="262" height="157" rx="18" fill="#0C202B" stroke="#72E6FF" stroke-opacity="0.22"/>
+    <rect x="752" y="136" width="713" height="268" rx="28" fill="#091720" fill-opacity="0.78" stroke="#87D7FF" stroke-opacity="0.2"/>
+    <rect x="752" y="446" width="713" height="316" rx="28" fill="#091720" fill-opacity="0.78" stroke="#87D7FF" stroke-opacity="0.2"/>
+    <rect x="115" y="476" width="598" height="286" rx="28" fill="#091720" fill-opacity="0.78" stroke="#87D7FF" stroke-opacity="0.2"/>
+  </g>
+  <g opacity="0.9">
+    <circle cx="876" cy="259" r="102" fill="#0B2834" stroke="#6BEAFF" stroke-opacity="0.48"/>
+    <circle cx="876" cy="259" r="65" fill="#08151F" stroke="#6BEAFF" stroke-opacity="0.42"/>
+    <circle cx="876" cy="259" r="11" fill="#6BEAFF"/>
+    <circle cx="998" cy="197" r="6" fill="#F6B75E"/>
+    <circle cx="1088" cy="269" r="7" fill="#6BEAFF"/>
+    <circle cx="958" cy="329" r="6" fill="#7DF2C7"/>
+    <circle cx="781" cy="330" r="8" fill="#F6B75E"/>
+    <path d="M876 259L998 197" stroke="#6BEAFF" stroke-opacity="0.62" stroke-width="2"/>
+    <path d="M876 259L1088 269" stroke="#6BEAFF" stroke-opacity="0.46" stroke-width="2"/>
+    <path d="M876 259L958 329" stroke="#6BEAFF" stroke-opacity="0.46" stroke-width="2"/>
+    <path d="M876 259L781 330" stroke="#6BEAFF" stroke-opacity="0.46" stroke-width="2"/>
+  </g>
+  <g opacity="0.85">
+    <path d="M208 569H668" stroke="#70E8FF" stroke-opacity="0.32"/>
+    <path d="M208 616H668" stroke="#70E8FF" stroke-opacity="0.2"/>
+    <path d="M208 663H668" stroke="#70E8FF" stroke-opacity="0.2"/>
+    <path d="M208 710H668" stroke="#70E8FF" stroke-opacity="0.2"/>
+    <rect x="210" y="521" width="121" height="22" rx="11" fill="#69EAFE" fill-opacity="0.14"/>
+    <rect x="344" y="521" width="141" height="22" rx="11" fill="#F6B75E" fill-opacity="0.16"/>
+    <rect x="498" y="521" width="101" height="22" rx="11" fill="#7DF2C7" fill-opacity="0.16"/>
+  </g>
+  <text x="150" y="102" fill="#B7DFFF" font-family="'IBM Plex Mono', monospace" font-size="20" letter-spacing="7.2">WIRELESS OPS SUITE</text>
+  <text x="150" y="348" fill="white" font-family="'Space Grotesk', sans-serif" font-size="74" font-weight="700">Signal Cartography</text>
+  <text x="150" y="409" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="28">Assessment cockpit / reporting lane / controlled delivery surface</text>
+  <text x="206" y="204" fill="#80EFFF" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="4">LIVE FIELD INPUT</text>
+  <text x="206" y="246" fill="white" font-family="'Space Grotesk', sans-serif" font-size="40" font-weight="700">34 channels</text>
+  <text x="206" y="283" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="21">active collection / monitored zones / evidence ready</text>
+  <text x="449" y="204" fill="#F6B75E" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="4">OPERATOR STATE</text>
+  <text x="449" y="287" fill="white" font-family="'Space Grotesk', sans-serif" font-size="34" font-weight="700">Report package standing by</text>
+  <text x="449" y="331" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="20">Artifacts, timelines, and delivery notes stay inside the same system.</text>
+  <text x="786" y="492" fill="#B7DFFF" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.4">RUNWAY</text>
+  <text x="786" y="551" fill="white" font-family="'Space Grotesk', sans-serif" font-size="54" font-weight="700">Operator workflow / release control / private entitlement</text>
+  <text x="786" y="610" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="24">A single surface for collection, evidence shaping, and controlled artifact delivery.</text>
+</svg>

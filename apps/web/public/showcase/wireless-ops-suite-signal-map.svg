@@ -1,0 +1,48 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="159" y1="91" x2="1427" y2="816" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#04111C"/>
+      <stop offset="0.52" stop-color="#071C28"/>
+      <stop offset="1" stop-color="#03070C"/>
+    </linearGradient>
+    <radialGradient id="aura" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1097 247) rotate(140.667) scale(532.475 636.238)">
+      <stop stop-color="#6BEAFF" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#6BEAFF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#aura)"/>
+  <g opacity="0.18">
+    <circle cx="800" cy="450" r="320" stroke="#6CDFFF"/>
+    <circle cx="800" cy="450" r="230" stroke="#6CDFFF"/>
+    <circle cx="800" cy="450" r="145" stroke="#6CDFFF"/>
+  </g>
+  <g opacity="0.28">
+    <path d="M112 760L620 318" stroke="#88D9FF"/>
+    <path d="M360 802L978 216" stroke="#88D9FF"/>
+    <path d="M740 790L1324 230" stroke="#88D9FF"/>
+  </g>
+  <g>
+    <circle cx="780" cy="454" r="13" fill="#6BEAFF"/>
+    <circle cx="947" cy="380" r="10" fill="#F6B75E"/>
+    <circle cx="1039" cy="522" r="9" fill="#7DF2C7"/>
+    <circle cx="632" cy="592" r="8" fill="#F6B75E"/>
+    <circle cx="544" cy="394" r="7" fill="#6BEAFF"/>
+    <circle cx="1175" cy="330" r="7" fill="#6BEAFF"/>
+    <circle cx="1238" cy="590" r="8" fill="#F6B75E"/>
+    <path d="M780 454L947 380" stroke="#6BEAFF" stroke-width="2" stroke-opacity="0.58"/>
+    <path d="M780 454L1039 522" stroke="#6BEAFF" stroke-width="2" stroke-opacity="0.44"/>
+    <path d="M780 454L632 592" stroke="#6BEAFF" stroke-width="2" stroke-opacity="0.44"/>
+    <path d="M780 454L544 394" stroke="#6BEAFF" stroke-width="2" stroke-opacity="0.44"/>
+    <path d="M947 380L1175 330" stroke="#6BEAFF" stroke-width="2" stroke-opacity="0.28"/>
+    <path d="M1039 522L1238 590" stroke="#6BEAFF" stroke-width="2" stroke-opacity="0.28"/>
+  </g>
+  <rect x="96" y="96" width="432" height="178" rx="26" fill="#071722" fill-opacity="0.82" stroke="#6BEAFF" stroke-opacity="0.26"/>
+  <rect x="1060" y="606" width="438" height="184" rx="26" fill="#071722" fill-opacity="0.82" stroke="#6BEAFF" stroke-opacity="0.26"/>
+  <text x="136" y="145" fill="#B7DFFF" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.6">SIGNAL TOPOLOGY</text>
+  <text x="136" y="208" fill="white" font-family="'Space Grotesk', sans-serif" font-size="54" font-weight="700">Route the field into a controlled map.</text>
+  <text x="136" y="243" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="22">Collection and reporting are structured as one disciplined operating surface.</text>
+  <text x="1098" y="655" fill="#B7DFFF" font-family="'IBM Plex Mono', monospace" font-size="18" letter-spacing="5.2">DELIVERY STATE</text>
+  <text x="1098" y="708" fill="white" font-family="'Space Grotesk', sans-serif" font-size="40" font-weight="700">Findings stay linked to release-ready artifacts.</text>
+  <text x="1098" y="748" fill="#A9C3D8" font-family="'Manrope', sans-serif" font-size="20">Private notes, release assets, and buyer delivery can all sit on the same system boundary.</text>
+</svg>

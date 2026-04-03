@@ -52,7 +52,7 @@ cd ../..
 pnpm dev:web
 ```
 
-Open **http://127.0.0.1:3000** (or the host/port shown in the terminal).
+`pnpm dev:web` now auto-selects an available **localhost-only** port (instead of assuming `3000`) and injects a matching `SITE_URL` for the dev process. Open the exact **`http://127.0.0.1:<port>`** printed in the terminal.
 
 **Production-style run on the host** (after a successful build):
 
@@ -68,6 +68,10 @@ See **`docs/DATABASE.md`** for migrations, seeding, and production Postgres note
 **Optional local data services:** `docker compose -f docker-compose.postgres.yml up -d` and/or **`docker compose -f docker-compose.dev.yml up -d`** (Postgres + Redis) — see **`docs/POSTGRES_LOCAL.md`** and **`docs/RATE_LIMITS.md`**.
 
 **Vault key rotation (offline):** after backup, `pnpm --filter web vault:reencrypt -- --dry-run` then without `--dry-run` — see **`docs/VAULT_KEY_ROTATION.md`**. Rate limits: **`docs/RATE_LIMITS.md`** (optional **`REDIS_URL`** + **`docker-compose.redis.yml`** for multi-instance). **`GET /api/health?probe=redis`** checks Redis when configured.
+
+**Release asset uploads (optional):** set `AWS_S3_RELEASE_BUCKET` plus AWS credentials to enable owner-only presigned PUT uploads from the Release Manager. `AWS_S3_RELEASE_SSE_KMS_KEY_ID` enables SSE-KMS for release uploads.
+
+**Application media uploads (optional):** set `AWS_S3_MEDIA_BUCKET` to isolate showcase screenshots and artwork from release files. If omitted, media uploads can fall back to `AWS_S3_RELEASE_BUCKET`. `AWS_S3_MEDIA_SSE_KMS_KEY_ID` enables a separate KMS key for media objects.
 
 ## Desktop shortcut (local)
 

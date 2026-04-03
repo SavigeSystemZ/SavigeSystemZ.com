@@ -11,7 +11,12 @@ export async function GET() {
 
   const items = await db.applicationVersion.findMany({
     orderBy: { createdAt: "desc" },
-    include: { application: true, assets: true },
+    include: {
+      application: true,
+      assets: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
   });
   return NextResponse.json({ items });
 }

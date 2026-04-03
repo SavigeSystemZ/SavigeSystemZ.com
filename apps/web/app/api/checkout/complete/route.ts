@@ -1,4 +1,10 @@
 import { NextResponse } from "next/server";
+import {
+  buildSessionCookie,
+  createSessionForUser,
+  getSessionCookieName,
+  getSessionMaxAgeSeconds,
+} from "@/lib/auth";
 import { completePurchaseFromSessionId } from "@/lib/checkout-complete";
 
 export async function GET(request: Request) {
@@ -16,5 +22,20 @@ export async function GET(request: Request) {
     );
   }
 
-  return NextResponse.redirect(new URL("/dashboard?checkout=success", origin));
+  const response = NextResponse.redirect(new URL("/dashboard?checkout=success", origin));
+
+  if (result.userId) {
+    const sessionToken = await createSessionForUser(result.userId);
+    response.cookies.set({
+      name: getSessionCookieName(),
+      value: buildSessionCookie(sessionToken),
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: getSessionMaxAgeSeconds(),
+    });
+  }
+
+  return response;
 }

@@ -1,0 +1,9 @@
+ALTER TABLE "Application" ADD COLUMN "label" TEXT;
+ALTER TABLE "Application" ADD COLUMN "tagline" TEXT;
+ALTER TABLE "Application" ADD COLUMN "audience" TEXT;
+ALTER TABLE "Application" ADD COLUMN "priceLabel" TEXT;
+ALTER TABLE "Application" ADD COLUMN "releaseChannel" TEXT;
+ALTER TABLE "Application" ADD COLUMN "details" TEXT;
+ALTER TABLE "Application" ADD COLUMN "highlights" TEXT;
+ALTER TABLE "Application" ADD COLUMN "surfaceAreas" TEXT;
+ALTER TABLE "Application" ADD COLUMN "stackItems" TEXT;

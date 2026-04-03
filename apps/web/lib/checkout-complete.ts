@@ -6,6 +6,8 @@ export async function completePurchaseFromSessionId(sessionId: string): Promise<
   ok: boolean;
   reason?: string;
   alreadyDone?: boolean;
+  userId?: string;
+  applicationId?: string;
 }> {
   const purchase = await db.purchase.findUnique({
     where: { stripeCheckoutSessionId: sessionId },
@@ -16,7 +18,8 @@ export async function completePurchaseFromSessionId(sessionId: string): Promise<
       return { ok: false, reason: "purchase_not_found" };
     }
     if (purchase.status === "COMPLETED") {
-      return { ok: true, alreadyDone: true };
+      const user = await upsertUserByEmail(purchase.purchaserEmail);
+      return { ok: true, alreadyDone: true, userId: user.id, applicationId: purchase.applicationId };
     }
     const user = await upsertUserByEmail(purchase.purchaserEmail);
     await grantLicenseForPurchase({
@@ -28,7 +31,7 @@ export async function completePurchaseFromSessionId(sessionId: string): Promise<
       where: { id: purchase.id },
       data: { status: "COMPLETED", completedAt: new Date() },
     });
-    return { ok: true };
+    return { ok: true, userId: user.id, applicationId: purchase.applicationId };
   }
 
   const stripe = getStripe();
@@ -53,7 +56,8 @@ export async function completePurchaseFromSessionId(sessionId: string): Promise<
   }
 
   if (purchase?.status === "COMPLETED") {
-    return { ok: true, alreadyDone: true };
+    const user = await upsertUserByEmail(email);
+    return { ok: true, alreadyDone: true, userId: user.id, applicationId };
   }
 
   const user = await upsertUserByEmail(email);
@@ -80,5 +84,5 @@ export async function completePurchaseFromSessionId(sessionId: string): Promise<
     });
   }
 
-  return { ok: true };
+  return { ok: true, userId: user.id, applicationId };
 }
