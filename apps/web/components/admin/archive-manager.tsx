@@ -134,10 +134,51 @@ function formatDate(value: string): string {
   });
 }
 
+type LaunchComposerState = {
+  slug: string;
+  title: string;
+  summary: string;
+  category: ArchiveCategoryRecord;
+  featured: boolean;
+  stageLabel: string;
+  artifactFormat: string;
+  details: string;
+  artifactUrl: string;
+  artifactLabel: string;
+  previewImageUrl: string;
+  previewThumbnailUrl: string;
+  tags: string;
+  stackItems: string;
+  publishAfterCreate: boolean;
+};
+
+function emptyComposer(): LaunchComposerState {
+  return {
+    slug: "",
+    title: "",
+    summary: "",
+    category: "OPERATING_SYSTEM",
+    featured: false,
+    stageLabel: "",
+    artifactFormat: "",
+    details: "",
+    artifactUrl: "",
+    artifactLabel: "",
+    previewImageUrl: "",
+    previewThumbnailUrl: "",
+    tags: "",
+    stackItems: "",
+    publishAfterCreate: false,
+  };
+}
+
 export function ArchiveManager() {
   const [items, setItems] = useState<ArchiveItem[]>([]);
   const [drafts, setDrafts] = useState<Record<string, ArchiveFormState>>({});
   const [createForm, setCreateForm] = useState<ArchiveFormState>(emptyForm());
+  const [composer, setComposer] = useState<LaunchComposerState>(emptyComposer());
+  const [composerOpen, setComposerOpen] = useState(false);
+  const [busyComposer, setBusyComposer] = useState(false);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   const [busyCreate, setBusyCreate] = useState(false);
@@ -161,6 +202,73 @@ export function ArchiveManager() {
   useEffect(() => {
     load().catch(() => setError("Failed to load archive entries. Ensure owner login."));
   }, []);
+
+  function updateComposerField<K extends keyof LaunchComposerState>(key: K, value: LaunchComposerState[K]) {
+    setComposer((prev) => ({ ...prev, [key]: value }));
+  }
+
+  async function composeLaunch(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusyComposer(true);
+    setError("");
+    setInfo("");
+
+    try {
+      const body = {
+        slug: composer.slug,
+        title: composer.title,
+        summary: composer.summary,
+        category: composer.category,
+        featured: composer.featured,
+        stageLabel: composer.stageLabel,
+        artifactFormat: composer.artifactFormat,
+        details: composer.details,
+        artifactUrl: composer.artifactUrl,
+        artifactLabel: trimOptional(composer.artifactLabel),
+        previewImageUrl: trimOptional(composer.previewImageUrl),
+        previewThumbnailUrl: trimOptional(composer.previewThumbnailUrl),
+        tags: trimOptional(composer.tags),
+        stackItems: trimOptional(composer.stackItems),
+        publishAfterCreate: composer.publishAfterCreate,
+      };
+
+      const res = await fetch("/api/admin/archive/launch-compose", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(body),
+      });
+
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        published?: boolean;
+        launchReadiness?: { blockers?: string[]; warnings?: string[] };
+      };
+
+      if (!res.ok) {
+        if (data.error === "slug_exists") {
+          setError(`Slug "${composer.slug}" already exists. Choose a different slug.`);
+        } else if (data.error === "invalid_payload") {
+          setError("Validation failed. Check all required fields.");
+        } else {
+          setError("Launch composition failed.");
+        }
+        return;
+      }
+
+      const publishNote = data.published
+        ? " Entry auto-published to public shell."
+        : composer.publishAfterCreate
+          ? " Entry created as draft — blockers remain."
+          : " Entry created as draft.";
+      setInfo(`Archive launch composed.${publishNote}`);
+      setComposer(emptyComposer());
+      setComposerOpen(false);
+      await load();
+    } finally {
+      setBusyComposer(false);
+    }
+  }
 
   function updateCreateField<K extends keyof ArchiveFormState>(key: K, value: ArchiveFormState[K]) {
     setCreateForm((prev) => ({ ...prev, [key]: value }));
@@ -309,6 +417,159 @@ export function ArchiveManager() {
             {readyCount} launch-ready
           </div>
         </div>
+      </div>
+
+      {/* Launch composer — guided draft-to-publish flow */}
+      <div className="mt-6 rounded-[1.6rem] border border-cyan-300/20 bg-cyan-950/10 p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-cyan-100/70">Guided launch</p>
+            <h3 className="mt-1 text-lg font-semibold text-white">Archive Launch Composer</h3>
+            <p className="mt-2 max-w-2xl text-sm text-slate-400">
+              Fill in all launch-required fields in one pass. Optionally auto-publish when all blockers clear.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setComposerOpen((prev) => !prev)}
+            className="action-primary text-xs"
+          >
+            {composerOpen ? "Close composer" : "Open composer"}
+          </button>
+        </div>
+
+        {composerOpen ? (
+          <form onSubmit={(event) => void composeLaunch(event)} className="mt-5 grid gap-4">
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <input
+                className={inputClass}
+                placeholder="slug (e.g. signal-os-build-kit)"
+                value={composer.slug}
+                onChange={(event) => updateComposerField("slug", event.target.value)}
+                required
+              />
+              <input
+                className={inputClass}
+                placeholder="title"
+                value={composer.title}
+                onChange={(event) => updateComposerField("title", event.target.value)}
+                required
+              />
+              <label className="grid gap-2 text-xs uppercase tracking-[0.24em] text-slate-500">
+                Category
+                <select
+                  className={inputClass}
+                  value={composer.category}
+                  onChange={(event) => updateComposerField("category", event.target.value as ArchiveCategoryRecord)}
+                >
+                  {archiveCategoryOptions.map((option) => (
+                    <option key={option} value={option}>
+                      {archiveCategoryLabels[option]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <input
+                className={inputClass}
+                placeholder="stage label (required)"
+                value={composer.stageLabel}
+                onChange={(event) => updateComposerField("stageLabel", event.target.value)}
+                required
+              />
+            </div>
+
+            <textarea
+              className={textareaClass}
+              placeholder="summary (10-500 chars)"
+              value={composer.summary}
+              onChange={(event) => updateComposerField("summary", event.target.value)}
+              required
+            />
+            <textarea
+              className={`${textareaClass} min-h-40`}
+              placeholder="details / long-form framing (20-4000 chars, required for launch)"
+              value={composer.details}
+              onChange={(event) => updateComposerField("details", event.target.value)}
+              required
+            />
+
+            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <input
+                className={inputClass}
+                placeholder="artifact format (required)"
+                value={composer.artifactFormat}
+                onChange={(event) => updateComposerField("artifactFormat", event.target.value)}
+                required
+              />
+              <input
+                className={inputClass}
+                placeholder="artifact URL (required)"
+                value={composer.artifactUrl}
+                onChange={(event) => updateComposerField("artifactUrl", event.target.value)}
+                required
+              />
+              <input
+                className={inputClass}
+                placeholder="artifact label (optional CTA)"
+                value={composer.artifactLabel}
+                onChange={(event) => updateComposerField("artifactLabel", event.target.value)}
+              />
+              <input
+                className={inputClass}
+                placeholder="preview image URL (optional)"
+                value={composer.previewImageUrl}
+                onChange={(event) => updateComposerField("previewImageUrl", event.target.value)}
+              />
+              <input
+                className={inputClass}
+                placeholder="preview thumbnail URL (optional)"
+                value={composer.previewThumbnailUrl}
+                onChange={(event) => updateComposerField("previewThumbnailUrl", event.target.value)}
+              />
+              <textarea
+                className={textareaClass}
+                placeholder={"tags, one per line\nLinux build\nBootstrap"}
+                value={composer.tags}
+                onChange={(event) => updateComposerField("tags", event.target.value)}
+              />
+              <textarea
+                className={textareaClass}
+                placeholder={"stack items, one per line\nBash\nsystemd"}
+                value={composer.stackItems}
+                onChange={(event) => updateComposerField("stackItems", event.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-6">
+              <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm text-slate-100">
+                <input
+                  type="checkbox"
+                  checked={composer.featured}
+                  onChange={(event) => updateComposerField("featured", event.target.checked)}
+                />
+                Mark as featured
+              </label>
+              <label className="flex items-center gap-3 rounded-2xl border border-cyan-300/20 bg-cyan-950/30 px-4 py-3 text-sm text-cyan-100">
+                <input
+                  type="checkbox"
+                  checked={composer.publishAfterCreate}
+                  onChange={(event) => updateComposerField("publishAfterCreate", event.target.checked)}
+                />
+                Auto-publish when blockers clear
+              </label>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                disabled={busyComposer}
+                className="action-primary text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {busyComposer ? "Composing launch…" : "Compose launch"}
+              </button>
+            </div>
+          </form>
+        ) : null}
       </div>
 
       <form

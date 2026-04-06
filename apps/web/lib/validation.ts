@@ -265,6 +265,24 @@ export const updateArchiveEntrySchema = z
     message: "at_least_one_field",
   });
 
+export const archiveLaunchComposerSchema = z.object({
+  slug: archiveEntryFields.slug,
+  title: archiveEntryFields.title,
+  summary: archiveEntryFields.summary,
+  category: archiveEntryFields.category,
+  featured: z.boolean().default(false),
+  stageLabel: z.string().trim().min(2).max(100),
+  artifactFormat: z.string().trim().min(2).max(120),
+  details: z.string().trim().min(20).max(4000),
+  artifactUrl: z.string().trim().min(1).max(2000),
+  artifactLabel: optionalTrimmedText(60, 2),
+  previewImageUrl: optionalUrlOrRootRelativeSchema,
+  previewThumbnailUrl: optionalUrlOrRootRelativeSchema,
+  tags: optionalTrimmedText(1400, 2),
+  stackItems: optionalTrimmedText(1400, 2),
+  publishAfterCreate: z.boolean().default(false),
+});
+
 export const checkoutRequestSchema = z.object({
   applicationId: z.string().min(1),
   purchaserEmail: z.string().email(),
