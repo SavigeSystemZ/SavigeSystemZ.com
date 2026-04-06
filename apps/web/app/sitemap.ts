@@ -1,7 +1,8 @@
 import type { MetadataRoute } from "next";
-import { archiveCatalog } from "@/lib/archive-catalog";
-import { appCatalog } from "@/lib/catalog";
+import { db } from "@/lib/db";
 import { getSiteUrl } from "@/lib/site-url";
+
+export const dynamic = "force-dynamic";
 
 const STATIC_PATHS = [
   "",
@@ -13,10 +14,9 @@ const STATIC_PATHS = [
   "/services",
   "/reviews",
   "/creator",
-  "/dashboard",
 ] as const;
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getSiteUrl();
   const now = new Date();
 
@@ -25,14 +25,27 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: now,
   }));
 
-  const catalogEntries: MetadataRoute.Sitemap = appCatalog.map((app) => ({
+  const [apps, archives] = await Promise.all([
+    db.application.findMany({
+      where: { visibility: "PUBLIC" },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    }),
+    db.archiveEntry.findMany({
+      where: { visibility: "PUBLIC" },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    }),
+  ]);
+
+  const catalogEntries: MetadataRoute.Sitemap = apps.map((app) => ({
     url: `${base}/applications/${app.slug}`,
-    lastModified: now,
+    lastModified: app.updatedAt,
   }));
 
-  const archiveEntries: MetadataRoute.Sitemap = archiveCatalog.map((entry) => ({
+  const archiveEntries: MetadataRoute.Sitemap = archives.map((entry) => ({
     url: `${base}/archive/${entry.slug}`,
-    lastModified: now,
+    lastModified: entry.updatedAt,
   }));
 
   return [...staticEntries, ...catalogEntries, ...archiveEntries];
