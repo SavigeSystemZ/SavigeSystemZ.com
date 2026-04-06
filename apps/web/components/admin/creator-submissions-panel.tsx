@@ -57,20 +57,23 @@ function emptyCounts(): Counts {
 function getPromotionMeta(item: CreatorSubmissionRow): {
   label: string;
   actionLabel: string;
-  href: string;
+  editorHref: string;
+  launchHref: string;
 } {
   if (item.type === "APPLICATION" || item.promotedTargetType === "APPLICATION") {
     return {
       label: "Draft application",
       actionLabel: "Promote to draft app",
-      href: item.promotedTargetId ? `/admin#application-${item.promotedTargetId}` : "/admin",
+      editorHref: item.promotedTargetId ? `/admin#application-${item.promotedTargetId}` : "/admin",
+      launchHref: "/admin/releases#launch-composer",
     };
   }
 
   return {
     label: "Draft archive entry",
     actionLabel: "Promote to draft archive",
-    href: item.promotedTargetId ? `/admin/archive#archive-entry-${item.promotedTargetId}` : "/admin/archive",
+    editorHref: item.promotedTargetId ? `/admin/archive#archive-entry-${item.promotedTargetId}` : "/admin/archive",
+    launchHref: "/admin/archive#launch-composer",
   };
 }
 
@@ -370,12 +373,20 @@ export function CreatorSubmissionsPanel() {
                       </button>
                     </div>
                     {promoted ? (
-                      <a
-                        href={promotion.href}
-                        className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-xs uppercase tracking-[0.22em] text-cyan-100 hover:border-cyan-300/30 hover:text-white"
-                      >
-                        Open {promotion.label}
-                      </a>
+                      <div className="grid gap-2">
+                        <a
+                          href={promotion.editorHref}
+                          className="rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-center text-xs uppercase tracking-[0.22em] text-cyan-100 hover:border-cyan-300/30 hover:text-white"
+                        >
+                          Edit {promotion.label}
+                        </a>
+                        <a
+                          href={promotion.launchHref}
+                          className="rounded-2xl border border-cyan-300/20 bg-cyan-950/30 px-4 py-3 text-center text-xs uppercase tracking-[0.22em] text-cyan-100 hover:border-cyan-300/40 hover:text-white"
+                        >
+                          Launch composer
+                        </a>
+                      </div>
                     ) : null}
                   </div>
                 </div>

@@ -815,7 +815,7 @@ export function ReleaseManager() {
       {!error && info ? <p className="mt-4 text-sm text-cyan-200">{info}</p> : null}
 
       <div className="mt-6 grid gap-4 xl:grid-cols-[1.08fr_0.92fr]">
-        <form onSubmit={composeLaunch} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
+        <form id="launch-composer" onSubmit={composeLaunch} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p className="text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70">Guided launch</p>

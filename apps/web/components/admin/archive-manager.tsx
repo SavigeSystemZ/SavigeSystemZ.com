@@ -420,7 +420,7 @@ export function ArchiveManager() {
       </div>
 
       {/* Launch composer — guided draft-to-publish flow */}
-      <div className="mt-6 rounded-[1.6rem] border border-cyan-300/20 bg-cyan-950/10 p-5">
+      <div id="launch-composer" className="mt-6 rounded-[1.6rem] border border-cyan-300/20 bg-cyan-950/10 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-cyan-100/70">Guided launch</p>
