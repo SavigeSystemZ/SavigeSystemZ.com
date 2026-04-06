@@ -11,6 +11,8 @@ import {
 } from "@/lib/creator-submission-taxonomy";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Creator",
   description: "Submit applications, archive artifacts, research, or system packs into the SavigeSystemZ moderation flow.",

@@ -4,6 +4,8 @@ import { SectionHeading } from "@/components/section-heading";
 import { getAuthContext } from "@/lib/auth";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Dashboard",
   description: "Licensed applications, release delivery routes, and access controls for SavigeSystemZ purchases.",

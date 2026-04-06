@@ -10,9 +10,9 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 ## P1 — product quality and coverage
 
-- [ ] **Playwright:** moderation -> promote -> launch compose -> publish coverage, plus archive publish coverage.
-- [ ] **Commerce:** live-path Stripe staging smoke and follow-up dashboard/download verification.
-- [ ] **A11y / polish:** rerun axe and tighten any regressions after the expanded public/admin UI passes.
+- [x] **Playwright:** archive launch composer (8 tests), creator moderation + promotion (5 tests), expanded commerce (7 tests), a11y (13 routes). Full suite: 50 passed, 0 failed.
+- [x] **A11y / polish:** fixed WCAG select-name/input-name violations on archive, creator form, and application manager. 13 axe routes all green.
+- [ ] **Commerce:** live-path Stripe staging smoke and follow-up dashboard/download verification (needs `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`).
 
 ## P2 — production path
 
