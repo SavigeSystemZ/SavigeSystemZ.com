@@ -20,4 +20,4 @@ Set `CI=1` when running Playwright if you want a clean server each run (see `app
 
 - Keep changes focused and match existing patterns in `apps/web`.
 - Do not commit secrets, `.env` files, or local SQLite databases (`*.db`).
-- For database schema changes, update `apps/web/prisma/schema.prisma` and document any required `prisma db push` or migration steps in the PR description.
+- For database schema changes, update `apps/web/prisma/schema.prisma` and create a migration with `prisma migrate dev --name <description>`. Document migration steps in the PR description. Prefer migrations over `db push` for anything beyond throwaway local experiments.

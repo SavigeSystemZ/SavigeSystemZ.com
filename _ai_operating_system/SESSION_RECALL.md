@@ -49,4 +49,4 @@ pnpm build:web
 
 - **`installer/desktop/`** — run **`./install-desktop-launcher.sh`** to place a shortcut on your Desktop (see README there).
 
-**Last updated:** 2026-04-03 (stop session)
+**Last updated:** 2026-04-06 (AI system audit and buildout session)

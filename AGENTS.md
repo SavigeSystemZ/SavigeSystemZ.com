@@ -1,6 +1,6 @@
 # AGENTS — SavigeSystemZ.com
 
-Human and AI coding agents: read this before large changes.
+Human and AI coding agents: read this before large changes. See also root [`CLAUDE.md`](CLAUDE.md) for full stack reference, commands, and non-negotiable rules.
 
 ## Where rules live
 
