@@ -29,7 +29,7 @@ export default function OwnerLoginPage() {
     });
 
     if (!response.ok) {
-      setError("Invalid access code.");
+      setError(response.status === 429 ? "Too many attempts. Wait a moment and try again." : "Invalid access code.");
       return;
     }
     router.push("/admin");

@@ -137,6 +137,7 @@ export function CreatorSubmissionForm() {
           <select
             className={inputClass}
             value={form.type}
+            aria-label="Submission type"
             onChange={(event) => updateField("type", event.target.value as FormState["type"])}
           >
             {creatorSubmissionTypeOptions.map((type) => (
@@ -165,6 +166,7 @@ export function CreatorSubmissionForm() {
           <select
             className={inputClass}
             value={form.plannedVisibility}
+            aria-label="Planned visibility"
             onChange={(event) =>
               updateField("plannedVisibility", event.target.value as FormState["plannedVisibility"])
             }

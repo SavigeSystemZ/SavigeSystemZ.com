@@ -126,6 +126,7 @@ export default async function ArchivePage(props: ArchivePageProps) {
           <select
             name="category"
             defaultValue={category}
+            aria-label="Filter by category"
             className="rounded-2xl border border-white/10 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 outline-none focus:border-cyan-300/40"
           >
             <option value="">All categories</option>

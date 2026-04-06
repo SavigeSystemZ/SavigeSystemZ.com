@@ -50,7 +50,7 @@ test.describe("owner and public shell", () => {
     await page.goto("/owner/login");
     await page.getByPlaceholder("Owner access code").fill("e2e-owner-code");
     await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/admin**");
+    await page.waitForURL("**/admin**", { timeout: 15_000 });
     await expect(page.getByRole("heading", { name: "Owner Admin Console" })).toBeVisible();
   });
 

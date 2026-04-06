@@ -469,12 +469,12 @@ export function ApplicationManager() {
               </div>
 
               <div className="mt-5 grid gap-3 md:grid-cols-2">
-                <input className={inputClass} value={draft.slug} onChange={(event) => updateDraftField(item.id, "slug", event.target.value)} />
-                <input className={inputClass} value={draft.name} onChange={(event) => updateDraftField(item.id, "name", event.target.value)} />
-                <input className={inputClass} value={draft.label} onChange={(event) => updateDraftField(item.id, "label", event.target.value)} placeholder="label" />
-                <input className={inputClass} value={draft.audience} onChange={(event) => updateDraftField(item.id, "audience", event.target.value)} placeholder="audience" />
-                <input className={inputClass} value={draft.priceLabel} onChange={(event) => updateDraftField(item.id, "priceLabel", event.target.value)} placeholder="pricing label" />
-                <input className={inputClass} value={draft.releaseChannel} onChange={(event) => updateDraftField(item.id, "releaseChannel", event.target.value)} placeholder="release channel" />
+                <input className={inputClass} aria-label="Application slug" value={draft.slug} onChange={(event) => updateDraftField(item.id, "slug", event.target.value)} />
+                <input className={inputClass} aria-label="Application name" value={draft.name} onChange={(event) => updateDraftField(item.id, "name", event.target.value)} />
+                <input className={inputClass} aria-label="Label" value={draft.label} onChange={(event) => updateDraftField(item.id, "label", event.target.value)} placeholder="label" />
+                <input className={inputClass} aria-label="Audience" value={draft.audience} onChange={(event) => updateDraftField(item.id, "audience", event.target.value)} placeholder="audience" />
+                <input className={inputClass} aria-label="Pricing label" value={draft.priceLabel} onChange={(event) => updateDraftField(item.id, "priceLabel", event.target.value)} placeholder="pricing label" />
+                <input className={inputClass} aria-label="Release channel" value={draft.releaseChannel} onChange={(event) => updateDraftField(item.id, "releaseChannel", event.target.value)} placeholder="release channel" />
               </div>
 
               <div className="mt-3 grid gap-3">

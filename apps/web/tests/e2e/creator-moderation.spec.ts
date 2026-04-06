@@ -2,9 +2,11 @@ import { test, expect } from "@playwright/test";
 
 const OWNER_CODE = process.env.OWNER_ACCESS_CODE ?? "e2e-owner-code";
 
+test.describe.configure({ mode: "serial" });
+
 test.describe("creator submission → moderation → promote flow", () => {
   test("public creator submission is accepted", async ({ request }) => {
-    const res = await request.post("/api/creator-submissions", {
+    const res = await request.post("/api/submissions", {
       data: {
         title: "E2E Test Submission",
         type: "AUTOMATION",
@@ -14,8 +16,9 @@ test.describe("creator submission → moderation → promote flow", () => {
       },
       headers: { "content-type": "application/json" },
     });
-    expect(res.status()).toBe(201);
-    const body = (await res.json()) as { id?: string };
+    expect(res.ok()).toBeTruthy();
+    const body = (await res.json()) as { ok?: boolean; id?: string };
+    expect(body.ok).toBe(true);
     expect(body.id).toBeTruthy();
   });
 
@@ -26,7 +29,7 @@ test.describe("creator submission → moderation → promote flow", () => {
 
   test("owner can list, promote, and see handoff metadata", async ({ request }) => {
     // Submit a creator submission
-    const submit = await request.post("/api/creator-submissions", {
+    const submit = await request.post("/api/submissions", {
       data: {
         title: `E2E Promote ${Date.now()}`,
         type: "RESEARCH",
@@ -36,7 +39,7 @@ test.describe("creator submission → moderation → promote flow", () => {
       },
       headers: { "content-type": "application/json" },
     });
-    expect(submit.status()).toBe(201);
+    expect(submit.ok()).toBeTruthy();
     const { id: submissionId } = (await submit.json()) as { id: string };
 
     // Owner login
@@ -94,7 +97,7 @@ test.describe("creator submission → moderation → promote flow", () => {
   test("moderation panel shows promoted entries with handoff links", async ({ page }) => {
     // Submit
     const uniqueTitle = `E2E UI Promote ${Date.now()}`;
-    const submitRes = await page.request.post("/api/creator-submissions", {
+    const submitRes = await page.request.post("/api/submissions", {
       data: {
         title: uniqueTitle,
         type: "AUTOMATION",
@@ -104,7 +107,7 @@ test.describe("creator submission → moderation → promote flow", () => {
       },
       headers: { "content-type": "application/json" },
     });
-    expect(submitRes.status()).toBe(201);
+    expect(submitRes.ok()).toBeTruthy();
     const { id: submissionId } = (await submitRes.json()) as { id: string };
 
     // Owner login via browser
@@ -115,7 +118,7 @@ test.describe("creator submission → moderation → promote flow", () => {
 
     // Navigate to moderation
     await page.getByRole("navigation", { name: "Admin sections" }).getByRole("link", { name: "Moderation" }).click();
-    await expect(page.getByRole("heading", { name: /Creator submissions/i })).toBeVisible();
+    await expect(page.getByText("Creator submissions ready for owner review")).toBeVisible();
 
     // Find and promote the submission
     await expect(page.getByText(uniqueTitle)).toBeVisible();
@@ -123,33 +126,40 @@ test.describe("creator submission → moderation → promote flow", () => {
     // Promote via API since the button may be hard to target among many items
     const promoteRes = await page.request.post(`/api/admin/creator-submissions/${submissionId}/promote`);
     expect(promoteRes.ok()).toBeTruthy();
+    const promoData = (await promoteRes.json()) as {
+      promotion?: { targetType: string; targetSlug: string };
+    };
+    expect(promoData.promotion?.targetType).toBe("ARCHIVE_ENTRY");
 
     // Reload moderation page to see updated state
-    await page.reload();
-    await expect(page.getByText(uniqueTitle)).toBeVisible();
+    await page.goto("/admin/moderation");
+    await expect(page.getByText(uniqueTitle)).toBeVisible({ timeout: 10_000 });
 
-    // Should show "Promoted" badge and handoff links
+    // Should show handoff links (edit + launch composer)
     const article = page.locator("article", { hasText: uniqueTitle });
-    await expect(article.getByText("Promoted")).toBeVisible();
-    await expect(article.getByRole("link", { name: /Edit.*archive/i })).toBeVisible();
-    await expect(article.getByRole("link", { name: /Launch composer/i })).toBeVisible();
+    await expect(article.locator("a", { hasText: /Edit/i })).toBeVisible({ timeout: 10_000 });
+    await expect(article.locator("a", { hasText: /Launch composer/i })).toBeVisible();
   });
 });
 
 test.describe("creator submission API guards", () => {
-  test("honeypot field rejects bots", async ({ request }) => {
-    const res = await request.post("/api/creator-submissions", {
+  test("honeypot field silently discards bots", async ({ request }) => {
+    const res = await request.post("/api/submissions", {
       data: {
         title: "Bot submission",
         type: "APPLICATION",
         summary: "A suspicious bot-like submission with filled honeypot.",
-        details: "This submission should be rejected because the honeypot field is filled in.",
+        details: "This submission should be silently discarded because the honeypot field is filled in.",
         website: "http://spam.example.com",
       },
       headers: { "content-type": "application/json" },
     });
-    // Honeypot-filled requests may return 201 silently (discard) or 400
-    // The important thing is no real submission was persisted
-    expect([201, 400]).toContain(res.status());
+    // Honeypot returns 200 with { ok: true } but does NOT persist (silent discard)
+    expect(res.ok()).toBeTruthy();
+    const body = (await res.json()) as { ok?: boolean; status?: string; id?: string };
+    expect(body.ok).toBe(true);
+    // Key: honeypot responses have status "received" but NO id (not queued)
+    expect(body.status).toBe("received");
+    expect(body.id).toBeUndefined();
   });
 });

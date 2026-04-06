@@ -12,6 +12,8 @@ async function ownerLogin(request: APIRequestContext) {
   return request;
 }
 
+test.describe.configure({ mode: "serial" });
+
 test.describe("archive launch composer API", () => {
   test("POST /api/admin/archive/launch-compose returns 403 without owner session", async ({ request }) => {
     const res = await request.post("/api/admin/archive/launch-compose", {

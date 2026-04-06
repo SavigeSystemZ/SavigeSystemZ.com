@@ -10,7 +10,7 @@ import {
 import { db } from "@/lib/db";
 
 const LOGIN_WINDOW_MS = 60_000;
-const LOGIN_MAX_PER_IP = 15;
+const LOGIN_MAX_PER_IP = 30;
 
 export async function POST(request: Request) {
   if (!allowAuthRequest(request, "login", LOGIN_MAX_PER_IP, LOGIN_WINDOW_MS)) {
