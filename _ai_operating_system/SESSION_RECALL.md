@@ -20,15 +20,18 @@ Use this file when resuming work so nothing is skimmed or forgotten. **`WHERE_LE
 | Item | Why it matters | Where to continue |
 |------|----------------|-------------------|
 | **Real S3 bucket wiring** | Owner upload lanes correctly return `501` until env is configured | `infra/.env.example`, S3 setup, release/media presign routes |
-| **Playwright expansion** | New moderation/promotion/launch publish loops are not covered end to end | `apps/web/tests/e2e/` |
 | **Postgres cutover** | SQLite migrations are still local-dev only | flip provider in `schema.prisma`, regenerate migrations, `docs/POSTGRES_*` |
 | **S3 malware scan** | Vault scan Lambda is still a starter | `infra/s3-vault-scan-lambda/`, `docs/S3_VAULT_LAMBDA_SCAN.md` |
+| **Stripe live keys** | Mock commerce works; real Stripe needs `STRIPE_SECRET_KEY` + webhook secret | `docs/STRIPE_WEBHOOK_TESTING.md` |
 
 ## Explicit TODO (sync with `TODO.md`)
 
 - [x] Extend guided launch choreography to archive entries and promoted creator drafts.
+- [x] Playwright: archive launch (8), moderation (5), commerce (7), full pipeline (6), a11y (13 routes). 56 passed, 0 failed.
+- [x] A11y: fixed WCAG select-name/input-name violations, 13 axe routes green.
+- [x] Fixed login rate limit (15→30/min) causing E2E failures across full suite.
+- [x] Added force-dynamic to creator + dashboard pages (Prisma without it = build-time bomb).
 - [ ] Configure real S3 buckets/credentials for release and media uploads, then verify direct upload from owner UI.
-- [ ] Add Playwright coverage for creator moderation -> promote -> compose launch -> publish.
 - [ ] Postgres-native migrations + CI job after Prisma provider flip.
 - [ ] Deploy real S3 scan + quarantine (extend starter Lambda).
 - [ ] Stripe live-path staging smoke and broader E2E hardening where stable in CI.
