@@ -11,6 +11,10 @@ Flagship software-foundry website and operations platform, built as a Next.js mo
 - **Indexing:** `.cursorignore` trims noisy paths from Cursor’s index.
 - **VS Code:** [`.vscode/settings.json`](.vscode/settings.json) and [`.vscode/extensions.json`](.vscode/extensions.json) for ESLint + Prisma.
 
+## Production
+
+If **savigesystemz.com** loads the wrong app (for example another product’s UI), the domain is pointed at the wrong deployment. See **[docs/PRODUCTION_DOMAIN_VERIFICATION.md](docs/PRODUCTION_DOMAIN_VERIFICATION.md)** for verification commands and DNS / Vercel fixes.
+
 ## Requirements
 
 - **Node.js** 20.x or newer (LTS recommended)
@@ -34,12 +38,12 @@ cp apps/web/.env.example apps/web/.env.local
 
 Edit `apps/web/.env.local`:
 
-- **`SITE_URL`** — e.g. `http://127.0.0.1:3000` for local browsing.
+- **`SITE_URL`** — e.g. `http://127.0.0.1:43907` for local browsing (match the URL printed by `pnpm dev:web`).
 - **`DATABASE_URL`** — for local development, SQLite is fine. The example uses `file:./dev.db`; Prisma resolves this **relative to the `prisma/` folder**, so the file is created at `apps/web/prisma/dev.db`.
 - **`OWNER_ACCESS_CODE`** / **`OWNER_LOGIN_SECRET`** — set long random strings for owner login at `/owner/login`.
-- **Passkeys (optional locally):** for `http://127.0.0.1:3000`, align WebAuthn with your origin, for example:
+- **Passkeys (optional locally):** for `http://127.0.0.1:43907`, align WebAuthn with your origin, for example:
   - `PASSKEY_RP_ID=127.0.0.1`
-  - `PASSKEY_ORIGIN=http://127.0.0.1:3000`
+  - `PASSKEY_ORIGIN=http://127.0.0.1:43907`
 
 Apply migrations and start the dev server:
 
