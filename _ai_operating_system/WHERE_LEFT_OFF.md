@@ -1,38 +1,46 @@
 # Where Left Off
 
 - **Timestamp:** 2026-04-06 (session concluded)
-- **Status:** All P1 items complete. Full E2E suite green (56 pass, 0 fail). All pushed to `origin/main`.
+- **Status:** P0/P1/P2 items complete (except external-dependency-blocked items). Full suite green on both SQLite and PostgreSQL.
 - **Commits this session:**
   - `7e50c66` — fix 6 E2E failures: a11y labels, commerce assertions, login rate limit
   - `c00949a` — full-pipeline E2E test + force-dynamic on creator/dashboard pages
   - `101cebc` — auth module unit tests (15 tests) + session recall update
   - `5a82c38` — dynamic sitemap from DB + robots.txt blocks admin/API routes
-- **Quality gates:** lint, typecheck, 111 unit tests, 56 E2E tests, build — all green
+  - `25b4190` — handoff update
+  - `e20a64c` — PostgreSQL cutover, S3 vault scan Lambda, CI with Postgres service
+- **Quality gates:** lint, typecheck, 111 unit tests, 56 E2E tests, build — all green on Postgres
 - **Git:** All pushed to `git@github.com:SavigeSystemZ/SavigeSystemZ.com.git`
 
-## Status
+## Completed this session
 
-| Item | Status |
-|------|--------|
-| Playwright E2E suite | DONE — 56 tests across 10 files, 0 failures |
-| A11y audit | DONE — 13 axe routes, WCAG select-name/input-name fixed |
-| Auth unit tests | DONE — 15 tests covering session signing, access code, requireOwner |
-| Full pipeline test | DONE — submit → moderate → promote → publish → verify public |
-| Dynamic sitemap | DONE — queries DB for published apps/archive entries |
-| robots.txt | DONE — blocks /admin/, /api/, /owner/, /dashboard |
-| Login rate limit | FIXED — 15→30/min to prevent E2E suite exhaustion |
-| force-dynamic | FIXED — creator + dashboard pages (Prisma without it = build-time failure) |
-| Real S3 bucket wiring | BLOCKED — needs AWS credentials |
-| Stripe live keys | BLOCKED — needs STRIPE_SECRET_KEY + webhook secret |
-| Postgres cutover | READY — Docker Compose exists, schema needs provider flip |
+| Item | Details |
+|------|---------|
+| E2E stabilization | Fixed 6 failures → 0. A11y labels, commerce assertions, login rate limit (15→30/min), force-dynamic |
+| Full pipeline test | 6-test chain: submit → moderate → promote → verify draft → publish → verify public |
+| Auth unit tests | 15 tests covering session signing, access code validation, requireOwner guard |
+| Dynamic sitemap | Queries DB for published entries with real updatedAt timestamps |
+| robots.txt | Blocks /admin/, /api/, /owner/, /dashboard |
+| **PostgreSQL cutover** | Schema flipped to postgresql, baseline migration, 56 E2E tests verified against Docker Postgres |
+| **S3 vault scan Lambda** | ClamAV-based: download → scan → tag → quarantine → SNS notify |
+| **CI with Postgres** | Both quality and E2E jobs use Postgres service containers |
+| Dev scripts | `scripts/dev-postgres.sh` and `scripts/dev-sqlite.sh` for local dev |
 
-## Next best steps
+## Blocked — needs credentials from owner
 
-1. **S3 bucket wiring** (P0) — set AWS env vars and verify upload UI
-2. **Stripe live staging** (P1) — configure test keys, verify webhook flow
-3. **Postgres cutover** (P2) — flip provider, generate native migrations, test with Docker Compose
-4. **S3 vault scan Lambda** (P2) — extend starter in `infra/s3-vault-scan-lambda/`
-5. **Domain verification** (P2) — confirm savigesystemz.com routes correctly
+| Item | What's needed | Instructions |
+|------|---------------|--------------|
+| S3 bucket wiring | AWS credentials + bucket | See credential instructions below |
+| Stripe live staging | Stripe test keys | See credential instructions below |
+| Domain verification | DNS access | See credential instructions below |
+| S3 vault scan deploy | AWS Lambda deploy access | Lambda code ready, needs deploy |
+
+## Next steps when credentials are available
+
+1. Set AWS env vars → verify upload from owner UI
+2. Set Stripe test keys → run `pnpm --filter web test:e2e` with real Stripe
+3. Deploy vault scan Lambda with ClamAV layer
+4. Verify domain routing to correct app
 
 ## Full recall
 
