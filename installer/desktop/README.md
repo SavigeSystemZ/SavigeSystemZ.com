@@ -1,6 +1,6 @@
 # Desktop launcher (local dev)
 
-Opens **`http://127.0.0.1:3000/`** in your default browser. Start the app first:
+Opens **`http://127.0.0.1:43907/`** in your default browser (or the port your dev server prints). Start the app first:
 
 ```bash
 cd /path/to/SavigeSystemZ.com

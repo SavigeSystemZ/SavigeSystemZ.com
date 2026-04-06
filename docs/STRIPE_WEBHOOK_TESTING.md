@@ -9,7 +9,7 @@ Production flow: Stripe signs each webhook with `Stripe-Signature` using your **
 3. Forward events to your dev server:
 
 ```bash
-stripe listen --forward-to http://127.0.0.1:3000/api/webhooks/stripe
+stripe listen --forward-to http://127.0.0.1:43907/api/webhooks/stripe
 ```
 
 The CLI prints a **webhook signing secret** — use that value as `STRIPE_WEBHOOK_SECRET` for local verification.

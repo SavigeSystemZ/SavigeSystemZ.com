@@ -12,7 +12,7 @@ cd apps/web && pnpm exec prisma generate && pnpm exec prisma migrate deploy && p
 pnpm dev:web
 ```
 
-Browse to the URL in the terminal (default **http://localhost:3000**). For passkeys on localhost, set `PASSKEY_RP_ID` and `PASSKEY_ORIGIN` to match that origin.
+Browse to the URL in the terminal (`.env.example` uses **http://127.0.0.1:43907**; dev may auto-pick a port—keep `SITE_URL` and passkey origins aligned). For passkeys on localhost, set `PASSKEY_RP_ID` and `PASSKEY_ORIGIN` to match that origin.
 
 ## Scripts (run inside `apps/web` or via `pnpm --filter web <script>`)
 
