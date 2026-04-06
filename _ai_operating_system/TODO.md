@@ -4,8 +4,8 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 ## P0 — launch and owner flow
 
-- [ ] **Archive launch composer:** give archive entries the same guided draft-to-launch path that applications now have.
-- [ ] **Creator draft handoff:** reduce manual bouncing between moderation, applications, archive, media, and releases after a submission is promoted.
+- [x] **Archive launch composer:** guided draft-to-launch flow for archive entries (API + UI).
+- [x] **Creator draft handoff:** dual deep links ("Edit draft" + "Launch composer") from moderation panel.
 - [ ] **Owner uploads live:** configure real S3 buckets/credentials and verify direct upload from release/media/launch composer surfaces.
 
 ## P1 — product quality and coverage
@@ -25,6 +25,9 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 - [x] Public catalog API + seed wiring; mock commerce E2E.
 - [x] Cursor/agent ergonomics (`.cursor/rules`, `AGENTS.md`, `.vscode` optional).
+- [x] AI agent system audit, buildout, session changelog (16 coherence fixes, PATTERNS.md, TROUBLESHOOTING.md, root CLAUDE.md).
+- [x] Git remote + push to GitHub (SavigeSystemZ/SavigeSystemZ.com, private).
+- [x] Archive launch composer (guided draft-to-publish) and creator-to-launch handoff (deep links).
 - [x] Vault crypto, legacy key, Redis limiter, strict mode, reencrypt script, health probes.
 - [x] Starter S3 Lambda folder + dev compose bundle.
 - [x] Flagship public redesign, application catalog/detail routes, archive system, creator intake/moderation/promotion, media galleries, launch readiness, publish flows, and guided application launch composer.
