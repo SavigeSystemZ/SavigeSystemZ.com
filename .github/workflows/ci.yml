@@ -8,6 +8,20 @@ on:
 jobs:
   quality:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ssz
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: savige
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ssz -d savige"
+          --health-interval 3s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -18,14 +32,35 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
+      - name: Prisma generate + migrate
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
       - run: pnpm lint
       - run: pnpm typecheck
       - run: pnpm test
-      - run: pnpm build
+      - name: Build
+        run: pnpm build
+        env:
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
       - run: pnpm audit:deps
 
   e2e:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ssz
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: savige
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ssz -d savige"
+          --health-interval 3s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -36,10 +71,10 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
-      - name: Prisma migrate, seed, and generate
+      - name: Prisma generate, migrate, seed
         run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm --filter web exec prisma db seed
         env:
-          DATABASE_URL: file:./dev.db
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
       - name: Install Playwright browser
         run: pnpm --filter web exec playwright install --with-deps chromium
       - name: End-to-end tests
@@ -48,6 +83,6 @@ jobs:
           CI: "1"
           OWNER_ACCESS_CODE: e2e-owner-code
           OWNER_LOGIN_SECRET: e2e-owner-secret-change-me-32chars
-          DATABASE_URL: file:./dev.db
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
           E2E_PORT: "3456"
           VAULT_ENCRYPTION_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"

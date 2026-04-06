@@ -23,7 +23,7 @@ export default defineConfig({
       ...process.env,
       OWNER_ACCESS_CODE: process.env.E2E_OWNER_CODE ?? "e2e-owner-code",
       OWNER_LOGIN_SECRET: process.env.E2E_OWNER_SECRET ?? "e2e-owner-secret-change-me-32chars",
-      DATABASE_URL: "file:./dev.db",
+      DATABASE_URL: process.env.DATABASE_URL ?? "file:./dev.db",
       NODE_ENV: "development",
       PASSKEY_RP_ID: process.env.PASSKEY_RP_ID ?? "127.0.0.1",
       PASSKEY_ORIGIN: process.env.PASSKEY_ORIGIN ?? `http://127.0.0.1:${E2E_PORT}`,

@@ -116,10 +116,13 @@ pnpm --filter web test:e2e      # Playwright E2E (needs DATABASE_URL + owner sec
 ## Environment setup (local dev)
 
 ```bash
+# Option A: Postgres (recommended — matches production)
 cp apps/web/.env.example apps/web/.env.local
-# Edit .env.local: set DATABASE_URL=file:./dev.db, OWNER_ACCESS_CODE, OWNER_LOGIN_SECRET
-cd apps/web && pnpm exec prisma generate && pnpm exec prisma migrate deploy && pnpm exec prisma db seed && cd ../..
-pnpm dev:web
+# Edit .env.local: set OWNER_ACCESS_CODE, OWNER_LOGIN_SECRET
+./scripts/dev-postgres.sh
+
+# Option B: SQLite (quick, no Docker)
+./scripts/dev-sqlite.sh
 ```
 
 ## Documentation index

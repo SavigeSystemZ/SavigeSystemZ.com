@@ -16,8 +16,9 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 ## P2 — production path
 
-- [ ] **Postgres:** switch `apps/web/prisma/schema.prisma` to `postgresql`, generate **new** migrations, run CI against Postgres service (see `docs/POSTGRES_CUTOVER_CHECKLIST.md`, `docs/CI_POSTGRES.md`).
-- [ ] **S3 vault scan:** replace placeholder in `infra/s3-vault-scan-lambda/handler.mjs` with real scanner + IAM; wire bucket notification (`docs/S3_VAULT_LAMBDA_SCAN.md`).
+- [x] **Postgres:** switched to `postgresql` provider, baseline migration, CI jobs with Postgres service, `scripts/dev-postgres.sh` + `scripts/dev-sqlite.sh` for local dev. Full E2E (56 tests) verified against Docker Postgres.
+- [x] **S3 vault scan:** ClamAV-based Lambda with download → scan → tag → quarantine → SNS notify flow. Ready for deploy with ClamAV Lambda layer.
+- [x] **CI:** quality + E2E jobs both run against Postgres service containers.
 - [ ] **Redis elsewhere:** if horizontally scaled, reuse sliding-window pattern for `lib/auth-rate-limit.ts` and `app/api/project-requests/route.ts` (see `docs/RATE_LIMITS.md`).
 - [ ] **Strict Redis ops:** alerts when `vaultMutationRedis` probe is `error` or 503 rate spikes with `VAULT_REDIS_STRICT=1`.
 
