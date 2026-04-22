@@ -1,0 +1,15 @@
+---
+description: "ssz — apps/web Next.js 16, proxy, auth, catalog"
+globs: apps/web/**/*
+alwaysApply: false
+---
+
+# apps/web — Next.js 16
+
+- **Proxy:** `apps/web/proxy.ts` (`export async function proxy`). Do not add deprecated `middleware.ts`. Use Web Crypto via `lib/hmac-web.ts`, not `node:crypto`, for Edge compatibility.
+- **Auth:** Never trust `x-user-*` headers. Use `getAuthContext()` from `lib/auth.ts` (session cookie + DB). Owner APIs use `requireOwner()`.
+- **Validation:** Zod in `lib/validation.ts` for API bodies; return `400` with `issues` on failure.
+- **Audit:** Important mutations call `writeAuditLog` from `lib/audit.ts` with stable `action` strings.
+- **Catalog:** `getPublicCatalog()` / `getPublicApplicationBySlug()` from `lib/catalog-resolver.ts`. Use `export const dynamic = "force-dynamic"` when Prisma must not run at `next build` without `DATABASE_URL`.
+- **Public API:** `GET /api/catalog` — no auth.
+- **Tests:** Vitest `tests/unit/`; Playwright `tests/e2e/`.
