@@ -1,10 +1,50 @@
 import { NextResponse } from "next/server";
 import { getAuthContext, requireOwner } from "@/lib/auth";
 import { writeAuditLog } from "@/lib/audit";
-import { syncCodeRepository } from "@/lib/code-repository";
+import {
+  codeRepositoryPatchSchema,
+  setCodeRepositoryApplicationLinks,
+  syncCodeRepository,
+} from "@/lib/code-repository";
 import { db } from "@/lib/db";
 
 type Params = { params: Promise<{ id: string }> };
+
+export async function PATCH(request: Request, ctx: Params) {
+  const context = await getAuthContext();
+  const forbidden = requireOwner(context);
+  if (forbidden) return forbidden;
+
+  const { id } = await ctx.params;
+
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const parsed = codeRepositoryPatchSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Invalid body", issues: parsed.error.issues }, { status: 400 });
+  }
+
+  try {
+    const updated = await setCodeRepositoryApplicationLinks(id, parsed.data.applicationIds);
+    await writeAuditLog({
+      actorUserId: context.userId,
+      action: "code.repository.link",
+      targetType: "CodeRepository",
+      targetId: id,
+      metadata: { applicationIds: parsed.data.applicationIds },
+    });
+    return NextResponse.json({ item: updated });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unable to update repository";
+    const status = /not found/i.test(message) ? 404 : 400;
+    return NextResponse.json({ error: message }, { status });
+  }
+}
 
 export async function POST(_request: Request, ctx: Params) {
   const context = await getAuthContext();

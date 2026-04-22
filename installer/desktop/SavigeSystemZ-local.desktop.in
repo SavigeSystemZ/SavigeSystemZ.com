@@ -6,5 +6,5 @@ Comment=Open local dev site (pnpm dev:web on port 43907)
 Exec=xdg-open http://127.0.0.1:43907/
 Icon=@ICON_PATH@
 Terminal=false
-Categories=Network;Development;
+Categories=Development;WebDevelopment;
 StartupNotify=true

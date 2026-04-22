@@ -42,6 +42,28 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${getSiteUrl()}/#organization`,
+      name: "SavigeSystemZ",
+      url: getSiteUrl(),
+      description: siteDescription,
+      sameAs: ["https://github.com/SavigeSystemZ"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${getSiteUrl()}/#website`,
+      url: getSiteUrl(),
+      name: "SavigeSystemZ",
+      description: siteDescription,
+      publisher: { "@id": `${getSiteUrl()}/#organization` },
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -52,6 +74,12 @@ export default function RootLayout({
       lang="en"
       className={`${bodySans.variable} ${displayFont.variable} ${monoFont.variable} h-full antialiased`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <a
           href="#main-content"

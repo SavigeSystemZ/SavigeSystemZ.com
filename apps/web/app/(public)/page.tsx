@@ -34,16 +34,16 @@ export default async function Home() {
         archiveCount={archiveEntries.length}
       />
 
-      <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <section className="reveal grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="surface-panel glow-hover rounded-[2rem] p-6 sm:p-8">
           <SectionHeading
             eyebrow="Operating thesis"
             title="One home for public products, private workflows, and the rest of the engineering stack."
             description="The strongest version of this site is not just a marketing front end. It is a controlled release layer, a systems showcase, a secure owner console, and an engineering archive that can scale with whatever you decide to publish next."
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="reveal-stagger mt-8 grid gap-4 sm:grid-cols-3">
             {flagshipMetrics.map((metric) => (
-              <article key={metric.label} className="rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
+              <article key={metric.label} className="glow-hover rounded-[1.6rem] border border-white/8 bg-white/[0.03] p-5">
                 <p className="display-title text-2xl font-semibold tracking-[-0.04em] text-white">{metric.value}</p>
                 <p className="mt-2 text-[0.72rem] uppercase tracking-[0.28em] text-slate-500">{metric.label}</p>
                 <p className="mt-4 text-sm leading-7 text-slate-300">{metric.detail}</p>
@@ -69,7 +69,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <section className="reveal surface-panel glow-hover rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Flagship catalog"
           title="Applications with stronger narrative, release context, and buyer pathways."
@@ -80,14 +80,14 @@ export default async function Home() {
             </Link>
           }
         />
-        <div className="mt-8 grid gap-4 lg:grid-cols-2">
+        <div className="reveal-stagger mt-8 grid gap-4 lg:grid-cols-2">
           {(featuredApps.length > 0 ? featuredApps : appCatalog).map((app) => (
             <AppShowcaseCard key={app.id} app={app} />
           ))}
         </div>
       </section>
 
-      <section className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <section className="reveal surface-panel rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Visual runway"
           title="The catalog now carries visual identity instead of only text."
@@ -98,7 +98,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <section className="reveal surface-panel glow-hover rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Engineering archive"
           title="The rest of the foundry now has a real public surface."
@@ -109,16 +109,16 @@ export default async function Home() {
             </Link>
           }
         />
-        <div className="mt-8 grid gap-4 lg:grid-cols-3">
+        <div className="reveal-stagger mt-8 grid gap-4 lg:grid-cols-3">
           {(featuredArchiveEntries.length > 0 ? featuredArchiveEntries : archiveEntries.slice(0, 3)).map((entry) => (
             <ArchiveEntryCard key={entry.id} entry={entry} />
           ))}
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-3">
+      <section className="reveal-stagger grid gap-4 xl:grid-cols-3">
         {foundryLanes.map((lane) => (
-          <article key={lane.title} className="surface-panel rounded-[1.8rem] p-6">
+          <article key={lane.title} className="surface-panel glow-hover rounded-[1.8rem] p-6">
             <p className="section-eyebrow">{lane.title}</p>
             <p className="mt-5 text-sm leading-7 text-slate-300">{lane.summary}</p>
             <div className="mt-5 flex flex-wrap gap-2">

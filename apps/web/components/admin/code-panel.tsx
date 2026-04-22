@@ -2,6 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+type AppSummary = {
+  id: string;
+  slug: string;
+  name: string;
+  visibility: "PUBLIC" | "PRIVATE" | "DRAFT";
+};
+
+type AppForLinking = AppSummary & { codeRepositoryId: string | null };
+
 type CodeRepo = {
   id: string;
   slug: string;
@@ -23,22 +32,27 @@ type CodeRepo = {
   syncStatus: "PENDING" | "OK" | "ERROR";
   syncError: string | null;
   lastSyncedAt: string | null;
+  applications: AppSummary[];
 };
 
 export function CodePanel() {
   const [items, setItems] = useState<CodeRepo[]>([]);
+  const [applications, setApplications] = useState<AppForLinking[]>([]);
   const [loading, setLoading] = useState(true);
   const [ref, setRef] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingLinksFor, setEditingLinksFor] = useState<string | null>(null);
+  const [linkDraft, setLinkDraft] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/admin/code", { credentials: "same-origin" });
       if (res.ok) {
-        const body = (await res.json()) as { items: CodeRepo[] };
+        const body = (await res.json()) as { items: CodeRepo[]; applications: AppForLinking[] };
         setItems(body.items);
+        setApplications(body.applications ?? []);
       }
     } finally {
       setLoading(false);
@@ -87,6 +101,45 @@ export function CodePanel() {
     try {
       await fetch(`/api/admin/code/${id}`, { method: "DELETE", credentials: "same-origin" });
       await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function beginEditLinks(repo: CodeRepo) {
+    setEditingLinksFor(repo.id);
+    setLinkDraft(repo.applications.map((a) => a.id));
+    setError(null);
+  }
+
+  function cancelEditLinks() {
+    setEditingLinksFor(null);
+    setLinkDraft([]);
+  }
+
+  function toggleLinkDraft(appId: string) {
+    setLinkDraft((prev) =>
+      prev.includes(appId) ? prev.filter((id) => id !== appId) : [...prev, appId],
+    );
+  }
+
+  async function saveLinks(repoId: string) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/code/${repoId}`, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ applicationIds: linkDraft }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
+      setEditingLinksFor(null);
+      setLinkDraft([]);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setBusy(false);
     }
@@ -180,6 +233,14 @@ export function CodePanel() {
                 <div className="flex flex-shrink-0 gap-2">
                   <button
                     type="button"
+                    onClick={() => beginEditLinks(repo)}
+                    disabled={busy}
+                    className="action-secondary text-xs disabled:opacity-50"
+                  >
+                    Link apps
+                  </button>
+                  <button
+                    type="button"
                     onClick={() => void sync(repo.id)}
                     disabled={busy}
                     className="action-secondary text-xs disabled:opacity-50"
@@ -195,6 +256,80 @@ export function CodePanel() {
                     Remove
                   </button>
                 </div>
+              </div>
+
+              <div className="mt-4 border-t border-white/8 pt-3 text-xs text-slate-300">
+                <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-500">Linked applications</p>
+                {repo.applications.length === 0 ? (
+                  <p className="mt-2 text-slate-400">No applications linked yet.</p>
+                ) : (
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {repo.applications.map((app) => (
+                      <li
+                        key={app.id}
+                        className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1"
+                      >
+                        {app.name}{" "}
+                        <span className="text-slate-500">({app.visibility.toLowerCase()})</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {editingLinksFor === repo.id ? (
+                  <div className="mt-3 rounded-xl border border-white/10 bg-slate-950/40 p-3">
+                    {applications.length === 0 ? (
+                      <p className="text-slate-400">No applications exist yet — create one in the Applications panel first.</p>
+                    ) : (
+                      <ul className="grid gap-1 sm:grid-cols-2">
+                        {applications.map((app) => {
+                          const checked = linkDraft.includes(app.id);
+                          const linkedElsewhere =
+                            !checked && app.codeRepositoryId && app.codeRepositoryId !== repo.id;
+                          return (
+                            <li key={app.id} className="flex items-start gap-2">
+                              <input
+                                id={`repo-${repo.id}-app-${app.id}`}
+                                type="checkbox"
+                                checked={checked}
+                                onChange={() => toggleLinkDraft(app.id)}
+                                className="mt-0.5"
+                              />
+                              <label
+                                htmlFor={`repo-${repo.id}-app-${app.id}`}
+                                className="cursor-pointer text-slate-200"
+                              >
+                                {app.name}{" "}
+                                <span className="text-slate-500">({app.visibility.toLowerCase()})</span>
+                                {linkedElsewhere ? (
+                                  <span className="ml-1 text-amber-200">— currently linked elsewhere</span>
+                                ) : null}
+                              </label>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                    <div className="mt-3 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => void saveLinks(repo.id)}
+                        disabled={busy}
+                        className="action-primary text-xs disabled:opacity-50"
+                      >
+                        {busy ? "Saving…" : "Save links"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelEditLinks}
+                        disabled={busy}
+                        className="action-secondary text-xs disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </li>
           ))}

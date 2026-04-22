@@ -31,9 +31,28 @@ export type PublicApplicationMediaRecord = {
   createdAt: string;
 };
 
+export type PublicCodeRepositoryRecord = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  githubUrl: string | null;
+  githubOwner: string | null;
+  githubRepo: string | null;
+  defaultBranch: string | null;
+  primaryLanguage: string | null;
+  starCount: number | null;
+  forkCount: number | null;
+  openIssueCount: number | null;
+  latestCommitSha: string | null;
+  latestCommitMessage: string | null;
+  latestCommitAt: string | null;
+};
+
 export type PublicApplicationDetailRecord = ApplicationRecord & {
   media: PublicApplicationMediaRecord[];
   versions: PublicApplicationVersionRecord[];
+  codeRepository: PublicCodeRepositoryRecord | null;
 };
 
 function mapVisibility(v: string): ApplicationRecord["visibility"] {
@@ -121,6 +140,46 @@ function mapVersion(version: {
   };
 }
 
+type CodeRepositoryRow = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  visibility: string;
+  githubUrl: string | null;
+  githubOwner: string | null;
+  githubRepo: string | null;
+  defaultBranch: string | null;
+  primaryLanguage: string | null;
+  starCount: number | null;
+  forkCount: number | null;
+  openIssueCount: number | null;
+  latestCommitSha: string | null;
+  latestCommitMessage: string | null;
+  latestCommitAt: Date | null;
+};
+
+function mapPublicCodeRepository(row: CodeRepositoryRow | null | undefined): PublicCodeRepositoryRecord | null {
+  if (!row || row.visibility !== "PUBLIC") return null;
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    description: row.description,
+    githubUrl: row.githubUrl,
+    githubOwner: row.githubOwner,
+    githubRepo: row.githubRepo,
+    defaultBranch: row.defaultBranch,
+    primaryLanguage: row.primaryLanguage,
+    starCount: row.starCount,
+    forkCount: row.forkCount,
+    openIssueCount: row.openIssueCount,
+    latestCommitSha: row.latestCommitSha,
+    latestCommitMessage: row.latestCommitMessage,
+    latestCommitAt: row.latestCommitAt ? row.latestCommitAt.toISOString() : null,
+  };
+}
+
 function mapApplicationWithVersions(row: {
   id: string;
   slug: string;
@@ -162,6 +221,7 @@ function mapApplicationWithVersions(row: {
       createdAt: Date;
     }>;
   }>;
+  codeRepository?: CodeRepositoryRow | null;
 }): PublicApplicationDetailRecord {
   return {
     ...mapRow(row),
@@ -177,6 +237,7 @@ function mapApplicationWithVersions(row: {
       createdAt: item.createdAt.toISOString(),
     })),
     versions: row.versions.map(mapVersion),
+    codeRepository: mapPublicCodeRepository(row.codeRepository ?? null),
   };
 }
 
@@ -234,6 +295,7 @@ export async function getPublicCatalogWithReleases(): Promise<PublicApplicationD
             },
           },
         },
+        codeRepository: true,
       },
     });
     if (rows.length > 0) {
@@ -247,6 +309,7 @@ export async function getPublicCatalogWithReleases(): Promise<PublicApplicationD
     ...app,
     media: [],
     versions: [],
+    codeRepository: null,
   }));
 }
 
@@ -272,6 +335,7 @@ export async function getPublicApplicationWithReleasesBySlug(
             },
           },
         },
+        codeRepository: true,
       },
     });
     if (row) return mapApplicationWithVersions(row);
@@ -280,5 +344,5 @@ export async function getPublicApplicationWithReleasesBySlug(
   }
 
   const fallback = appCatalog.find((a) => a.slug === slug);
-  return fallback ? { ...fallback, media: [], versions: [] } : null;
+  return fallback ? { ...fallback, media: [], versions: [], codeRepository: null } : null;
 }

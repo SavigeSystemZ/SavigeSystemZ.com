@@ -2,6 +2,37 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-04-22 — Application ↔ CodeRepository link (migration 0003) + dev-server env fix
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS (6 tasks clean)
+- **Typecheck**: PASS (7 packages clean — includes fix to `tests/unit/concierge.test.ts` KnowledgeBase fixture)
+- **Vitest**: **124 / 124** pass (20 files) — 3 new tests in `tests/unit/code-repository.test.ts` covering `setCodeRepositoryApplicationLinks`
+- **`pnpm build:web`**: PASS — `/admin/code` routes + updated `/applications/[slug]` compile; Prisma client regenerated post-migration
+- **Prisma migrate deploy**: applied `0003_application_code_repository_link` against local Postgres (`postgresql://ssz:dev@localhost:5433/savige`)
+
+### Runtime smoke (live against Postgres, port 43907)
+- `GET /` → 200
+- `GET /applications` → 200
+- `GET /applications/wireless-ops-suite` → 200 (detail page reached)
+- `GET /archive` → 200
+- `GET /api/catalog` → 200 (returns real Postgres row `cmnnteez70000i2kop620vq9d`, not static fallback)
+- `GET /api/health` → 200 (`vaultMutationRateLimit: memory`)
+- **Desktop launcher**: `desktop-file-validate` clean (no hints after `Categories` fix); `gio launch ~/Desktop/SavigeSystemZ-local.desktop` → exit 0; `xdg-open http://127.0.0.1:43907/` routed through Vivaldi (default handler)
+
+### Issues found and resolved this session (3)
+1. `scripts/dev-web.mjs` hard-coded `DATABASE_URL: process.env.DATABASE_URL?.trim() || "file:./dev.db"` in the child-process env, overriding `.env.local` and triggering Prisma "URL must start with the protocol `postgresql://`" on every dev session. Removed the override — `.env.local` + Next's `.env` loader now drive it correctly.
+2. `apps/web/.env.local` still carried the SQLite URL from the SQLite era. Flipped to `postgresql://ssz:dev@localhost:5433/savige` so `pnpm dev:web` works against the canonical local Postgres without needing `dev-postgres.sh`.
+3. `apps/web/AGENTS.md` still claimed SQLite as the local store. Updated the Stack + PR checklist lines to Postgres.
+4. Desktop launcher `Categories=Network;Development;` raised a freedesktop hint (two main categories). Changed to `Categories=Development;WebDevelopment;` in `installer/desktop/SavigeSystemZ-local.desktop.in` and re-installed.
+
+### New / changed surfaces
+- **Schema**: `Application.codeRepositoryId` (optional FK, `onDelete: SetNull`) + `@@index([codeRepositoryId])`; `CodeRepository.applications[]` back-relation
+- **Admin API**: `PATCH /api/admin/code/[id]` with Zod-validated `{ applicationIds: string[] }`; `GET /api/admin/code` now returns `{ items, applications }` for the linking UI
+- **Admin UI**: new "Link apps" button + checkbox editor + "Linked applications" pill list per repo in `components/admin/code-panel.tsx`
+- **Public UI**: `codeRepository` included on `getPublicApplicationWithReleasesBySlug`; `/applications/[slug]` renders a "Source code" card (lang, branch, stars, open issues, latest commit, GitHub link) when the linked repo is `PUBLIC`. Non-public repos never leak to anonymous visitors.
+- **E2E**: 4 new cases in `tests/e2e/admin-code.spec.ts` covering PATCH auth, 404, body validation, and `applications` on list.
+
 ## 2026-04-06 — AI system audit, buildout, and full validation
 
 ### Code quality gates

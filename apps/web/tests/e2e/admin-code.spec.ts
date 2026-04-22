@@ -61,6 +61,55 @@ test.describe("admin /code (Code module)", () => {
     expect(res.status()).toBe(400);
   });
 
+  test("PATCH /api/admin/code/:id returns 403 without owner session", async ({ request }) => {
+    const res = await request.patch("/api/admin/code/any-id", {
+      data: { applicationIds: [] },
+      headers: { "content-type": "application/json" },
+    });
+    expect(res.status()).toBe(403);
+  });
+
+  test("owner gets a 404 when linking apps on a non-existent repo", async ({ request }) => {
+    const login = await request.post("/api/auth/login", {
+      data: { accessCode: OWNER_CODE },
+      headers: { "content-type": "application/json" },
+    });
+    expect(login.ok()).toBeTruthy();
+
+    const res = await request.patch("/api/admin/code/does-not-exist", {
+      data: { applicationIds: [] },
+      headers: { "content-type": "application/json" },
+    });
+    expect(res.status()).toBe(404);
+  });
+
+  test("owner gets a 400 on a malformed PATCH body", async ({ request }) => {
+    const login = await request.post("/api/auth/login", {
+      data: { accessCode: OWNER_CODE },
+      headers: { "content-type": "application/json" },
+    });
+    expect(login.ok()).toBeTruthy();
+
+    const res = await request.patch("/api/admin/code/any-id", {
+      data: { applicationIds: "not-an-array" },
+      headers: { "content-type": "application/json" },
+    });
+    expect(res.status()).toBe(400);
+  });
+
+  test("GET /api/admin/code includes the applications index for linking", async ({ request }) => {
+    const login = await request.post("/api/auth/login", {
+      data: { accessCode: OWNER_CODE },
+      headers: { "content-type": "application/json" },
+    });
+    expect(login.ok()).toBeTruthy();
+
+    const list = await request.get("/api/admin/code");
+    expect(list.ok()).toBeTruthy();
+    const body = (await list.json()) as { items: unknown[]; applications: unknown[] };
+    expect(Array.isArray(body.applications)).toBe(true);
+  });
+
   test("owner page /admin/code renders the Code heading", async ({ page, request }) => {
     const login = await request.post("/api/auth/login", {
       data: { accessCode: OWNER_CODE },

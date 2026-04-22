@@ -38,14 +38,17 @@ model Application {
   stackItems  String?
   visibility  ApplicationVisibility @default(DRAFT)
   featured    Boolean              @default(false)
+  codeRepositoryId String?
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   versions    ApplicationVersion[]
   media       ApplicationMedia[]
   licenses    License[]
   purchases   Purchase[]
+  codeRepository CodeRepository? @relation(fields: [codeRepositoryId], references: [id], onDelete: SetNull)
 
   @@index([visibility, featured])
+  @@index([codeRepositoryId])
 }
 
 model ArchiveEntry {
@@ -373,6 +376,7 @@ model CodeRepository {
   lastSyncedAt         DateTime?
   createdAt            DateTime              @default(now())
   updatedAt            DateTime              @updatedAt
+  applications         Application[]
 
   @@unique([provider, githubOwner, githubRepo])
   @@index([visibility, provider])

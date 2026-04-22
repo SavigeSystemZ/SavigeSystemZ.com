@@ -9,7 +9,16 @@ vi.mock("@/lib/db", () => {
     findMany: vi.fn(),
     delete: vi.fn(),
   };
-  return { db: { codeRepository } };
+  const application = {
+    updateMany: vi.fn(),
+    findMany: vi.fn(),
+  };
+  const db = {
+    codeRepository,
+    application,
+    $transaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn(db)),
+  };
+  return { db };
 });
 
 vi.mock("@/lib/github-client", () => ({
@@ -26,6 +35,7 @@ import {
 } from "@/lib/github-client";
 import {
   createCodeRepositoryFromGithub,
+  setCodeRepositoryApplicationLinks,
   syncCodeRepository,
 } from "@/lib/code-repository";
 
@@ -38,6 +48,11 @@ const mockDb = db as unknown as {
     findMany: ReturnType<typeof vi.fn>;
     delete: ReturnType<typeof vi.fn>;
   };
+  application: {
+    updateMany: ReturnType<typeof vi.fn>;
+    findMany: ReturnType<typeof vi.fn>;
+  };
+  $transaction: ReturnType<typeof vi.fn>;
 };
 
 const mockParse = parseGithubRepoRef as unknown as ReturnType<typeof vi.fn>;
@@ -46,6 +61,8 @@ const mockFetchCommit = fetchGithubLatestCommit as unknown as ReturnType<typeof 
 
 beforeEach(() => {
   for (const fn of Object.values(mockDb.codeRepository)) fn.mockReset();
+  for (const fn of Object.values(mockDb.application)) fn.mockReset();
+  mockDb.$transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => fn(mockDb));
   mockParse.mockReset();
   mockFetchRepo.mockReset();
   mockFetchCommit.mockReset();
@@ -174,5 +191,48 @@ describe("syncCodeRepository", () => {
       githubRepo: null,
     });
     await expect(syncCodeRepository("repo_2")).rejects.toThrow(/GitHub-backed/);
+  });
+});
+
+describe("setCodeRepositoryApplicationLinks", () => {
+  it("throws when the repository does not exist", async () => {
+    mockDb.codeRepository.findUnique.mockResolvedValue(null);
+    await expect(setCodeRepositoryApplicationLinks("missing", ["app_1"])).rejects.toThrow(/not found/i);
+    expect(mockDb.application.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("clears previously-linked apps not in the new set and sets the new links", async () => {
+    mockDb.codeRepository.findUnique.mockResolvedValueOnce({ id: "repo_1" });
+    mockDb.application.updateMany.mockResolvedValue({ count: 0 });
+    mockDb.codeRepository.findUnique.mockResolvedValueOnce({
+      id: "repo_1",
+      applications: [{ id: "app_a", slug: "a", name: "A", visibility: "PUBLIC" }],
+    });
+
+    const result = await setCodeRepositoryApplicationLinks("repo_1", ["app_a"]);
+
+    expect(mockDb.application.updateMany).toHaveBeenNthCalledWith(1, {
+      where: { codeRepositoryId: "repo_1", id: { notIn: ["app_a"] } },
+      data: { codeRepositoryId: null },
+    });
+    expect(mockDb.application.updateMany).toHaveBeenNthCalledWith(2, {
+      where: { id: { in: ["app_a"] } },
+      data: { codeRepositoryId: "repo_1" },
+    });
+    expect(result?.applications).toHaveLength(1);
+  });
+
+  it("clears all links when given an empty array", async () => {
+    mockDb.codeRepository.findUnique.mockResolvedValueOnce({ id: "repo_1" });
+    mockDb.application.updateMany.mockResolvedValue({ count: 2 });
+    mockDb.codeRepository.findUnique.mockResolvedValueOnce({ id: "repo_1", applications: [] });
+
+    await setCodeRepositoryApplicationLinks("repo_1", []);
+
+    expect(mockDb.application.updateMany).toHaveBeenCalledTimes(1);
+    expect(mockDb.application.updateMany).toHaveBeenCalledWith({
+      where: { codeRepositoryId: "repo_1", id: { notIn: ["__none__"] } },
+      data: { codeRepositoryId: null },
+    });
   });
 });

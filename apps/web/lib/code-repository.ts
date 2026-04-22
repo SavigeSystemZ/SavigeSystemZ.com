@@ -19,6 +19,12 @@ export const codeRepositoryCreateSchema = z.object({
 
 export type CodeRepositoryCreateInput = z.infer<typeof codeRepositoryCreateSchema>;
 
+export const codeRepositoryPatchSchema = z.object({
+  applicationIds: z.array(z.string().min(1).max(64)).max(50),
+});
+
+export type CodeRepositoryPatchInput = z.infer<typeof codeRepositoryPatchSchema>;
+
 function toSlug(owner: string, repo: string): string {
   return `${owner}-${repo}`
     .toLowerCase()
@@ -118,5 +124,50 @@ export async function syncCodeRepository(id: string) {
 export async function listCodeRepositories() {
   return db.codeRepository.findMany({
     orderBy: [{ updatedAt: "desc" }],
+    include: {
+      applications: {
+        select: { id: true, slug: true, name: true, visibility: true },
+        orderBy: [{ name: "asc" }],
+      },
+    },
+  });
+}
+
+export async function setCodeRepositoryApplicationLinks(
+  repositoryId: string,
+  applicationIds: string[],
+) {
+  const repo = await db.codeRepository.findUnique({ where: { id: repositoryId } });
+  if (!repo) throw new Error("Not found");
+
+  const ids = Array.from(new Set(applicationIds));
+
+  return db.$transaction(async (tx) => {
+    await tx.application.updateMany({
+      where: { codeRepositoryId: repositoryId, id: { notIn: ids.length > 0 ? ids : ["__none__"] } },
+      data: { codeRepositoryId: null },
+    });
+    if (ids.length > 0) {
+      await tx.application.updateMany({
+        where: { id: { in: ids } },
+        data: { codeRepositoryId: repositoryId },
+      });
+    }
+    return tx.codeRepository.findUnique({
+      where: { id: repositoryId },
+      include: {
+        applications: {
+          select: { id: true, slug: true, name: true, visibility: true },
+          orderBy: [{ name: "asc" }],
+        },
+      },
+    });
+  });
+}
+
+export async function listApplicationsForLinking() {
+  return db.application.findMany({
+    select: { id: true, slug: true, name: true, visibility: true, codeRepositoryId: true },
+    orderBy: [{ name: "asc" }],
   });
 }

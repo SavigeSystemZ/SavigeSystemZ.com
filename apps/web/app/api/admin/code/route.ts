@@ -4,6 +4,7 @@ import { writeAuditLog } from "@/lib/audit";
 import {
   codeRepositoryCreateSchema,
   createCodeRepositoryFromGithub,
+  listApplicationsForLinking,
   listCodeRepositories,
 } from "@/lib/code-repository";
 
@@ -12,8 +13,11 @@ export async function GET() {
   const forbidden = requireOwner(context);
   if (forbidden) return forbidden;
 
-  const items = await listCodeRepositories();
-  return NextResponse.json({ items });
+  const [items, applications] = await Promise.all([
+    listCodeRepositories(),
+    listApplicationsForLinking(),
+  ]);
+  return NextResponse.json({ items, applications });
 }
 
 export async function POST(request: Request) {

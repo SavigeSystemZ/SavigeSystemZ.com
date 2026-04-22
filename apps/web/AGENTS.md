@@ -5,7 +5,7 @@
 ## Stack
 
 - **Next.js 16** (App Router, Turbopack dev). Entry: `app/`. Network edge: **`proxy.ts`** (not `middleware.ts`).
-- **Prisma** + SQLite locally (`prisma/schema.prisma`, `prisma/migrations/`). **`DATABASE_URL=file:./dev.db`** → `prisma/dev.db`.
+- **Prisma** + PostgreSQL (`prisma/schema.prisma`, `prisma/migrations/`). Local dev: **`DATABASE_URL=postgresql://ssz:dev@localhost:5433/savige`** — `./scripts/dev-postgres.sh` starts Docker Postgres and seeds, or set it in `apps/web/.env.local`.
 - **Auth:** `lib/auth.ts` — cookie `sz_session` + `Session` table. **`getAuthContext` / `requireOwner`** for admin APIs.
 - **Catalog:** `lib/catalog-resolver.ts` for public pages; static fallback `lib/catalog.ts`.
 
@@ -20,7 +20,8 @@
 ## Code module (M10)
 
 - Admin UI at **`/admin/code`** (gated by `requireOwner()`). Model: `CodeRepository` + enums. Sync via `lib/github-client.ts` + `lib/code-repository.ts`.
-- APIs: `GET/POST /api/admin/code`, `POST /api/admin/code/[id]` (sync), `DELETE /api/admin/code/[id]` (untrack).
+- APIs: `GET/POST /api/admin/code`, `PATCH /api/admin/code/[id]` (link apps), `POST /api/admin/code/[id]` (sync), `DELETE /api/admin/code/[id]` (untrack).
+- `Application.codeRepositoryId` (optional FK, `onDelete: SetNull`) — a repo can power multiple apps; when PUBLIC, its metadata surfaces on `/applications/[slug]`.
 - Env: `GITHUB_TOKEN` optional — required only for private repos or to raise the 60 req/hr anonymous GitHub rate limit.
 
 ## Files to touch for common tasks
@@ -48,4 +49,4 @@ Resume work: repo root **`_ai_operating_system/SESSION_RECALL.md`** (full checkl
 - [ ] `pnpm exec eslint .` in `apps/web` (or root `pnpm lint`)
 - [ ] `pnpm exec tsc --noEmit`
 - [ ] `pnpm test` (Vitest)
-- [ ] For auth/DB flows: `pnpm test:e2e` with `DATABASE_URL=file:./dev.db` and owner secrets
+- [ ] For auth/DB flows: `pnpm test:e2e` with `DATABASE_URL=postgresql://ssz:dev@localhost:5433/savige` and owner secrets

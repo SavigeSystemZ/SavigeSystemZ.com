@@ -223,6 +223,70 @@ export default async function ApplicationDetailPage(props: { params: Promise<{ s
           </p>
         </div>
       </section>
+
+      {app.codeRepository ? (
+        <section className="mt-8">
+          <div className="surface-panel rounded-[2rem] p-6 sm:p-8">
+            <SectionHeading
+              eyebrow="Source code"
+              title={`${app.codeRepository.name} — open source surface for this application.`}
+              description={
+                app.codeRepository.description ??
+                "Repository metadata is mirrored from GitHub so the application can be evaluated against real code, not just marketing."
+              }
+            />
+            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {app.codeRepository.primaryLanguage ? (
+                <article className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+                  <p className="text-[0.72rem] uppercase tracking-[0.28em] text-slate-500">Primary language</p>
+                  <p className="mt-3 text-sm text-slate-100">{app.codeRepository.primaryLanguage}</p>
+                </article>
+              ) : null}
+              {app.codeRepository.defaultBranch ? (
+                <article className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+                  <p className="text-[0.72rem] uppercase tracking-[0.28em] text-slate-500">Default branch</p>
+                  <p className="mt-3 text-sm text-slate-100">{app.codeRepository.defaultBranch}</p>
+                </article>
+              ) : null}
+              {typeof app.codeRepository.starCount === "number" ? (
+                <article className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+                  <p className="text-[0.72rem] uppercase tracking-[0.28em] text-slate-500">Stars</p>
+                  <p className="mt-3 text-sm text-slate-100">{app.codeRepository.starCount}</p>
+                </article>
+              ) : null}
+              {typeof app.codeRepository.openIssueCount === "number" ? (
+                <article className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+                  <p className="text-[0.72rem] uppercase tracking-[0.28em] text-slate-500">Open issues</p>
+                  <p className="mt-3 text-sm text-slate-100">{app.codeRepository.openIssueCount}</p>
+                </article>
+              ) : null}
+            </div>
+            {app.codeRepository.latestCommitMessage ? (
+              <p className="mt-6 text-sm text-slate-300">
+                <span className="text-slate-400">Latest commit:</span>{" "}
+                {app.codeRepository.latestCommitSha ? (
+                  <code className="text-slate-200">
+                    {app.codeRepository.latestCommitSha.slice(0, 7)}
+                  </code>
+                ) : null}{" "}
+                {app.codeRepository.latestCommitMessage}
+              </p>
+            ) : null}
+            {app.codeRepository.githubUrl ? (
+              <div className="mt-6">
+                <a
+                  href={app.codeRepository.githubUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="action-secondary text-sm"
+                >
+                  View on GitHub →
+                </a>
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
     </main>
   );
 }

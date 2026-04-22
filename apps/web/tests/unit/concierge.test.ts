@@ -8,6 +8,7 @@ const knowledge = {
     ...application,
     media: [],
     versions: [],
+    codeRepository: null,
   })),
   archiveEntries: archiveCatalog,
 };

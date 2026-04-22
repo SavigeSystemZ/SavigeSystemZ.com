@@ -15,3 +15,10 @@ apps/web/prisma/*.db
 apps/web/e2e.db
 apps/web/test-results/
 apps/web/playwright-report/
+.aider*
+.gemini/
+.claudecode/
+.plandex/
+.openhands_state/
+!.ai/
+.dev-logs/

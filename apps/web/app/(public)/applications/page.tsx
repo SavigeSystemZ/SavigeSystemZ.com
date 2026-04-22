@@ -28,13 +28,13 @@ export default async function ApplicationsPage() {
             </Link>
           }
         />
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        <div className="reveal-stagger mt-8 grid gap-4 sm:grid-cols-3">
           {[
             { value: `${appCatalog.length}`, label: "public systems" },
             { value: `${appCatalog.filter((app) => app.featured).length}`, label: "featured launches" },
             { value: "Flexible", label: "delivery models" },
           ].map((metric) => (
-            <div key={metric.label} className="rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
+            <div key={metric.label} className="glow-hover rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
               <p className="display-title text-3xl font-semibold tracking-[-0.05em] text-white">{metric.value}</p>
               <p className="mt-2 text-[0.72rem] uppercase tracking-[0.28em] text-slate-500">{metric.label}</p>
             </div>
@@ -43,16 +43,16 @@ export default async function ApplicationsPage() {
       </section>
 
       <section className="mt-8">
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="reveal-stagger grid gap-4 md:grid-cols-2">
           {appCatalog.map((app) => (
             <AppShowcaseCard key={app.id} app={app} />
           ))}
         </div>
       </section>
 
-      <section className="mt-8 grid gap-4 xl:grid-cols-3">
+      <section className="reveal-stagger mt-8 grid gap-4 xl:grid-cols-3">
         {foundryLanes.map((lane) => (
-          <article key={lane.title} className="surface-panel rounded-[1.8rem] p-6">
+          <article key={lane.title} className="surface-panel glow-hover rounded-[1.8rem] p-6">
             <p className="section-eyebrow">{lane.title}</p>
             <p className="mt-5 text-sm leading-7 text-slate-300">{lane.summary}</p>
             <div className="mt-5 flex flex-wrap gap-2">

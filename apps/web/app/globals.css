@@ -206,6 +206,178 @@ textarea {
   }
 }
 
+/* ── Scroll-triggered reveal animations ─────────────────────────── */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: reveal-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 0% entry 30%;
+}
+
+/* Stagger children: cards, grid items */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: reveal-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 0% entry 35%;
+}
+
+.reveal-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.reveal-stagger > *:nth-child(2) { animation-delay: 80ms; }
+.reveal-stagger > *:nth-child(3) { animation-delay: 160ms; }
+.reveal-stagger > *:nth-child(4) { animation-delay: 240ms; }
+.reveal-stagger > *:nth-child(5) { animation-delay: 320ms; }
+.reveal-stagger > *:nth-child(6) { animation-delay: 400ms; }
+.reveal-stagger > *:nth-child(7) { animation-delay: 480ms; }
+.reveal-stagger > *:nth-child(8) { animation-delay: 560ms; }
+
+/* Fallback for browsers without animation-timeline: view() */
+@supports not (animation-timeline: view()) {
+  .reveal,
+  .reveal-stagger > * {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+@keyframes reveal-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale-in for hero elements */
+.reveal-scale {
+  opacity: 0;
+  transform: scale(0.95);
+  animation: reveal-scale-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-timeline: view();
+  animation-range: entry 0% entry 25%;
+}
+
+@supports not (animation-timeline: view()) {
+  .reveal-scale {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+
+@keyframes reveal-scale-in {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Enhanced glow hover for cards ──────────────────────────────── */
+
+.glow-hover {
+  position: relative;
+  transition: box-shadow 400ms ease, border-color 400ms ease;
+}
+
+.glow-hover:hover {
+  border-color: rgba(101, 243, 255, 0.28);
+  box-shadow:
+    0 24px 80px rgba(2, 6, 23, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 40px rgba(101, 243, 255, 0.08),
+    0 0 80px rgba(101, 243, 255, 0.04);
+}
+
+/* ── Pulse glow for live status indicators ──────────────────────── */
+
+.pulse-glow {
+  animation: pulse-glow 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(101, 243, 255, 0.5), 0 0 24px rgba(101, 243, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(101, 243, 255, 0.8), 0 0 48px rgba(101, 243, 255, 0.3);
+  }
+}
+
+/* ── Gradient text utility ──────────────────────────────────────── */
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-warm) 50%, var(--accent-green) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-cyan {
+  background: linear-gradient(135deg, #65f3ff, #1dd5f2, #7df2c7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Animated border for featured cards ─────────────────────────── */
+
+.border-shimmer {
+  position: relative;
+}
+
+.border-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(101, 243, 255, 0.4),
+    transparent 40%,
+    transparent 60%,
+    rgba(249, 188, 97, 0.3)
+  );
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: shimmer-rotate 8s linear infinite;
+}
+
+@keyframes shimmer-rotate {
+  to {
+    filter: hue-rotate(30deg);
+  }
+}
+
+/* ── Smooth number counter animation ────────────────────────────── */
+
+@property --num {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+.counter-animate {
+  animation: count-up 2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  counter-reset: num var(--num);
+  animation-timeline: view();
+  animation-range: entry 0% entry 40%;
+}
+
+@supports not (animation-timeline: view()) {
+  .counter-animate {
+    animation-timeline: auto;
+  }
+}
+
+@keyframes count-up {
+  from { --num: 0; }
+}
+
 @media (max-width: 640px) {
   body::before {
     opacity: 0.14;

@@ -19,10 +19,10 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **A11y / polish:** fixed WCAG select-name/input-name violations on archive, creator form, and application manager. 13 axe routes all green.
 - [ ] **Commerce:** live-path Stripe staging smoke and follow-up dashboard/download verification (needs `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`).
 - [x] **Code module tests:** 10 unit tests + 6 E2E tests — green.
+- [x] **`Application` ↔ `CodeRepository` relation** (migration `0003`, admin linker UI, `/applications/[slug]` surfaces a PUBLIC-only "Source code" card — 2026-04-22).
 - [ ] **Code module polish (next session):**
-  - [ ] `Application` ↔ `CodeRepository` relation so app detail pages can surface source
   - [ ] Public `/repos/[slug]` detail page (README render) for PUBLIC code repos
-  - [ ] Visibility toggle in `/admin/code`
+  - [ ] Visibility toggle in `/admin/code` (unblocks the public "Source code" card without DB pokes)
   - [ ] "Sync all" batch action
   - [ ] GitHub webhook receiver (`/api/webhooks/github`) with HMAC verification → auto-sync on push
   - [ ] E2E happy-path test that stubs the GitHub API for deterministic CI

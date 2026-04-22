@@ -59,7 +59,6 @@ async function main() {
       stdio: "inherit",
       env: {
         ...process.env,
-        DATABASE_URL: process.env.DATABASE_URL?.trim() || "file:./dev.db",
         PORT: String(port),
         SITE_URL: origin,
         PASSKEY_ORIGIN: process.env.PASSKEY_ORIGIN?.trim() || origin,
