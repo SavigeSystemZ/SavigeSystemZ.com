@@ -1,46 +1,45 @@
 # Where Left Off
 
-- **Timestamp:** 2026-04-06 (session concluded)
-- **Status:** P0/P1/P2 items complete (except external-dependency-blocked items). Full suite green on both SQLite and PostgreSQL.
-- **Commits this session:**
-  - `7e50c66` — fix 6 E2E failures: a11y labels, commerce assertions, login rate limit
-  - `c00949a` — full-pipeline E2E test + force-dynamic on creator/dashboard pages
-  - `101cebc` — auth module unit tests (15 tests) + session recall update
-  - `5a82c38` — dynamic sitemap from DB + robots.txt blocks admin/API routes
-  - `25b4190` — handoff update
-  - `e20a64c` — PostgreSQL cutover, S3 vault scan Lambda, CI with Postgres service
-- **Quality gates:** lint, typecheck, 111 unit tests, 56 E2E tests, build — all green on Postgres
-- **Git:** All pushed to `git@github.com:SavigeSystemZ/SavigeSystemZ.com.git`
+- **Timestamp:** 2026-04-22
+- **Status:** Canonical dev port wired, desktop launcher fixed, Code module scaffold landed (M10 kickoff). Prior M9 work unchanged.
+- **Commits this session:** Pending — changes are staged/unstaged in the working tree; owner to review and commit.
+- **Quality gates:** `tsc --noEmit` + ESLint clean on new files. Migration `0002_code_repository` is written but not yet applied (requires running Postgres).
+- **Git:** `git@github.com:SavigeSystemZ/SavigeSystemZ.com.git` — no push yet this session.
 
 ## Completed this session
 
 | Item | Details |
 |------|---------|
-| E2E stabilization | Fixed 6 failures → 0. A11y labels, commerce assertions, login rate limit (15→30/min), force-dynamic |
-| Full pipeline test | 6-test chain: submit → moderate → promote → verify draft → publish → verify public |
-| Auth unit tests | 15 tests covering session signing, access code validation, requireOwner guard |
-| Dynamic sitemap | Queries DB for published entries with real updatedAt timestamps |
-| robots.txt | Blocks /admin/, /api/, /owner/, /dashboard |
-| **PostgreSQL cutover** | Schema flipped to postgresql, baseline migration, 56 E2E tests verified against Docker Postgres |
-| **S3 vault scan Lambda** | ClamAV-based: download → scan → tag → quarantine → SNS notify |
-| **CI with Postgres** | Both quality and E2E jobs use Postgres service containers |
-| Dev scripts | `scripts/dev-postgres.sh` and `scripts/dev-sqlite.sh` for local dev |
+| **Canonical dev port** | 43907 wired into `scripts/dev-web.mjs` (prefers `SITE_PORT` env → 43907 → random fallback 43000–44999) |
+| **Desktop launcher fix** | `~/Desktop/SavigeSystemZ-local.desktop` now targets `http://127.0.0.1:43907/` (was 3000 = Immortality app collision). Installer template `installer/desktop/SavigeSystemZ-local.desktop.in` updated to match |
+| **Code module (M10 scaffold)** | `CodeRepository` Prisma model + migration `0002_code_repository`, `lib/github-client.ts`, `lib/code-repository.ts`, `app/api/admin/code/route.ts`, `app/api/admin/code/[id]/route.ts`, `app/(admin)/admin/code/page.tsx`, `components/admin/code-panel.tsx`, admin nav link, `.env.example` additions (`SITE_PORT`, `GITHUB_TOKEN`) |
+| **Meta-system polish** | `.ai/CURRENT_STATUS.md` rewritten, `WHERE_LEFT_OFF.md` / `SESSION_RECALL.md` / `TODO.md` / `PLAN.md` / `VISION_AND_ROADMAP.md` / `PROMPT_PACK.md` / `SESSION_CHANGELOG.md` / root `CLAUDE.md` / `apps/web/AGENTS.md` updated to reflect port + Code module |
 
-## Blocked — needs credentials from owner
+## Verification of owner's stated scope
 
-| Item | What's needed | Instructions |
-|------|---------------|--------------|
-| S3 bucket wiring | AWS credentials + bucket | See credential instructions below |
-| Stripe live staging | Stripe test keys | See credential instructions below |
-| Domain verification | DNS access | See credential instructions below |
-| S3 vault scan deploy | AWS Lambda deploy access | Lambda code ready, needs deploy |
+| Statement | Implemented? | Evidence |
+|-----------|--------------|----------|
+| Hosts and sells apps | ✅ | `Application` / `License` / `Purchase` Prisma models, Stripe checkout + webhook, signed downloads, entitlements |
+| Displays other accomplishments | ✅ | Archive system (`ArchiveEntry` model, public `/archive` routes, admin archive manager) |
+| Admin-only area | ✅ | `app/(admin)/admin/*` gated by `requireOwner()`; admin HTML also gated at `proxy.ts` |
+| Store code like GitHub & connect to GitHub | 🟡 scaffold | Code module landed (model + API + admin UI + GitHub metadata sync). Full self-hosted git storage is a future milestone (M11 — see VISION roadmap) |
+| Desktop icon opens this site | ✅ (fixed) | Launcher now at 43907; user to relaunch / re-trust if KDE/Plasma prompts |
+| Unique non-standard random port | ✅ | 43907 chosen; outside 3000/3001/5173/8080 and outside common dev ranges |
 
-## Next steps when credentials are available
+## Blocked — needs external input
 
-1. Set AWS env vars → verify upload from owner UI
-2. Set Stripe test keys → run `pnpm --filter web test:e2e` with real Stripe
-3. Deploy vault scan Lambda with ClamAV layer
-4. Verify domain routing to correct app
+| Item | What's needed |
+|------|---------------|
+| Apply Code migration | Start Postgres (`scripts/dev-postgres.sh`), run `pnpm --filter web prisma migrate deploy` |
+| Private repo sync | Populate `GITHUB_TOKEN` in `apps/web/.env.local` |
+| S3 bucket wiring, Stripe live keys, domain, Lambda deploy | Unchanged from 2026-04-06 handoff — owner credentials still needed |
+
+## Next steps
+
+1. Apply the new migration and do a manual round-trip (connect → sync → remove) via `/admin/code`
+2. Add unit tests (`tests/unit/code-repository.test.ts`) and E2E coverage (`tests/e2e/admin-code.spec.ts`)
+3. Commit as `feat(code): scaffold GitHub-connected Code module + canonical dev port`
+4. Begin M11 scoping: self-hosted git storage backend
 
 ## Full recall
 

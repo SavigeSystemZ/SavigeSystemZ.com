@@ -16,6 +16,7 @@ A **production-grade** public site and operations shell for the SavigeSystemZ fo
 | **Observability** | Audit logs, health + Redis probe | Active |
 | **Data plane** | Prisma + SQLite dev; Postgres docs + compose | Path documented, cutover pending |
 | **Content safety** | S3 scan pipeline | Reference Lambda + docs |
+| **Code / GitHub** | Owner-scoped dashboard mirroring GitHub repos; path to self-hosted git storage | M10 scaffold landed; M11 storage backend scoped |
 
 ## Near-term roadmap (aligned with TODO.md)
 
@@ -35,6 +36,16 @@ A **production-grade** public site and operations shell for the SavigeSystemZ fo
 9. **S3 malware scan** — deploy real scanner + quarantine Lambda
 10. **Domain verification** — attach savigesystemz.com to correct Vercel project
 11. **CI/CD** — GitHub Actions for `pnpm check:all` + Playwright
+
+### M10 — Code module (scaffold DONE, polish in progress)
+12. **Admin /code panel** — track GitHub repos (owner-scoped), sync metadata (stars, branches, latest commit), audit-logged mutations
+13. **Tests** — unit coverage for `lib/code-repository.ts`, E2E for the admin panel
+14. **Public detail pages (future)** — render README / tree / blob for PUBLIC repos
+
+### M11 — Self-hosted code storage (scoped, not started)
+15. **Backend decision** — Gitea sidecar vs. S3-mirrored bare repos (trade-offs in `docs/CODE_STORAGE.md` when written)
+16. **Push/pull protocol** — HTTP smart protocol or read-only mirror, with entitlements for PRIVATE repos
+17. **Webhook intake** — GitHub webhook → automatic sync on push
 
 ## Handoff
 

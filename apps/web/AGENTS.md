@@ -13,6 +13,16 @@
 
 - **`GET /api/catalog`** — JSON list of `PUBLIC` applications (`id`, `slug`, `name`, …) for storefronts and tests. No auth.
 
+## Local dev URL
+
+- Canonical port **43907**. `pnpm dev:web` prefers it; override with `SITE_PORT=<port> pnpm dev:web`. See root `CLAUDE.md` → _Local dev URL and desktop launcher_.
+
+## Code module (M10)
+
+- Admin UI at **`/admin/code`** (gated by `requireOwner()`). Model: `CodeRepository` + enums. Sync via `lib/github-client.ts` + `lib/code-repository.ts`.
+- APIs: `GET/POST /api/admin/code`, `POST /api/admin/code/[id]` (sync), `DELETE /api/admin/code/[id]` (untrack).
+- Env: `GITHUB_TOKEN` optional — required only for private repos or to raise the 60 req/hr anonymous GitHub rate limit.
+
 ## Files to touch for common tasks
 
 | Task | Primary paths |
@@ -22,6 +32,7 @@
 | Security headers / admin HTML gate | `proxy.ts`, `packages/security/src/index.ts` |
 | DB schema | `prisma/schema.prisma` then `prisma migrate` |
 | E2E | `tests/e2e/`, `playwright.config.ts` |
+| Code / GitHub | `lib/github-client.ts`, `lib/code-repository.ts`, `app/(admin)/admin/code/`, `app/api/admin/code/` |
 
 ## Handoff
 

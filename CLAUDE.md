@@ -4,7 +4,9 @@ Root instruction file for all AI agents (Claude Code, Cursor, Copilot, etc.) wor
 
 ## Project
 
-**SavigeSystemZ.com** — flagship software foundry platform. Next.js 16 monorepo for showcasing, distributing, and selling applications.
+**SavigeSystemZ.com** — flagship software foundry platform. Next.js 16 monorepo that showcases, distributes, and sells the owner's applications; archives the owner's other works; hosts an owner-only admin/operations console; and mirrors / connects to GitHub-hosted code (with a roadmap to host code directly on the platform).
+
+**Local dev URL (canonical):** http://127.0.0.1:43907/ — see the _Local dev_ section below.
 
 ## Monorepo layout
 
@@ -81,6 +83,7 @@ pnpm --filter web test:e2e      # Playwright E2E (needs DATABASE_URL + owner sec
 7. **Zod validation** — API bodies validated via `lib/validation.ts`; return `400` with `issues` on failure.
 8. **Audit mutations** — important mutations call `writeAuditLog` from `lib/audit.ts`.
 9. **`force-dynamic` for Prisma pages** — use `export const dynamic = "force-dynamic"` when Prisma must not run at build time without `DATABASE_URL`.
+10. **Canonical dev port 43907** — `pnpm dev:web` prefers it; override with `SITE_PORT=<port> pnpm dev:web`. Never hardcode 3000 in launchers or docs — that collides with the local Immortality app.
 
 ## Key file locations (apps/web)
 
@@ -99,6 +102,9 @@ pnpm --filter web test:e2e      # Playwright E2E (needs DATABASE_URL + owner sec
 | Signed downloads | `lib/signed-download.ts`, `lib/entitlements.ts` |
 | Launch readiness | `lib/launch-readiness.ts` |
 | Creator promotion | `lib/creator-promotion.ts` |
+| GitHub client | `lib/github-client.ts` |
+| Code repository logic | `lib/code-repository.ts` |
+| Admin Code panel | `app/(admin)/admin/code/`, `components/admin/code-panel.tsx`, `app/api/admin/code/` |
 | DB schema | `prisma/schema.prisma` |
 | Public routes | `app/(public)/` |
 | Admin routes | `app/(admin)/admin/` |
@@ -124,6 +130,13 @@ cp apps/web/.env.example apps/web/.env.local
 # Option B: SQLite (quick, no Docker)
 ./scripts/dev-sqlite.sh
 ```
+
+## Local dev URL and desktop launcher
+
+- **Canonical port:** `43907` (set in `apps/web/.env.example` as `SITE_URL` and `SITE_PORT`).
+- **Port resolution order** in `scripts/dev-web.mjs`: `SITE_PORT` env → `43907` → random in 43000–44999.
+- **Desktop shortcut:** `~/Desktop/SavigeSystemZ-local.desktop` points to `http://127.0.0.1:43907/`. Regenerate with `./installer/desktop/install-desktop-launcher.sh`.
+- If your shortcut suddenly opens a different app, something else has written to it — re-run the installer or update `Exec=xdg-open http://127.0.0.1:43907/` by hand.
 
 ## Documentation index
 
@@ -152,3 +165,5 @@ Always update these files when stopping work:
 - `_ai_operating_system/TODO.md` — if priorities changed
 - `_ai_operating_system/PLAN.md` — if execution phase changed
 - `_ai_operating_system/VALIDATION_LOG.md` — if you ran `pnpm check:all`
+
+Read `.ai/PROJECT_RULES.md` and `.ai/CURRENT_STATUS.md` to understand the project state before executing.

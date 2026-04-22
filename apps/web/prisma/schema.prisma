@@ -348,3 +348,44 @@ enum CreatorPromotionTarget {
   APPLICATION
   ARCHIVE_ENTRY
 }
+
+model CodeRepository {
+  id                   String                @id @default(cuid())
+  slug                 String                @unique
+  name                 String
+  description          String?
+  provider             CodeRepositoryProvider @default(GITHUB)
+  visibility           ApplicationVisibility @default(DRAFT)
+  githubOwner          String?
+  githubRepo           String?
+  githubUrl            String?
+  defaultBranch        String?
+  homepageUrl          String?
+  primaryLanguage      String?
+  starCount            Int?
+  forkCount            Int?
+  openIssueCount       Int?
+  latestCommitSha      String?
+  latestCommitMessage  String?
+  latestCommitAt       DateTime?
+  syncStatus           CodeRepositorySyncStatus @default(PENDING)
+  syncError            String?
+  lastSyncedAt         DateTime?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  @@unique([provider, githubOwner, githubRepo])
+  @@index([visibility, provider])
+  @@index([updatedAt])
+}
+
+enum CodeRepositoryProvider {
+  GITHUB
+  LOCAL
+}
+
+enum CodeRepositorySyncStatus {
+  PENDING
+  OK
+  ERROR
+}

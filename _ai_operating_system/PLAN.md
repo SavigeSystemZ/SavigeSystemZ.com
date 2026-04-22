@@ -2,16 +2,16 @@
 
 ## Current phase
 
-**M9 — Hardening and launch** (in progress)
+**M9 — Hardening and launch** (wrapping) and **M10 — Code module** (scaffold landed 2026-04-22; tests + polish outstanding).
 
-Milestones M0-M8 are complete. The public site, admin platform, creator pipeline, archive system, commerce, and vault are all built and passing quality gates. Now finishing the launch story and production hardening.
+Milestones M0–M8 are complete. M9 remaining work is external-blocked (S3 creds, Stripe keys, DNS). M10 introduces the "store code like GitHub & connect to GitHub" surface — Prisma model, GitHub metadata sync, owner-only admin UI. M11 (self-hosted git storage backend) is scoped but not started.
 
-## Active work items (from TODO.md P0)
+## Active work items (from TODO.md)
 
-1. Archive launch composer — guided flow matching the application launch composer
-2. Creator-to-launch handoff — streamline post-promotion navigation
-3. Real S3 bucket wiring — configure credentials, verify upload UI
-4. Git remote + push — establish origin and push local commits
+1. Apply `0002_code_repository` migration against Postgres and round-trip the admin /code panel
+2. Add unit + E2E coverage for the Code module
+3. Close out M9 external-blocked items (S3, Stripe live, DNS) as credentials arrive
+4. Begin M11 scoping — decide git storage backend (Gitea sidecar vs. S3-mirrored refs)
 
 ## Constraints
 
@@ -38,3 +38,5 @@ Milestones M0-M8 are complete. The public site, admin platform, creator pipeline
 - Session cookies over JWTs — simpler, revocable, DB-backed
 - Guided launch composers — reduce error-prone manual multi-step publishing
 - Mock commerce in dev — real Stripe only in staging/production
+- **Canonical dev port 43907** (2026-04-22) — prevents collision with local Immortality app on port 3000 and gives the desktop launcher a stable target. `SITE_PORT` env overrides.
+- **Code module ships as GitHub mirror first** (M10, 2026-04-22) — DB-backed metadata cache + admin sync. Self-hosted git storage deferred to M11 to keep the admin UX and data model stable before we add a real object store / git daemon.

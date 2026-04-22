@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { href: "/admin/audit", label: "Audit" },
   { href: "/admin/vault", label: "Vault" },
   { href: "/admin/moderation", label: "Moderation" },
+  { href: "/admin/code", label: "Code" },
 ] as const;
 
 function linkIsActive(pathname: string | null, href: string): boolean {

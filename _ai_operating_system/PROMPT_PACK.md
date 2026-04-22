@@ -78,3 +78,30 @@ Milestone-scoped prompts for AI agents. Each milestone has a planning phase and 
 - [ ] Git remote + push
 - [ ] Domain verification on Vercel
 **Verification:** `pnpm check:all`, Playwright E2E green, Lighthouse scores acceptable, security negative tests pass.
+
+## M10 — Code module (SCAFFOLD DONE — tests + polish pending)
+
+**Scope:** Owner-scoped dashboard that tracks GitHub repositories, mirrors their metadata, and lays groundwork for the self-hosted storage milestone (M11).
+**Key files:**
+- `apps/web/prisma/schema.prisma` (`CodeRepository`, `CodeRepositoryProvider`, `CodeRepositorySyncStatus`)
+- `apps/web/prisma/migrations/0002_code_repository/migration.sql`
+- `apps/web/lib/github-client.ts`, `apps/web/lib/code-repository.ts`
+- `apps/web/app/api/admin/code/route.ts`, `apps/web/app/api/admin/code/[id]/route.ts`
+- `apps/web/app/(admin)/admin/code/page.tsx`, `apps/web/components/admin/code-panel.tsx`
+- Env: `GITHUB_TOKEN` (optional — for private repos / higher rate limits)
+
+**Remaining work:**
+- [ ] Apply `0002_code_repository` against Postgres
+- [ ] Unit tests (`tests/unit/code-repository.test.ts`)
+- [ ] E2E coverage (`tests/e2e/admin-code.spec.ts`)
+- [ ] Visibility toggle + batch "Sync all" in the admin UI
+- [ ] Public detail page for PUBLIC repos (README render)
+
+**Verification:** Round-trip `Connect → Sync → Remove` via `/admin/code`, audit log records all three actions, typecheck + lint + test green.
+
+## M11 — Self-hosted code storage (NOT STARTED)
+
+**Scope:** Actually *store* code (not just metadata), so the site can serve as a GitHub-like hosting surface for owner-authored work.
+**Open decisions:** Gitea sidecar vs. S3-mirrored bare repos; smart HTTP protocol vs. read-only mirror; entitlement model for PRIVATE code blobs.
+**Key files (to be created):** `docs/CODE_STORAGE.md`, new `modules/code/` contract, storage adapter under `packages/`.
+**Verification:** Push from a client → sync completes → blob/tree render on detail page with correct access control.

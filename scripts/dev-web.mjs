@@ -1,8 +1,9 @@
 import { spawn } from "node:child_process";
 import net from "node:net";
 
-const PORT_MIN = 4300;
-const PORT_MAX = 5199;
+const CANONICAL_PORT = 43907;
+const PORT_MIN = 43000;
+const PORT_MAX = 44999;
 const MAX_ATTEMPTS = 48;
 
 function randomPort() {
@@ -20,7 +21,16 @@ function isPortAvailable(port) {
   });
 }
 
-async function findAvailablePort() {
+async function resolvePort() {
+  const requested = Number.parseInt(process.env.SITE_PORT ?? "", 10);
+  if (Number.isFinite(requested) && requested > 0 && requested < 65536) {
+    if (await isPortAvailable(requested)) return requested;
+    console.warn(`[dev:web] SITE_PORT=${requested} is busy; falling back.`);
+  }
+
+  if (await isPortAvailable(CANONICAL_PORT)) return CANONICAL_PORT;
+  console.warn(`[dev:web] canonical port ${CANONICAL_PORT} is busy; probing random fallback in ${PORT_MIN}-${PORT_MAX}.`);
+
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
     const candidate = randomPort();
     // eslint-disable-next-line no-await-in-loop
@@ -33,10 +43,13 @@ async function findAvailablePort() {
 }
 
 async function main() {
-  const port = await findAvailablePort();
+  const port = await resolvePort();
   const origin = `http://127.0.0.1:${port}`;
 
   console.log(`[dev:web] Starting SavigeSystemZ on ${origin}`);
+  if (port !== CANONICAL_PORT) {
+    console.log(`[dev:web] Note: canonical port is ${CANONICAL_PORT}; desktop launcher targets that port.`);
+  }
   console.log("[dev:web] Bound to 127.0.0.1 only to avoid exposing the dev server externally.");
 
   const child = spawn(

@@ -32,6 +32,39 @@ Records changes made to the AI agent operating system files in this repo. Used f
 
 ---
 
+## SES-20260422-SSZ-001 — Canonical dev port + Code module (M10) scaffold + meta-system polish
+
+- **Date:** 2026-04-22
+- **Agent:** Claude Code (claude-opus-4-7)
+- **Repo:** SavigeSystemZ.com
+- **Scope:** (1) resolve desktop-icon collision with Immortality app, (2) canonicalize dev port, (3) ground owner's "store code like GitHub / connect to GitHub" statement in real code, (4) polish all meta-system files.
+
+### Changes
+
+| File | Change | Template-worthy? |
+|------|--------|-------------------|
+| `scripts/dev-web.mjs` | Prefer `SITE_PORT` env → canonical 43907 → random fallback in 43000–44999 | App-specific |
+| `~/Desktop/SavigeSystemZ-local.desktop`, `installer/desktop/SavigeSystemZ-local.desktop.in` | Re-pointed from port 3000 to 43907 | App-specific |
+| `apps/web/prisma/schema.prisma` | Added `CodeRepository` model + enums | App-specific |
+| `apps/web/prisma/migrations/0002_code_repository/migration.sql` | New Postgres migration for the Code module | App-specific |
+| `apps/web/lib/github-client.ts` | GitHub REST client via `fetch`, optional `GITHUB_TOKEN` | `[TEMPLATE-WORTHY]` concept — minimal fetch-based REST client pattern is reusable |
+| `apps/web/lib/code-repository.ts` | Create-from-ref, sync, list helpers | App-specific |
+| `apps/web/app/api/admin/code/{route,[id]/route}.ts` | Owner-gated admin APIs with audit logging | App-specific — follows established pattern |
+| `apps/web/app/(admin)/admin/code/page.tsx`, `apps/web/components/admin/code-panel.tsx` | Admin UI to connect, sync, remove tracked repos | App-specific |
+| `apps/web/components/admin/admin-shell.tsx` | New "Code" nav link | App-specific |
+| `apps/web/.env.example` | Added `SITE_PORT`, `GITHUB_TOKEN` | App-specific |
+| `.ai/CURRENT_STATUS.md` | Replaced placeholder with real current status | `[TEMPLATE-WORTHY]` — the AIAST template's `.ai/CURRENT_STATUS.md` is itself a placeholder; this is a concrete example |
+| `_ai_operating_system/WHERE_LEFT_OFF.md`, `SESSION_RECALL.md`, `TODO.md`, `PLAN.md`, `VISION_AND_ROADMAP.md`, `PROMPT_PACK.md`, `SESSION_CHANGELOG.md` | Updated to reflect port + M10 + M11 | Content app-specific; structure already template |
+| `CLAUDE.md` (root), `apps/web/AGENTS.md` | Added canonical port + Code module pointers | Structure already template |
+
+### Harvest guidance for AIAST
+
+- **[TEMPLATE-WORTHY]** pattern: including a **"Verification of owner's stated scope"** table in `WHERE_LEFT_OFF.md` that maps each user-stated feature to ✅/🟡/❌ with evidence. This protects against agent drift where scope claims diverge from reality. Worth adding to the AIAST `WHERE_LEFT_OFF.md` template.
+- **[TEMPLATE-WORTHY]** pattern: canonical port + `SITE_PORT` env + random fallback is a reusable local-dev ergonomics pattern for any Next.js project running alongside other local apps.
+- App-specific: all GitHub / Code-module content is unique to SavigeSystemZ.
+
+---
+
 ## SES-20260406-SSZ-001 — AI System Audit and Buildout
 
 - **Date:** 2026-04-06

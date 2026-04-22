@@ -2,8 +2,8 @@
 Version=1.0
 Type=Application
 Name=SavigeSystemZ (local)
-Comment=Open local dev site (pnpm dev:web on port 3000)
-Exec=xdg-open http://127.0.0.1:3000/
+Comment=Open local dev site (pnpm dev:web on port 43907)
+Exec=xdg-open http://127.0.0.1:43907/
 Icon=@ICON_PATH@
 Terminal=false
 Categories=Network;Development;
