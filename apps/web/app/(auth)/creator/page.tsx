@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SectionHeading } from "@savige/ui";
 import { CreatorSubmissionForm } from "@/components/creator-submission-form";
-import { SectionHeading } from "@/components/section-heading";
 import { getPublicArchiveEntries } from "@/lib/archive-resolver";
 import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 import {

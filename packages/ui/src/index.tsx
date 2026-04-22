@@ -1,4 +1,8 @@
 import type { ReactNode } from "react";
+export { Panel } from "./Panel";
+export { SectionHeading } from "./SectionHeading";
+export { StatusChip } from "./StatusChip";
+export { CommandPaletteRow } from "./CommandPaletteRow";
 
 export function SectionCard(props: { title: string; children: ReactNode }): ReactNode {
   return (

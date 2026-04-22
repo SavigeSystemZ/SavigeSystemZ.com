@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SectionHeading } from "@/components/section-heading";
+import { SectionHeading } from "@savige/ui";
 import { getAuthContext } from "@/lib/auth";
 import { db } from "@/lib/db";
 

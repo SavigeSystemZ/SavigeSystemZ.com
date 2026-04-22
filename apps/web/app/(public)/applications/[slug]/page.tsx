@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { SectionHeading } from "@savige/ui";
 import { ApplicationMediaGallery } from "@/components/application-media-gallery";
 import { CheckoutCta } from "@/components/checkout-cta";
-import { SectionHeading } from "@/components/section-heading";
 import { getPublicApplicationWithReleasesBySlug } from "@/lib/catalog-resolver";
 import { getShowcaseApplication } from "@/lib/showcase-content";
 
@@ -272,8 +272,11 @@ export default async function ApplicationDetailPage(props: { params: Promise<{ s
                 {app.codeRepository.latestCommitMessage}
               </p>
             ) : null}
-            {app.codeRepository.githubUrl ? (
-              <div className="mt-6">
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href={`/repos/${app.codeRepository.slug}`} className="action-secondary text-sm">
+                View repository details →
+              </a>
+              {app.codeRepository.githubUrl ? (
                 <a
                   href={app.codeRepository.githubUrl}
                   target="_blank"
@@ -282,8 +285,8 @@ export default async function ApplicationDetailPage(props: { params: Promise<{ s
                 >
                   View on GitHub →
                 </a>
-              </div>
-            ) : null}
+              ) : null}
+            </div>
           </div>
         </section>
       ) : null}

@@ -30,14 +30,42 @@ export async function PATCH(request: Request, ctx: Params) {
   }
 
   try {
-    const updated = await setCodeRepositoryApplicationLinks(id, parsed.data.applicationIds);
-    await writeAuditLog({
-      actorUserId: context.userId,
-      action: "code.repository.link",
-      targetType: "CodeRepository",
-      targetId: id,
-      metadata: { applicationIds: parsed.data.applicationIds },
-    });
+    let updated = null;
+
+    if (parsed.data.applicationIds !== undefined) {
+      updated = await setCodeRepositoryApplicationLinks(id, parsed.data.applicationIds);
+      await writeAuditLog({
+        actorUserId: context.userId,
+        action: "code.repository.link",
+        targetType: "CodeRepository",
+        targetId: id,
+        metadata: { applicationIds: parsed.data.applicationIds },
+      });
+    }
+
+    if (parsed.data.visibility !== undefined) {
+      updated = await db.codeRepository.update({
+        where: { id },
+        data: { visibility: parsed.data.visibility },
+        include: {
+          applications: {
+            select: { id: true, slug: true, name: true, visibility: true },
+            orderBy: [{ name: "asc" }],
+          },
+        },
+      });
+      await writeAuditLog({
+        actorUserId: context.userId,
+        action: "code.repository.visibility",
+        targetType: "CodeRepository",
+        targetId: id,
+        metadata: { visibility: parsed.data.visibility },
+      });
+    }
+
+    if (!updated) {
+      return NextResponse.json({ error: "No patch fields provided" }, { status: 400 });
+    }
     return NextResponse.json({ item: updated });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unable to update repository";

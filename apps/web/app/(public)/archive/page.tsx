@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Panel, SectionHeading } from "@savige/ui";
 import { ArchiveEntryCard } from "@/components/archive-entry-card";
-import { SectionHeading } from "@/components/section-heading";
 import { getPublicArchiveEntries } from "@/lib/archive-resolver";
 import {
   archiveCategoryLabels,
@@ -83,7 +83,7 @@ export default async function ArchivePage(props: ArchivePageProps) {
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-12 sm:px-6 lg:py-8">
-      <section className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <Panel className="rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Engineering archive"
           title="A publication surface for the rest of the operator stack."
@@ -106,9 +106,9 @@ export default async function ArchivePage(props: ArchivePageProps) {
             </article>
           ))}
         </div>
-      </section>
+      </Panel>
 
-      <section className="mt-8 surface-panel rounded-[2rem] p-6 sm:p-8">
+      <Panel className="mt-8 rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Find a lane"
           title="Search the archive by system type, artifact format, or signal."
@@ -192,9 +192,9 @@ export default async function ArchivePage(props: ArchivePageProps) {
             {featuredOnly ? "featured only" : null}
           </p>
         ) : null}
-      </section>
+      </Panel>
 
-      <section className="mt-8 surface-panel rounded-[2rem] p-6 sm:p-8">
+      <Panel className="mt-8 rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Featured archive"
           title="High-signal entries positioned like systems, not loose files."
@@ -205,7 +205,7 @@ export default async function ArchivePage(props: ArchivePageProps) {
             <ArchiveEntryCard key={entry.id} entry={entry} />
           ))}
         </div>
-      </section>
+      </Panel>
 
       <section className="mt-8 grid gap-4 xl:grid-cols-3">
         {categoryCounts
@@ -224,7 +224,7 @@ export default async function ArchivePage(props: ArchivePageProps) {
           ))}
       </section>
 
-      <section className="mt-8 surface-panel rounded-[2rem] p-6 sm:p-8">
+      <Panel className="mt-8 rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Full archive"
           title="The broader foundry output in one searchable lane."
@@ -241,7 +241,7 @@ export default async function ArchivePage(props: ArchivePageProps) {
             ))}
           </div>
         )}
-      </section>
+      </Panel>
     </main>
   );
 }

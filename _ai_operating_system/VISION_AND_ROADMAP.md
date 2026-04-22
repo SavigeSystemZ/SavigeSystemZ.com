@@ -37,15 +37,23 @@ A **production-grade** public site and operations shell for the SavigeSystemZ fo
 10. **Domain verification** — attach savigesystemz.com to correct Vercel project
 11. **CI/CD** — GitHub Actions for `pnpm check:all` + Playwright
 
-### M10 — Code module (scaffold DONE, polish in progress)
-12. **Admin /code panel** — track GitHub repos (owner-scoped), sync metadata (stars, branches, latest commit), audit-logged mutations
-13. **Tests** — unit coverage for `lib/code-repository.ts`, E2E for the admin panel
-14. **Public detail pages (future)** — render README / tree / blob for PUBLIC repos
+### M10 — Code module (scaffold + tests DONE; polish queued as M5.1–M5.4)
+12. **Admin /code panel** — DONE. Track GitHub repos, sync metadata, audit-logged mutations (`68e2f46`).
+13. **Tests** — DONE. Unit + E2E green.
+14. **Public detail pages** — queued as M5.3 (see `PROMPT_PACK.md` Part II).
 
-### M11 — Self-hosted code storage (scoped, not started)
-15. **Backend decision** — Gitea sidecar vs. S3-mirrored bare repos (trade-offs in `docs/CODE_STORAGE.md` when written)
-16. **Push/pull protocol** — HTTP smart protocol or read-only mirror, with entitlements for PRIVATE repos
-17. **Webhook intake** — GitHub webhook → automatic sync on push
+### M10.5 — Application ↔ CodeRepository link (DONE 2026-04-22)
+15. **Optional FK** `Application.codeRepositoryId` with `onDelete: SetNull` + back-relation. Admin linker UI + public "Source code" card on `/applications/[slug]` for PUBLIC repos. Shipped in `c70ab8c`.
+
+### M11 — Self-hosted code storage (PENDING DECISION)
+16. **Backend decision** — Gitea sidecar vs. S3-mirrored bare repos. Decision matrix + current state in `docs/CODE_STORAGE.md`.
+17. **Push/pull protocol** — smart HTTP vs. read-only mirror, with entitlements for PRIVATE repos.
+18. **Webhook intake** — queued as M5.4 for metadata sync; extended in M11 for blob sync.
+
+### Doc alignment (DONE 2026-04-22 — this session)
+- Postgres is the dev AND prod story across `docs/DATABASE.md`, `README.md`, `CLAUDE.md`; SQLite documented only as fallback via `scripts/dev-sqlite.sh`.
+- New stubs: `docs/UX_SYSTEM.md` (M1 fills), `docs/AI_INTEGRATION_STRATEGY.md` (M6 fills), `docs/CODE_STORAGE.md` (M11 decision), `docs/DEV_ENV_GOTCHAS.md` (running list).
+- `_ai_operating_system/PROMPT_PACK.md` gains Part II — refined per-milestone session prompts for M0–M8 + Review.
 
 ## Handoff
 

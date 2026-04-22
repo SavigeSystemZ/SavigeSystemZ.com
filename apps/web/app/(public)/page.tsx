@@ -1,9 +1,9 @@
 import Link from "next/link";
+import { SectionHeading } from "@savige/ui";
 import { ApplicationMediaGallery } from "@/components/application-media-gallery";
 import { ArchiveEntryCard } from "@/components/archive-entry-card";
 import { AppShowcaseCard } from "@/components/app-showcase-card";
 import { Hero } from "@/components/hero";
-import { SectionHeading } from "@/components/section-heading";
 import { getPublicArchiveEntries } from "@/lib/archive-resolver";
 import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 import {

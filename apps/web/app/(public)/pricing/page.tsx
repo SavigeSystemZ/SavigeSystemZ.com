@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SectionHeading } from "@/components/section-heading";
+import { SectionHeading } from "@savige/ui";
 import { pricingPlans } from "@/lib/showcase-content";
 
 export const metadata: Metadata = {

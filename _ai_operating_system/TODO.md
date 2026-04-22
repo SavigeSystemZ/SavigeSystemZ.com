@@ -20,12 +20,23 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [ ] **Commerce:** live-path Stripe staging smoke and follow-up dashboard/download verification (needs `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`).
 - [x] **Code module tests:** 10 unit tests + 6 E2E tests — green.
 - [x] **`Application` ↔ `CodeRepository` relation** (migration `0003`, admin linker UI, `/applications/[slug]` surfaces a PUBLIC-only "Source code" card — 2026-04-22).
-- [ ] **Code module polish (next session):**
-  - [ ] Public `/repos/[slug]` detail page (README render) for PUBLIC code repos
-  - [ ] Visibility toggle in `/admin/code` (unblocks the public "Source code" card without DB pokes)
-  - [ ] "Sync all" batch action
-  - [ ] GitHub webhook receiver (`/api/webhooks/github`) with HMAC verification → auto-sync on push
-  - [ ] E2E happy-path test that stubs the GitHub API for deterministic CI
+- [x] **M0 doc alignment (2026-04-22):** Postgres-first framing across `docs/DATABASE.md`, `README.md`, `CLAUDE.md`; new stubs `docs/UX_SYSTEM.md`, `docs/AI_INTEGRATION_STRATEGY.md`, `docs/CODE_STORAGE.md`, `docs/DEV_ENV_GOTCHAS.md`; `PROMPT_PACK.md` Part II refined session prompts integrated.
+- [x] **M1 slice 1:** `prefers-reduced-motion` fallback in `apps/web/app/globals.css` + first `packages/ui` primitive promotion (`Panel`, `StatusChip`, promoted `SectionHeading`) + reduced-motion a11y E2E checks.
+- [x] **M1 slice 2:** adopted promoted UI primitives in key public routes (`applications`, `archive`, `services`) and completed repo-wide `SectionHeading` import migration to `@savige/ui`.
+- [x] **M1 slice 3 groundwork:** admin overview card polish + command-palette row primitive landed (`packages/ui/src/CommandPaletteRow.tsx`) and applied on `/admin`.
+- [x] **M7 prep:** interactive command palette client component landed in admin shell (`Cmd/Ctrl+K`, search, keyboard navigation, route actions) with Playwright coverage.
+- [x] **M7 slice 1:** server-computed "fix next" queue + dashboard widgets landed on `/admin` (`launch blockers`, `repo sync errors`, `pending moderation`, `pending requests`, `recent audit anomalies`) via `lib/admin-dashboard.ts`.
+- [x] **M7 slice 2:** interactive widget drill-downs + lightweight timeframe controls (24h/7d) are live on `/admin` with server-backed queue details.
+- [x] **M7 slice 3:** queue trend snapshots (current vs previous window deltas) and inline quick actions shipped across admin drill-down lanes.
+- [x] **M7 slice 4:** admin dashboard E2E coverage landed for window/focus trend rendering; fix-next `/admin` deep links now preserve dashboard window+focus context.
+- [x] **M7 slice 5:** dashboard freshness telemetry (`last updated` + optional `30s` auto-refresh) and trend-threshold spike highlighting shipped on `/admin`.
+- [ ] **Next actionable — M7 slice 6:** add operator alert ergonomics (dismissible spike notices + audit/burst acknowledgment state) and optional webhook/notification fanout hooks.
+- [ ] **Code module polish (execution-ready, see `PROMPT_PACK.md` Part II):**
+  - [x] **M5.1** — Visibility toggle in `/admin/code` (done: PATCH supports `visibility`, UI select, `code.repository.visibility` audit)
+  - [x] **M5.2** — "Sync all" batch action (done: `/api/admin/code/sync-all`, serial sync, `code.repository.sync-all` audit, UI status feedback)
+  - [x] **M5.3** — Public `/repos/[slug]` detail page (done: PUBLIC-only resolver, cached README fetch, sanitized markdown render, app-detail link)
+  - [x] **M5.4** — GitHub webhook receiver (`/api/webhooks/github`) with HMAC → auto-sync on push
+  - [x] E2E happy-path test stubbing GitHub API for deterministic CI (admin code flow now covers connect, visibility, sync-all, webhook push using `GITHUB_MOCK_MODE=1`)
 
 ## P2 — production path
 

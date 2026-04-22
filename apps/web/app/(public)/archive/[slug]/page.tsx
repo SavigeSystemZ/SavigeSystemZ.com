@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SectionHeading } from "@/components/section-heading";
+import { SectionHeading } from "@savige/ui";
 import { getPublicArchiveEntryBySlug } from "@/lib/archive-resolver";
 import { archiveCategoryThemes } from "@/lib/archive-taxonomy";
 

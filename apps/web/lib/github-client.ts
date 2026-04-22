@@ -1,4 +1,8 @@
 const GITHUB_API = "https://api.github.com";
+const MOCK_REPO = {
+  owner: "octocat",
+  name: "hello-world",
+};
 
 export type GithubRepoSummary = {
   fullName: string;
@@ -22,6 +26,12 @@ export type GithubCommitSummary = {
   committedAt: string | null;
 };
 
+export type GithubReadme = {
+  sha: string;
+  path: string;
+  content: string;
+};
+
 function githubHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
@@ -31,6 +41,10 @@ function githubHeaders(): Record<string, string> {
   const token = process.env.GITHUB_TOKEN?.trim();
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
+}
+
+function isGithubMockMode(): boolean {
+  return process.env.GITHUB_MOCK_MODE === "1" || process.env.GITHUB_MOCK_MODE?.toLowerCase() === "true";
 }
 
 async function ghFetch<T>(path: string): Promise<T> {
@@ -55,6 +69,23 @@ export function parseGithubRepoRef(input: string): { owner: string; repo: string
 }
 
 export async function fetchGithubRepo(owner: string, repo: string): Promise<GithubRepoSummary> {
+  if (isGithubMockMode()) {
+    return {
+      fullName: `${owner}/${repo}`,
+      name: repo,
+      owner,
+      description: "Mocked GitHub repository for deterministic E2E and CI.",
+      htmlUrl: `https://github.com/${owner}/${repo}`,
+      homepage: null,
+      defaultBranch: "main",
+      language: "TypeScript",
+      stargazersCount: owner === MOCK_REPO.owner && repo === MOCK_REPO.name ? 4242 : 42,
+      forksCount: 7,
+      openIssuesCount: 3,
+      visibility: "public",
+      pushedAt: "2026-04-22T00:00:00Z",
+    };
+  }
   type Raw = {
     name: string;
     full_name: string;
@@ -94,6 +125,13 @@ export async function fetchGithubLatestCommit(
   repo: string,
   branch: string | null | undefined,
 ): Promise<GithubCommitSummary | null> {
+  if (isGithubMockMode()) {
+    return {
+      sha: "0123456789abcdef0123456789abcdef01234567",
+      message: `Mock sync for ${owner}/${repo}`,
+      committedAt: "2026-04-22T00:00:00Z",
+    };
+  }
   const ref = branch ?? "HEAD";
   try {
     type Raw = {
@@ -108,6 +146,30 @@ export async function fetchGithubLatestCommit(
       message: raw.commit.message.split("\n")[0]?.slice(0, 240) ?? "",
       committedAt: raw.commit.committer?.date ?? null,
     };
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchGithubReadme(owner: string, repo: string): Promise<GithubReadme | null> {
+  if (isGithubMockMode()) {
+    return {
+      sha: "feedbeeffeedbeeffeedbeeffeedbeeffeedbeef",
+      path: "README.md",
+      content: `# ${owner}/${repo}\n\n- Mock README content for deterministic tests.\n- Source card and /repos pages can render without live GitHub access.\n`,
+    };
+  }
+  try {
+    type Raw = {
+      sha: string;
+      path: string;
+      content: string;
+      encoding: string;
+    };
+    const raw = await ghFetch<Raw>(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/readme`);
+    if (raw.encoding !== "base64" || !raw.content) return null;
+    const content = Buffer.from(raw.content.replace(/\n/g, ""), "base64").toString("utf8");
+    return { sha: raw.sha, path: raw.path, content };
   } catch {
     return null;
   }

@@ -37,3 +37,16 @@ Planning, execution, risk tracking, and handoff context for AI agents working on
 | `.cursor/rules/ssz-*.mdc` | `.cursor/rules/` | Cursor project rules (4 files) |
 | `CLAUDE.md` | `.claude/projects/` | Claude Code project-level instructions |
 | `memory/` | `.claude/projects/` | Claude Code persistent memory |
+
+## Milestone-aligned product docs (in `docs/`)
+
+Added 2026-04-22 as M0 scaffolding for upcoming milestones. Each is a stub owned by the milestone that fills it.
+
+| Doc | Owner milestone | Status |
+|-----|-----------------|--------|
+| `docs/UX_SYSTEM.md` | M1 — Design-system upgrade | Stub; current tokens + motion inventory + reduced-motion gap |
+| `docs/AI_INTEGRATION_STRATEGY.md` | M6 — Agentic AI split | TOC-only stub |
+| `docs/CODE_STORAGE.md` | M11 — Self-hosted code storage | Current state + decision matrix, decision pending |
+| `docs/DEV_ENV_GOTCHAS.md` | Rolling | `DATABASE_URL` inheritance, prisma regen, scan-status sync, 43907 vs 3000 |
+
+See `PROMPT_PACK.md` Part II for the refined, paste-ready session prompt for each milestone.

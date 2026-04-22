@@ -82,6 +82,21 @@ test.describe("accessibility — public routes (axe)", () => {
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
     expect(seriousViolations(violations)).toEqual([]);
   });
+
+  test("reduced-motion mode still passes on home + applications", async ({ browser }) => {
+    const context = await browser.newContext({ reducedMotion: "reduce" });
+    const page = await context.newPage();
+
+    await page.goto("/");
+    const home = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
+    expect(seriousViolations(home.violations)).toEqual([]);
+
+    await page.goto("/applications");
+    const apps = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
+    expect(seriousViolations(apps.violations)).toEqual([]);
+
+    await context.close();
+  });
 });
 
 test.describe("accessibility — admin routes (axe)", () => {

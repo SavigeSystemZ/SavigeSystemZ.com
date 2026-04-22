@@ -2,6 +2,31 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-04-22 — M7 dashboard intelligence slices 1-5 + night operational wrap
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**133 / 133**)
+- **Build**: PASS (`next build` route table includes `/admin`, `/admin/code`, `/repos/[slug]`, webhook/admin APIs)
+
+### Focused verification
+- **Admin dashboard E2E**: PASS (`tests/e2e/admin-dashboard.spec.ts` **3 / 3**)
+  - Focus persists when switching timeframe
+  - Audit drilldown + trend lane renders
+  - Refresh controls + freshness telemetry render
+- **Runtime smoke (live)**:
+  - `GET http://127.0.0.1:43907/` → **200**
+  - Listener confirmed on `127.0.0.1:43907`
+- **Desktop launcher**:
+  - `~/Desktop/SavigeSystemZ-local.desktop` exists
+  - `desktop-file-validate` → clean
+  - `gio launch ~/Desktop/SavigeSystemZ-local.desktop` → launches URL path
+
+### Notes
+- A stale Next dev PID caused one Playwright webServer startup conflict; process was terminated and rerun succeeded.
+- End-of-night state intentionally left with dev server running on canonical local URL for immediate launch from desktop icon.
+
 ## 2026-04-22 — Application ↔ CodeRepository link (migration 0003) + dev-server env fix
 
 ### Code quality gates (`pnpm check:all`)

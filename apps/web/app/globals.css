@@ -378,6 +378,37 @@ textarea {
   from { --num: 0; }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .drift-slow,
+  .drift-fast,
+  .reveal,
+  .reveal-stagger > *,
+  .reveal-scale,
+  .pulse-glow,
+  .border-shimmer::before,
+  .scanline::before {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  .pulse-glow {
+    box-shadow: 0 0 8px rgba(101, 243, 255, 0.32), 0 0 20px rgba(101, 243, 255, 0.12);
+  }
+}
+
 @media (max-width: 640px) {
   body::before {
     opacity: 0.14;

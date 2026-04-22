@@ -51,7 +51,7 @@ See also: `apps/web/AGENTS.md` (web-app specifics), `AGENTS.md` (repo-wide agent
 | Framework | Next.js 16 (App Router, Turbopack dev) |
 | Language | TypeScript 5.x, React 19 |
 | Styling | Tailwind CSS 4 |
-| Database | Prisma ORM, SQLite (dev), PostgreSQL (prod target) |
+| Database | Prisma ORM, PostgreSQL (dev + prod); SQLite supported as local fallback |
 | Auth | Session cookies + DB (`lib/auth.ts`), WebAuthn/passkeys |
 | Commerce | Stripe (checkout, webhooks, signed downloads) |
 | Storage | S3 (release assets, media, vault) |

@@ -20,7 +20,10 @@ export const codeRepositoryCreateSchema = z.object({
 export type CodeRepositoryCreateInput = z.infer<typeof codeRepositoryCreateSchema>;
 
 export const codeRepositoryPatchSchema = z.object({
-  applicationIds: z.array(z.string().min(1).max(64)).max(50),
+  applicationIds: z.array(z.string().min(1).max(64)).max(50).optional(),
+  visibility: z.enum(["PUBLIC", "PRIVATE", "DRAFT"]).optional(),
+}).refine((input) => input.applicationIds !== undefined || input.visibility !== undefined, {
+  message: "At least one field must be provided",
 });
 
 export type CodeRepositoryPatchInput = z.infer<typeof codeRepositoryPatchSchema>;
@@ -119,6 +122,16 @@ export async function syncCodeRepository(id: string) {
       data: { syncStatus: "ERROR", syncError: message, lastSyncedAt: new Date() },
     });
   }
+}
+
+export async function syncCodeRepositoryByGithubRef(owner: string, repo: string) {
+  const row = await db.codeRepository.findFirst({
+    where: { provider: "GITHUB", githubOwner: owner, githubRepo: repo },
+  });
+  if (!row) {
+    throw new Error("Repository not tracked");
+  }
+  return syncCodeRepository(row.id);
 }
 
 export async function listCodeRepositories() {

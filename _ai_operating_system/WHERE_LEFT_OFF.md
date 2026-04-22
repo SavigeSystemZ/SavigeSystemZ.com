@@ -1,6 +1,70 @@
 # Where Left Off
 
-- **Timestamp:** 2026-04-22 (mid-day continuation; owner returned, rate-limit reset, asked to continue best-possible work on the site)
+- **Timestamp:** 2026-04-22 (night continuation; M7 slice 5 shipped)
+- **Status:** M0 remains complete, M5.1–M5.4 is shipped, M1 slices 1+2 plus slice-3 groundwork are landed, and M7 slices 1+2+3+4+5 are complete:
+  - M5.1 shipped: `/admin/code` visibility selector (`DRAFT|PRIVATE|PUBLIC`), PATCH schema now supports `visibility`, and audit action `code.repository.visibility`.
+  - M5.2 shipped: `POST /api/admin/code/sync-all` (serial sync), audit action `code.repository.sync-all`, and per-row sync feedback in the admin panel.
+  - M5.3 shipped: new public `/repos/[slug]` route (PUBLIC-only), GitHub README fetch with 5-minute in-memory cache, and sanitized markdown rendering component.
+  - M5.4 shipped: new `POST /api/webhooks/github` endpoint (HMAC validation via Web Crypto, IP rate limit, push-event handling, tracked-repo sync, audit action `code.repository.webhook`).
+  - `apps/web/playwright.config.ts` default `DATABASE_URL` fallback updated to Postgres (`postgresql://ssz:dev@localhost:5433/savige`) to match repo cutover.
+- **M1 slice 1 shipped:**
+- **M1 slice 2 shipped:**
+- **M1 slice 3 groundwork shipped:**
+  - Added `CommandPaletteRow` primitive to `packages/ui`.
+  - Polished `/admin` overview with promoted UI primitives (`Panel`, `SectionHeading`, `StatusChip`) and seeded static command rows to accelerate M7 interactive palette work.
+  - Full quality gate still green.
+- **M7 prep shipped:**
+  - Interactive command palette now mounted in `AdminShell` (`apps/web/components/admin/command-palette.tsx`) with `Cmd/Ctrl+K`, fuzzy filtering, keyboard navigation, and route-jump actions.
+  - Added focused E2E: `tests/e2e/admin-command-palette.spec.ts`.
+- **M7 slice 1 shipped:**
+  - Added server-composed admin intelligence helper: `apps/web/lib/admin-dashboard.ts`.
+  - `/admin` now renders computed widgets for launch blockers, repo sync errors, moderation backlog, request backlog, and audit anomaly bursts, plus a ranked "fix next" queue with severity badges and deep links.
+  - Added unit coverage: `tests/unit/admin-dashboard.test.ts`.
+- **M7 slice 2 shipped:**
+  - Added URL-driven timeframe controls on `/admin` (`window=24h|7d`) and focus drill-down state (`focus=launch|repos|moderation|requests|audit`).
+  - Expanded `getAdminDashboardSummary` to return drill-down payloads per widget lane (launch blockers, repo sync errors, moderation queue, request queue, anomaly actions).
+  - Wired widget actions to in-place drill-down rendering with concrete rows and deep links to the owning admin surfaces.
+- **M7 slice 3 shipped:**
+  - Added trend snapshots in `apps/web/lib/admin-dashboard.ts` for current vs previous window deltas: repo error inflow, moderation inflow, request inflow, and audit anomaly bursts.
+  - `/admin` now surfaces trend deltas directly in widget shortcuts and focused drill-down headers, with severity-aware status chips.
+  - Added inline high-friction quick actions in focused drilldowns (`Sync all now`, `Process queue`, `Review bursts`) and expanded unit assertions in `tests/unit/admin-dashboard.test.ts`.
+- **M7 slice 4 shipped:**
+  - Added focused Playwright coverage in `apps/web/tests/e2e/admin-dashboard.spec.ts` for dashboard focus/window behavior and trend drill-down rendering.
+  - Updated fix-next links that target `/admin` to preserve active dashboard context (`window` + `focus=launch`) instead of dropping operators to a generic overview state.
+- **M7 slice 5 shipped:**
+  - Added freshness telemetry to `/admin` (`last updated` display + URL-driven refresh controls `off|30s`).
+  - Added lightweight client refresher (`apps/web/components/admin/auto-refresh.tsx`) that uses `router.refresh()` at a 30s interval when enabled.
+  - Extended dashboard summary payload with `generatedAt` and trend spike flags; surfaced `Spike` chips in focused drilldown trend lanes.
+  - Expanded admin dashboard E2E to cover refresh controls/freshness rendering.
+  - Migrated first three public routes to promoted UI primitives in `@savige/ui` (`applications`, `archive`, `services`) using `Panel`/`SectionHeading`/`StatusChip`.
+  - Completed app-wide import migration from `@/components/section-heading` to `@savige/ui` for all current consumers.
+  - `pnpm check:all` remains green after migration.
+  - Added reduced-motion fallback block in `apps/web/app/globals.css` to disable/neutralize animation-heavy utilities (`drift-*`, `reveal*`, `scanline`, `pulse-glow`, `border-shimmer`).
+  - Promoted UI primitives into `packages/ui/src/`: `Panel`, `StatusChip`, and `SectionHeading`.
+  - `apps/web/components/section-heading.tsx` now re-exports `SectionHeading` from `@savige/ui`.
+  - Added reduced-motion a11y E2E coverage in `apps/web/tests/e2e/a11y.spec.ts`.
+- **Validation (latest):**
+  - `pnpm --filter web lint` / `typecheck` / `test` green.
+  - Playwright `tests/e2e/admin-code.spec.ts` 11/11 green in deterministic mode (`GITHUB_MOCK_MODE=1`).
+  - Playwright `tests/e2e/a11y.spec.ts` 14/14 green (includes reduced-motion run).
+  - Playwright `tests/e2e/admin-dashboard.spec.ts` 3/3 green (focus/window/refresh coverage).
+  - `pnpm check:all` green.
+- **Night wrap (2026-04-22):**
+  - Local site is live on `http://127.0.0.1:43907` (`pnpm dev:web` running, listener confirmed).
+  - Desktop launcher validated and launch-tested: `~/Desktop/SavigeSystemZ-local.desktop` (`desktop-file-validate` clean, `gio launch` ok).
+- **Next actionable:** M7 slice 6 — operator alert ergonomics (dismissible spike notices + acknowledgment state) and optional notification fanout hooks.
+
+---
+
+- **Timestamp:** 2026-04-22 (late-afternoon continuation; M0 doc alignment pass shipped after Ultraplan-refined plan approval)
+- **Status:** M0 (docs + AI-OS integration) done. No runtime code, no schema, no migrations. Refined per-milestone session prompts now live in `_ai_operating_system/PROMPT_PACK.md` Part II; four new product-doc stubs seeded in `docs/` (UX_SYSTEM, AI_INTEGRATION_STRATEGY, CODE_STORAGE, DEV_ENV_GOTCHAS); SQLite-as-dev-default drift removed from `docs/DATABASE.md`, `README.md`, root `CLAUDE.md`.
+- **Latest commit on disk:** `c70ab8c` on `main`. M0 changes are uncommitted working tree pending owner review.
+- **Next actionable:** M1 slice 1 — `prefers-reduced-motion` fallback in `apps/web/app/globals.css` + first `packages/ui` primitive promotion. OR quick-win M5.1 — visibility toggle in `/admin/code`. See `PROMPT_PACK.md` Part II.
+
+---
+
+## Earlier pulse (2026-04-22 mid-day)
+
 - **Status:** Application ↔ CodeRepository relation (priority-1 follow-up to M10) shipped end-to-end — schema + migration + admin API + admin UI + public surface + tests. All gates green against Postgres.
 - **Latest commit on disk:** uncommitted working tree as of this file being written. Previous session landed `68e2f46` (M10 scaffold). This session's changes are staged for the owner's review / commit.
 

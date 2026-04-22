@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import { Panel, SectionHeading } from "@savige/ui";
 import { ProjectRequestForm } from "@/components/project-request-form";
-import { SectionHeading } from "@/components/section-heading";
 import { projectTracks } from "@/lib/showcase-content";
 
 export const metadata: Metadata = {
@@ -11,13 +11,13 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-12 sm:px-6 lg:py-8">
-      <section className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <Panel className="rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Project requests"
           title="Bring in product, infrastructure, environment, or operator-system work."
           description="Use this route for custom builds, private tooling, secure delivery systems, local environment engineering, or anything that needs a direct scoped conversation instead of a simple product checkout."
         />
-      </section>
+      </Panel>
 
       <section className="mt-8 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="grid gap-4">

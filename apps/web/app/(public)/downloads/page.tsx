@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SectionHeading } from "@/components/section-heading";
+import { SectionHeading } from "@savige/ui";
 import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 import { getShowcaseApplication, releaseLanes } from "@/lib/showcase-content";
 

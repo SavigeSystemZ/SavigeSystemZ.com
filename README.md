@@ -39,24 +39,20 @@ cp apps/web/.env.example apps/web/.env.local
 Edit `apps/web/.env.local`:
 
 - **`SITE_URL`** — e.g. `http://127.0.0.1:43907` for local browsing (match the URL printed by `pnpm dev:web`).
-- **`DATABASE_URL`** — for local development, SQLite is fine. The example uses `file:./dev.db`; Prisma resolves this **relative to the `prisma/` folder**, so the file is created at `apps/web/prisma/dev.db`.
+- **`DATABASE_URL`** — canonical local value is `postgresql://ssz:dev@localhost:5433/savige`. Run `./scripts/dev-postgres.sh` to start the Docker Postgres and apply migrations + seed. (SQLite remains as a fallback via `./scripts/dev-sqlite.sh` — see `docs/DATABASE.md`.)
 - **`OWNER_ACCESS_CODE`** / **`OWNER_LOGIN_SECRET`** — set long random strings for owner login at `/owner/login`.
 - **Passkeys (optional locally):** for `http://127.0.0.1:43907`, align WebAuthn with your origin, for example:
   - `PASSKEY_RP_ID=127.0.0.1`
   - `PASSKEY_ORIGIN=http://127.0.0.1:43907`
 
-Apply migrations and start the dev server:
+Start Postgres (Docker) and the dev server:
 
 ```bash
-cd apps/web
-pnpm exec prisma generate
-pnpm exec prisma migrate deploy
-pnpm exec prisma db seed
-cd ../..
-pnpm dev:web
+./scripts/dev-postgres.sh      # provisions localhost:5433, runs prisma migrate deploy + seed
+pnpm dev:web                    # canonical port 43907; falls back to random in 43000–44999 if busy
 ```
 
-`pnpm dev:web` now auto-selects an available **localhost-only** port (instead of assuming `3000`) and injects a matching `SITE_URL` for the dev process. Open the exact **`http://127.0.0.1:<port>`** printed in the terminal.
+`pnpm dev:web` binds **127.0.0.1 only**. Open the exact **`http://127.0.0.1:<port>`** printed in the terminal (default: `http://127.0.0.1:43907/`). Override with `SITE_PORT=<port> pnpm dev:web`.
 
 **Production-style run on the host** (after a successful build):
 

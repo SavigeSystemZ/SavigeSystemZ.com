@@ -44,6 +44,7 @@ export function CodePanel() {
   const [error, setError] = useState<string | null>(null);
   const [editingLinksFor, setEditingLinksFor] = useState<string | null>(null);
   const [linkDraft, setLinkDraft] = useState<string[]>([]);
+  const [syncAllReport, setSyncAllReport] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -145,6 +146,55 @@ export function CodePanel() {
     }
   }
 
+  async function updateVisibility(repoId: string, visibility: CodeRepo["visibility"]) {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/code/${repoId}`, {
+        method: "PATCH",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ visibility }),
+      });
+      const body = (await res.json().catch(() => ({}))) as { error?: string };
+      if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function syncAll() {
+    setBusy(true);
+    setError(null);
+    setSyncAllReport({});
+    try {
+      const res = await fetch("/api/admin/code/sync-all", {
+        method: "POST",
+        credentials: "same-origin",
+      });
+      const body = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        results?: Array<{ id: string; syncStatus: "OK" | "ERROR"; syncError: string | null }>;
+      };
+      if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status})`);
+      const report = Object.fromEntries(
+        (body.results ?? []).map((result) => [
+          result.id,
+          result.syncStatus === "OK" ? "Synced" : `Failed: ${result.syncError ?? "unknown error"}`,
+        ]),
+      );
+      setSyncAllReport(report);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <form
@@ -175,6 +225,16 @@ export function CodePanel() {
           {error}
         </p>
       ) : null}
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={() => void syncAll()}
+          disabled={busy || items.length === 0}
+          className="action-secondary text-xs disabled:opacity-50"
+        >
+          {busy ? "Working…" : "Sync all"}
+        </button>
+      </div>
 
       {loading ? (
         <p className="text-sm text-slate-400">Loading repositories…</p>
@@ -231,6 +291,22 @@ export function CodePanel() {
                   ) : null}
                 </div>
                 <div className="flex flex-shrink-0 gap-2">
+                  <label className="flex items-center gap-1 text-xs text-slate-300">
+                    <span className="sr-only">Set repository visibility</span>
+                    <select
+                      value={repo.visibility}
+                      onChange={(event) =>
+                        void updateVisibility(repo.id, event.target.value as CodeRepo["visibility"])
+                      }
+                      disabled={busy}
+                      className="rounded-md border border-white/10 bg-slate-950/60 px-2 py-1 text-xs text-white disabled:opacity-50"
+                      aria-label={`Visibility for ${repo.name}`}
+                    >
+                      <option value="DRAFT">DRAFT</option>
+                      <option value="PRIVATE">PRIVATE</option>
+                      <option value="PUBLIC">PUBLIC</option>
+                    </select>
+                  </label>
                   <button
                     type="button"
                     onClick={() => beginEditLinks(repo)}
@@ -259,6 +335,15 @@ export function CodePanel() {
               </div>
 
               <div className="mt-4 border-t border-white/8 pt-3 text-xs text-slate-300">
+                {syncAllReport[repo.id] ? (
+                  <p
+                    className={`mb-2 ${
+                      syncAllReport[repo.id].startsWith("Synced") ? "text-emerald-200" : "text-rose-200"
+                    }`}
+                  >
+                    {syncAllReport[repo.id]}
+                  </p>
+                ) : null}
                 <p className="text-[0.7rem] uppercase tracking-[0.24em] text-slate-500">Linked applications</p>
                 {repo.applications.length === 0 ? (
                   <p className="mt-2 text-slate-400">No applications linked yet.</p>

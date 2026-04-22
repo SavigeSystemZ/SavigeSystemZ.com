@@ -49,6 +49,10 @@ export type PublicCodeRepositoryRecord = {
   latestCommitAt: string | null;
 };
 
+export type PublicRepositoryDetailRecord = PublicCodeRepositoryRecord & {
+  updatedAt: string;
+};
+
 export type PublicApplicationDetailRecord = ApplicationRecord & {
   media: PublicApplicationMediaRecord[];
   versions: PublicApplicationVersionRecord[];
@@ -178,6 +182,39 @@ function mapPublicCodeRepository(row: CodeRepositoryRow | null | undefined): Pub
     latestCommitMessage: row.latestCommitMessage,
     latestCommitAt: row.latestCommitAt ? row.latestCommitAt.toISOString() : null,
   };
+}
+
+export async function getPublicRepoBySlug(slug: string): Promise<PublicRepositoryDetailRecord | null> {
+  try {
+    const row = await db.codeRepository.findFirst({
+      where: { slug, visibility: "PUBLIC" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        description: true,
+        githubUrl: true,
+        githubOwner: true,
+        githubRepo: true,
+        defaultBranch: true,
+        primaryLanguage: true,
+        starCount: true,
+        forkCount: true,
+        openIssueCount: true,
+        latestCommitSha: true,
+        latestCommitMessage: true,
+        latestCommitAt: true,
+        updatedAt: true,
+        visibility: true,
+      },
+    });
+    if (!row) return null;
+    const mapped = mapPublicCodeRepository(row);
+    if (!mapped) return null;
+    return { ...mapped, updatedAt: row.updatedAt.toISOString() };
+  } catch {
+    return null;
+  }
 }
 
 function mapApplicationWithVersions(row: {

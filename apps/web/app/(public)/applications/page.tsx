@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Panel, SectionHeading, StatusChip } from "@savige/ui";
 import { AppShowcaseCard } from "@/components/app-showcase-card";
-import { SectionHeading } from "@/components/section-heading";
 import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 import { foundryLanes } from "@/lib/showcase-content";
 
@@ -17,7 +17,7 @@ export default async function ApplicationsPage() {
   const appCatalog = await getPublicCatalogWithReleases();
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-12 sm:px-6 lg:py-8">
-      <section className="surface-panel rounded-[2rem] p-6 sm:p-8">
+      <Panel className="rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Applications"
           title="Catalog entries positioned like real systems, not dead portfolio tiles."
@@ -40,7 +40,7 @@ export default async function ApplicationsPage() {
             </div>
           ))}
         </div>
-      </section>
+      </Panel>
 
       <section className="mt-8">
         <div className="reveal-stagger grid gap-4 md:grid-cols-2">
@@ -57,9 +57,9 @@ export default async function ApplicationsPage() {
             <p className="mt-5 text-sm leading-7 text-slate-300">{lane.summary}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               {lane.items.map((item) => (
-                <span key={item} className="signal-chip text-xs uppercase tracking-[0.24em] text-slate-200">
+                <StatusChip key={item} className="text-xs uppercase tracking-[0.24em] text-slate-200">
                   {item}
-                </span>
+                </StatusChip>
               ))}
             </div>
           </article>

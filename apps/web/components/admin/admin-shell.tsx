@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AdminCommandPalette } from "@/components/admin/command-palette";
 
 const NAV_LINKS = [
   { href: "/admin", label: "Overview" },
@@ -57,13 +58,16 @@ export function AdminShell() {
               })}
             </nav>
           </div>
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="action-secondary text-xs"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-2">
+            <AdminCommandPalette />
+            <button
+              type="button"
+              onClick={() => void signOut()}
+              className="action-secondary text-xs"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </div>
     </header>
