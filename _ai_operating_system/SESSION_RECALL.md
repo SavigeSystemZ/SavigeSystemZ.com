@@ -5,7 +5,7 @@ Use this file when resuming work so nothing is skimmed or forgotten. **`WHERE_LE
 ## Done and verified (recent)
 
 - **Local dev surface (2026-04-22):** canonical dev port **43907** wired through `scripts/dev-web.mjs` (with `SITE_PORT` env override); desktop launcher at `~/Desktop/SavigeSystemZ-local.desktop` and installer template re-pointed from port 3000 (Immortality app collision) to 43907.
-- **Code module M10 scaffold (2026-04-22):** `CodeRepository` Prisma model (+ `CodeRepositoryProvider`, `CodeRepositorySyncStatus` enums) with migration `0002_code_repository`; `lib/github-client.ts` (GitHub REST via `fetch` + optional `GITHUB_TOKEN`); `lib/code-repository.ts` (create-from-ref, sync, list, dedupe); admin APIs `/api/admin/code` (GET list, POST create) and `/api/admin/code/[id]` (POST sync, DELETE untrack); admin page `/admin/code` with `CodePanel` client component; admin nav link. Typecheck + lint clean; migration pending apply (needs Postgres running).
+- **Code module M10 scaffold (2026-04-22, committed `68e2f46`):** `CodeRepository` Prisma model (+ `CodeRepositoryProvider`, `CodeRepositorySyncStatus` enums) with migration `0002_code_repository` **applied against Postgres**; `lib/github-client.ts` (GitHub REST via `fetch` + optional `GITHUB_TOKEN`); `lib/code-repository.ts` (create-from-ref, sync, list, dedupe); admin APIs `/api/admin/code` (GET list, POST create) and `/api/admin/code/[id]` (POST sync, DELETE untrack); admin page `/admin/code` with `CodePanel` client component; admin nav link. **121/121 unit tests pass** (10 new), **62 E2E pass / 1 skip / 0 fail** (6 new in `admin-code.spec.ts`), lint + typecheck + build all clean.
 - Public shell: flagship visual redesign across home, applications, downloads, pricing, bio, reviews, services, shared header/footer, AI dock, and stronger design system / motion / typography.
 - Catalog and data model: application showcase fields, real Prisma-backed app catalog, version/release asset model, media model, archive entries, creator submissions, creator promotion tracking, seeded showcase data and artwork.
 - Admin control plane: owner dashboard, application manager, release manager, archive manager, media manager, moderation queue, audit viewer, passkey/admin auth posture, launch readiness indicators, one-click publish flows for applications and archive entries.
@@ -25,8 +25,10 @@ Use this file when resuming work so nothing is skimmed or forgotten. **`WHERE_LE
 | **Postgres cutover** | SQLite migrations are still local-dev only | flip provider in `schema.prisma`, regenerate migrations, `docs/POSTGRES_*` |
 | **S3 malware scan** | Vault scan Lambda is still a starter | `infra/s3-vault-scan-lambda/`, `docs/S3_VAULT_LAMBDA_SCAN.md` |
 | **Stripe live keys** | Mock commerce works; real Stripe needs `STRIPE_SECRET_KEY` + webhook secret | `docs/STRIPE_WEBHOOK_TESTING.md` |
-| **Code module migration apply** | `0002_code_repository` is written but not deployed against Postgres | `scripts/dev-postgres.sh` then `pnpm --filter web prisma migrate deploy` |
-| **Code module tests** | No unit or E2E coverage yet on the new Code module | `tests/unit/code-repository.test.ts`, `tests/e2e/admin-code.spec.ts` |
+| **Application ↔ CodeRepository link** | Apps should surface their source repo; currently the two models are unconnected | Extend `schema.prisma` with relation, migration, update app detail page |
+| **Public repo detail page** | Closes the "displays code works" loop — README render for PUBLIC repos | New route `app/(public)/repos/[slug]/page.tsx` + GitHub contents API sync |
+| **Code admin UX polish** | Visibility toggle + "Sync all" batch action are not yet in `/admin/code` | `components/admin/code-panel.tsx` |
+| **GitHub webhook intake** | Auto-sync on push avoids the manual Sync click | New `app/api/webhooks/github/route.ts` + HMAC verification |
 | **Self-hosted git storage (M11)** | Admin /code currently mirrors GitHub metadata only — the "store code like GitHub" promise needs a storage backend | See `VISION_AND_ROADMAP.md` M11 |
 
 ## Explicit TODO (sync with `TODO.md`)

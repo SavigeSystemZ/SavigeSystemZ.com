@@ -8,16 +8,24 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Creator draft handoff:** dual deep links ("Edit draft" + "Launch composer") from moderation panel.
 - [x] **Canonical dev port + desktop launcher:** port 43907 wired into `dev-web.mjs`; desktop icon no longer conflicts with the Immortality app.
 - [x] **Code module scaffold:** `CodeRepository` model + migration `0002_code_repository`, GitHub client, admin /code page and API routes, admin nav link, `GITHUB_TOKEN` env.
+- [x] **Apply Code migration:** applied against Postgres; `/admin/code` routes live in the build.
+- [x] **Code module tests:** 10 unit tests (`tests/unit/code-repository.test.ts` + `tests/unit/github-client.test.ts`), 6 E2E (`tests/e2e/admin-code.spec.ts`). All green.
 - [ ] **Owner uploads live:** configure real S3 buckets/credentials and verify direct upload from release/media/launch composer surfaces.
-- [ ] **Apply Code migration:** run `scripts/dev-postgres.sh` + `pnpm --filter web prisma migrate deploy`; round-trip connect/sync/remove via `/admin/code`.
+- [ ] **Manual /admin/code round-trip:** owner to connect their own GitHub repo in-browser and confirm UX.
 
 ## P1 — product quality and coverage
 
 - [x] **Playwright:** archive launch composer (8 tests), creator moderation + promotion (5 tests), expanded commerce (7 tests), a11y (13 routes). Full suite: 50 passed, 0 failed.
 - [x] **A11y / polish:** fixed WCAG select-name/input-name violations on archive, creator form, and application manager. 13 axe routes all green.
 - [ ] **Commerce:** live-path Stripe staging smoke and follow-up dashboard/download verification (needs `STRIPE_SECRET_KEY` + `STRIPE_WEBHOOK_SECRET`).
-- [ ] **Code module tests:** `tests/unit/code-repository.test.ts` (create + dedupe + sync error), `tests/e2e/admin-code.spec.ts` (owner-gated connect/sync/remove).
-- [ ] **Code module polish:** visibility toggle UI, manual "Sync all" batch action, per-repo audit detail drawer.
+- [x] **Code module tests:** 10 unit tests + 6 E2E tests — green.
+- [ ] **Code module polish (next session):**
+  - [ ] `Application` ↔ `CodeRepository` relation so app detail pages can surface source
+  - [ ] Public `/repos/[slug]` detail page (README render) for PUBLIC code repos
+  - [ ] Visibility toggle in `/admin/code`
+  - [ ] "Sync all" batch action
+  - [ ] GitHub webhook receiver (`/api/webhooks/github`) with HMAC verification → auto-sync on push
+  - [ ] E2E happy-path test that stubs the GitHub API for deterministic CI
 
 ## P2 — production path
 
