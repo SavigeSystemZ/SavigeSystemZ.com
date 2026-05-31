@@ -87,7 +87,7 @@ check_no_feature_branches() {
 check_no_stale_remotes() {
   cd "$REPO_ROOT" || return 1
   
-  if ! git remote -v &>/dev/null | grep -q "origin"; then
+  if ! git remote -v 2>/dev/null | grep -q "origin"; then
     log_warn "No remote configured yet (setup may be incomplete)"
     return 0
   fi
