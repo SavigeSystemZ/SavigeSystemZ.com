@@ -66,19 +66,34 @@ export const flagshipMetrics: ShowcaseMetric[] = [
 
 export const foundryLanes: ShowcaseLane[] = [
   {
-    title: "Product Systems",
-    summary: "Flagship applications, storefronts, release channels, and private buyer experiences.",
-    items: ["Applications", "Versioned releases", "Entitlement flows", "Admin lifecycle controls"],
+    title: "Applications & Software",
+    summary: "Showcase of applications, both free and premium, with secure release channels and private buyer experiences.",
+    items: ["Applications", "Versioned releases", "Free & Premium Software", "Admin lifecycle controls"],
   },
   {
-    title: "Operator Kits",
-    summary: "The engineering playground side of the site: infrastructure, local tooling, and repeatable workstation assets.",
-    items: ["Linux builds", "Lua + rc files", "VM and container kits", "Automation scripts"],
+    title: "Operator Kits & Configs",
+    summary: "The engineering playground: dotfiles, program settings, custom OS builds, automation scripts, and freeware lists.",
+    items: ["Custom OS builds", ".files & rc configs", "Software & freeware links", "Automation scripts"],
   },
   {
-    title: "Research Archive",
-    summary: "A controlled publishing surface for security work, experiments, notes, prompts, and trained-model artifacts.",
-    items: ["LLM experiments", "Books + notes", "Security content", "Private vault drops"],
+    title: "AI & Meta-Systems",
+    summary: "System Admin meta-systems, trained AI agents, prompt architectures, and curated links to the best LLMs.",
+    items: ["Trained AI agents", "Sysadmin meta-systems", "LLM resources", "Prompt ecosystems"],
+  },
+  {
+    title: "Security & Payloads",
+    summary: "Hacking content, exploitation payloads, security recommendations, and defensive OPNsense builds.",
+    items: ["Hacking payloads", "Security recommendations", "OPNsense builds", "Offensive & Defensive research"],
+  },
+  {
+    title: "Guides & Instructional Media",
+    summary: "Tips, tricks, instructional videos, YouTube links, and comprehensive guides for various systems and tasks.",
+    items: ["Instructional videos", "YouTube links", "System guides", "Tips & tricks"],
+  },
+  {
+    title: "Games & Literature",
+    summary: "Custom-developed games, books, notes, and interactive literature.",
+    items: ["Custom Games", "Books & literature", "Research notes", "Interactive media"],
   },
 ];
 
