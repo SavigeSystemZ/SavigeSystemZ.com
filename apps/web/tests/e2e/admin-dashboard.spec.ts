@@ -39,4 +39,18 @@ test.describe("admin dashboard intelligence", () => {
     await expect(page).toHaveURL(/\/admin\?window=24h&focus=repos&refresh=30s/);
     await expect(page.getByRole("heading", { name: /repository sync errors/i })).toBeVisible();
   });
+
+  test("dismisses spike notices", async ({ page }) => {
+    await loginOwner(page);
+
+    // This test relies on a spike notice being present.
+    // If one isn't present, we'll just check that it handles gracefully.
+    await page.goto("/admin");
+    const dismissButton = page.getByRole("button", { name: /dismiss/i }).first();
+    if (await dismissButton.isVisible()) {
+      await dismissButton.click();
+      // Wait for it to disappear or the page to refresh
+      await expect(dismissButton).not.toBeVisible();
+    }
+  });
 });

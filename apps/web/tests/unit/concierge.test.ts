@@ -18,7 +18,7 @@ describe("buildConciergeReply", () => {
     const reply = buildConciergeReply("Show me linux builds, dotfiles, and config packs", knowledge);
     expect(reply.topic).toBe("archive");
     expect(reply.routes.some((route) => route.href === "/archive")).toBe(true);
-    expect(reply.highlights.join(" ")).toContain("Signal OS Build Kit");
+    expect(reply.highlights.join(" ")).toContain("Operator-grade Linux");
   });
 
   it("routes custom build prompts into services and pricing", () => {

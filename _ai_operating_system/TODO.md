@@ -11,6 +11,7 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Apply Code migration:** applied against Postgres; `/admin/code` routes live in the build.
 - [x] **Code module tests:** 10 unit tests (`tests/unit/code-repository.test.ts` + `tests/unit/github-client.test.ts`), 6 E2E (`tests/e2e/admin-code.spec.ts`). All green.
 - [ ] **Owner uploads live:** configure real S3 buckets/credentials and verify direct upload from release/media/launch composer surfaces.
+- [ ] **Make GitHub repo public:** Owner needs to set the associated GitHub repo to public to enable repository sync and public facing repo surfaces.
 - [ ] **Manual /admin/code round-trip:** owner to connect their own GitHub repo in-browser and confirm UX.
 - [x] **M7 slice 6 — dismissible spike notices + ack state:** `lib/admin-dashboard.ts` records spike alerts; `components/admin/dashboard-spike-notices.tsx` renders dismissible cards on `/admin`; ack route exists at `/api/admin/dashboard/acknowledge` with rate limit + audit log.
 - [x] **Public `/repos` index page:** ranks PUBLIC code repositories by latest commit; links to existing `/repos/[slug]` detail page.
