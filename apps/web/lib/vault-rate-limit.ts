@@ -3,10 +3,10 @@ import { NextResponse } from "next/server";
 import { getRequestClientIp } from "@/lib/client-ip";
 import { rateLimit } from "@/lib/rate-limit";
 import {
-  isVaultRedisRateLimitConfigured,
-  isVaultRedisStrict,
+  isRedisRateLimitConfigured,
+  isRedisStrict,
   slidingWindowAllowRedis,
-} from "@/lib/vault-rate-limit-redis";
+} from "@/lib/redis-rate-limit";
 
 const WINDOW_MS = 60_000;
 const MAX_VAULT_MUTATIONS_PER_USER = 45;
@@ -15,7 +15,7 @@ const MAX_VAULT_MUTATIONS_PER_IP = 45;
 export type VaultRateLimitBackend = "redis" | "memory";
 
 export function vaultRateLimitBackend(): VaultRateLimitBackend {
-  return isVaultRedisRateLimitConfigured() ? "redis" : "memory";
+  return isRedisRateLimitConfigured() ? "redis" : "memory";
 }
 
 /**
@@ -38,7 +38,7 @@ export async function vaultMutationGate(
     : { kind: "ip" as const, id: getRequestClientIp(request), max: MAX_VAULT_MUTATIONS_PER_IP };
   const key = `vault:mut:${scope.kind}:${scope.id}`;
 
-  if (isVaultRedisRateLimitConfigured()) {
+  if (isRedisRateLimitConfigured()) {
     try {
       const ok = await slidingWindowAllowRedis(key, scope.max, WINDOW_MS);
       if (!ok) {
@@ -46,7 +46,7 @@ export async function vaultMutationGate(
       }
       return null;
     } catch (e) {
-      if (isVaultRedisStrict()) {
+      if (isRedisStrict()) {
         console.error("[vault-rate-limit] redis required (strict) but failed", e);
         return NextResponse.json(
           { error: "rate_limit_backend_unavailable" },

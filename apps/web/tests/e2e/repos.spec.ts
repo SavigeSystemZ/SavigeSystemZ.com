@@ -1,18 +1,62 @@
-import { expect, test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
+import { PrismaClient } from "@prisma/client";
 
-test.describe("public repos directory", () => {
-  test("renders the repos index and navigates to a repo detail", async ({ page }) => {
-    // Note: If no repos are seeded, this will just show the empty state.
-    // For a real end-to-end test, we might want to ensure at least one repo is public,
-    // or we just assert that the page loads correctly and shows the correct header.
+const prisma = new PrismaClient();
+
+test.describe("Public Repositories", () => {
+  test.beforeAll(async () => {
+    // Seed some repos
+    await prisma.codeRepository.createMany({
+      data: [
+        {
+          id: "repo-pub-1",
+          slug: "test-public-repo",
+          name: "Test Public Repo",
+          description: "A test repository that is public",
+          visibility: "PUBLIC",
+          storageBackend: "GITHUB",
+          primaryLanguage: "TypeScript",
+          starCount: 42,
+          latestCommitAt: new Date(),
+          syncStatus: "OK",
+        },
+        {
+          id: "repo-priv-1",
+          slug: "test-private-repo",
+          name: "Test Private Repo",
+          description: "A test repository that is private",
+          visibility: "PRIVATE",
+          storageBackend: "SELF_HOSTED",
+          syncStatus: "OK",
+        },
+      ],
+      skipDuplicates: true,
+    });
+  });
+
+  test.afterAll(async () => {
+    await prisma.codeRepository.deleteMany({
+      where: { id: { in: ["repo-pub-1", "repo-priv-1"] } },
+    });
+    await prisma.$disconnect();
+  });
+
+  test("lists only public repositories on the index page", async ({ page }) => {
     await page.goto("/repos");
-    await expect(page.getByRole("heading", { name: /Public source code tracked by the foundry/i })).toBeVisible();
-
-    // Check if there are any repo links
-    const repoLinks = page.locator('a[href^="/repos/"]');
-    if (await repoLinks.count() > 0) {
-      await repoLinks.first().click();
-      await expect(page.locator("text=README")).toBeVisible();
-    }
+    
+    // Should see the public repo
+    await expect(page.getByRole("heading", { name: "Test Public Repo" })).toBeVisible();
+    await expect(page.getByText("A test repository that is public")).toBeVisible();
+    
+    // Should not see the private repo
+    await expect(page.getByRole("heading", { name: "Test Private Repo" })).not.toBeVisible();
+    
+    // Check signals
+    await expect(page.getByText("TypeScript")).toBeVisible();
+    await expect(page.getByText("Stars: 42")).toBeVisible();
+    
+    // Check navigation
+    await page.getByRole("link", { name: "Open repository" }).click();
+    await expect(page).toHaveURL(/\/repos\/test-public-repo/);
   });
 });

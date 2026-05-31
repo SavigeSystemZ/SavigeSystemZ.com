@@ -20,8 +20,8 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Stripe REFUNDED status:** add `REFUNDED` to `PurchaseStatus` enum + migration; wire `POST /api/admin/purchases/[id]/refund` calling Stripe `refunds.create` + audit log.
 - [x] **Checkout transaction wrap:** `lib/checkout-complete.ts` license-grant + purchase-update should be a single `db.$transaction` to avoid the License-granted-but-Purchase-not-completed window.
 - [x] **GitHub README rate-limit + sync debounce:** `lib/github-client.ts` README fetcher + per-repo sync should debounce to prevent burst calls.
-- [ ] **Audit-log retention:** delete or archive `AuditLog` rows older than 90 days (cron or pg_partman).
-- [ ] **E2E coverage gaps:** `/repos` index, spike-notice dismiss flow, admin publish flows.
+- [x] **Audit-log retention:** delete or archive `AuditLog` rows older than 90 days (cron or pg_partman).
+- [x] **E2E coverage gaps:** `/repos` index, spike-notice dismiss flow, admin publish flows.
 - [ ] **S3 vault scan Lambda:** wire `infra/s3-vault-scan-lambda/` to vault bucket S3 events for AV/YARA scanning (blocked: AWS deploy access).
 
 ## P1 — product quality and coverage
@@ -54,15 +54,15 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Postgres:** switched to `postgresql` provider, baseline migration, CI jobs with Postgres service, `scripts/dev-postgres.sh` + `scripts/dev-sqlite.sh` for local dev. Full E2E (56 tests) verified against Docker Postgres.
 - [x] **S3 vault scan:** ClamAV-based Lambda with download → scan → tag → quarantine → SNS notify flow. Ready for deploy with ClamAV Lambda layer.
 - [x] **CI:** quality + E2E jobs both run against Postgres service containers.
-- [ ] **Redis elsewhere:** if horizontally scaled, reuse sliding-window pattern for `lib/auth-rate-limit.ts` and `app/api/project-requests/route.ts` (see `docs/RATE_LIMITS.md`).
-- [ ] **Strict Redis ops:** alerts when `vaultMutationRedis` probe is `error` or 503 rate spikes with `VAULT_REDIS_STRICT=1`.
+- [x] **Redis elsewhere:** if horizontally scaled, reuse sliding-window pattern for `lib/auth-rate-limit.ts` and `app/api/project-requests/route.ts` (see `docs/RATE_LIMITS.md`).
+- [x] **Strict Redis ops:** alerts when `vaultMutationRedis` probe is `error` or 503 rate spikes with `VAULT_REDIS_STRICT=1`.
 
 ## P3 — M11 self-hosted code storage (new milestone)
 
 - [x] **Schema stub (2026-04-27):** `CodeRepositoryStorageBackend` enum (`GITHUB | SELF_HOSTED`) + `CodeRepository.storageBackend` column with `GITHUB` default in migration `0005_dashboard_alert_and_code_storage_backend`. Avoids a future migration ordering churn when self-hosted backend lands.
-- [ ] **Backend decision:** evaluate Gitea sidecar container vs. `isomorphic-git` over S3 bare-repo approach. Capture trade-offs in `docs/CODE_STORAGE.md`.
-- [ ] **Git hosting surface:** public `GET /repos/<slug>` detail page (README render, tree/blob browser), owner-only `POST /api/admin/code/<id>/sync-contents` to cache selected files.
-- [ ] **Access control:** extend `AssetVisibility` reuse for code blobs, wire entitlements for PRIVATE repos.
+- [x] **Backend decision:** evaluate Gitea sidecar container vs. `isomorphic-git` over S3 bare-repo approach. Capture trade-offs in `docs/CODE_STORAGE.md`.
+- [x] **Git hosting surface:** public `GET /repos/<slug>` detail page (README render, tree/blob browser), owner-only `POST /api/admin/code/<id>/sync-contents` to cache selected files.
+- [x] **Access control:** extend `AssetVisibility` reuse for code blobs, wire entitlements for PRIVATE repos.
 - [x] **Webhook intake (M5.4):** `POST /api/webhooks/github` with HMAC verification + auto-sync on push events.
 
 ## P0 — landed this session (2026-04-27, uncommitted, blocked on chown)
@@ -79,8 +79,8 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 ## Pending after chown (resume order)
 
-1. Run `./scripts/post-chown-verify.sh` end-to-end.
-2. Run `./scripts/post-chown-commit.sh` to land the work in 7 commits.
+- [x] 1. Run `./scripts/post-chown-verify.sh` end-to-end.
+- [x] 2. Run `./scripts/post-chown-commit.sh` to land the work in 7 commits.
 - [x] 3. Wire `DashboardAlert` into `lib/admin-dashboard.ts` and create `components/admin/dashboard-spike-notices.tsx` (M7.6 finish).
 - [x] 4. Create `app/(public)/repos/page.tsx` (public repo index).
 - [x] 5. Triage the remaining 40 P1 + 16 P2 review items (refund flow, AI per-user rate limit + audit, Application JSON-blob field typing, soft-delete utility, License/Purchase transaction wrap, README markdown sanitizer fixtures).

@@ -17,6 +17,7 @@ type CodeRepo = {
   name: string;
   description: string | null;
   provider: "GITHUB" | "LOCAL";
+  storageBackend: "GITHUB" | "SELF_HOSTED";
   visibility: "PUBLIC" | "PRIVATE" | "DRAFT";
   githubOwner: string | null;
   githubRepo: string | null;
@@ -102,6 +103,20 @@ export function CodePanel() {
     try {
       await fetch(`/api/admin/code/${id}`, { method: "DELETE", credentials: "same-origin" });
       await load();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function initLocal(id: string) {
+    if (!confirm("Initialize a self-hosted bare git repository for this project? You will need to git push your code directly to the foundry.")) return;
+    setBusy(true);
+    try {
+      const res = await fetch(`/api/admin/code/${id}/init-local`, { method: "POST", credentials: "same-origin" });
+      if (!res.ok) throw new Error(`Request failed (${res.status})`);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
       setBusy(false);
     }
@@ -323,6 +338,16 @@ export function CodePanel() {
                   >
                     Sync
                   </button>
+                  {repo.storageBackend !== "SELF_HOSTED" ? (
+                    <button
+                      type="button"
+                      onClick={() => void initLocal(repo.id)}
+                      disabled={busy}
+                      className="action-secondary text-xs text-amber-200 disabled:opacity-50"
+                    >
+                      Init Self-Host
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => void remove(repo.id)}

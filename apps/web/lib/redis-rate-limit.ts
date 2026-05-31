@@ -19,7 +19,7 @@ return 1
 `;
 
 type GlobalRedis = typeof globalThis & {
-  __sszVaultRateLimitRedis?: Redis;
+  __sszRedisRateLimit?: Redis;
 };
 
 function getRedisUrl(): string | null {
@@ -27,7 +27,7 @@ function getRedisUrl(): string | null {
   return url || null;
 }
 
-export function isVaultRedisRateLimitConfigured(): boolean {
+export function isRedisRateLimitConfigured(): boolean {
   return Boolean(getRedisUrl());
 }
 
@@ -35,23 +35,23 @@ export function isVaultRedisRateLimitConfigured(): boolean {
  * When `REDIS_URL` is set and this is true, Redis failures return **503** instead of
  * falling back to in-memory limits (`VAULT_REDIS_STRICT=1|true|yes`).
  */
-export function isVaultRedisStrict(): boolean {
+export function isRedisStrict(): boolean {
   const v = process.env.VAULT_REDIS_STRICT?.trim().toLowerCase();
   return v === "1" || v === "true" || v === "yes";
 }
 
-export function getVaultRateLimitRedis(): Redis | null {
+export function getRateLimitRedis(): Redis | null {
   const url = getRedisUrl();
   if (!url) return null;
   const g = globalThis as GlobalRedis;
-  if (!g.__sszVaultRateLimitRedis) {
-    g.__sszVaultRateLimitRedis = new Redis(url, {
+  if (!g.__sszRedisRateLimit) {
+    g.__sszRedisRateLimit = new Redis(url, {
       maxRetriesPerRequest: 2,
       lazyConnect: true,
       enableOfflineQueue: false,
     });
   }
-  return g.__sszVaultRateLimitRedis;
+  return g.__sszRedisRateLimit;
 }
 
 /**
@@ -62,7 +62,7 @@ export async function slidingWindowAllowRedis(
   max: number,
   windowMs: number,
 ): Promise<boolean> {
-  const redis = getVaultRateLimitRedis();
+  const redis = getRateLimitRedis();
   if (!redis) {
     throw new Error("REDIS_URL not configured");
   }
@@ -81,10 +81,10 @@ export async function slidingWindowAllowRedis(
   return res === 1;
 }
 
-export async function pingVaultRateLimitRedis(): Promise<"ok" | "miss" | "error"> {
+export async function pingRateLimitRedis(): Promise<"ok" | "miss" | "error"> {
   if (!getRedisUrl()) return "miss";
   try {
-    const redis = getVaultRateLimitRedis();
+    const redis = getRateLimitRedis();
     if (!redis) return "miss";
     const pong = await redis.ping();
     return pong === "PONG" ? "ok" : "error";

@@ -1,6 +1,8 @@
 import { expect, test } from "@playwright/test";
+import { PrismaClient } from "@prisma/client";
 
 const OWNER_CODE = process.env.E2E_OWNER_CODE ?? "e2e-owner-code";
+const prisma = new PrismaClient();
 
 async function loginOwner(page: import("@playwright/test").Page) {
   await page.goto("/owner/login");
@@ -10,6 +12,34 @@ async function loginOwner(page: import("@playwright/test").Page) {
 }
 
 test.describe("admin dashboard intelligence", () => {
+  test.beforeAll(async () => {
+    // Seed a fake alert to test dismissal
+    await prisma.dashboardAlert.upsert({
+      where: { alertKey: "spike:test-lane:24h" },
+      create: {
+        alertKey: "spike:test-lane:24h",
+        category: "spike",
+        severity: "warn",
+        message: "E2E Test Spike Notice",
+        metadata: JSON.stringify({ href: "/admin", value: 100 }),
+        firstSeenAt: new Date(),
+        lastSeenAt: new Date(),
+      },
+      update: {
+        lastSeenAt: new Date(),
+        acknowledgedAt: null,
+        acknowledgedBy: null,
+      },
+    });
+  });
+
+  test.afterAll(async () => {
+    await prisma.dashboardAlert.deleteMany({
+      where: { alertKey: "spike:test-lane:24h" },
+    });
+    await prisma.$disconnect();
+  });
+
   test("keeps focus when switching timeframe", async ({ page }) => {
     await loginOwner(page);
 
@@ -43,14 +73,13 @@ test.describe("admin dashboard intelligence", () => {
   test("dismisses spike notices", async ({ page }) => {
     await loginOwner(page);
 
-    // This test relies on a spike notice being present.
-    // If one isn't present, we'll just check that it handles gracefully.
     await page.goto("/admin");
+    await expect(page.getByText("E2E Test Spike Notice")).toBeVisible();
+    
     const dismissButton = page.getByRole("button", { name: /dismiss/i }).first();
-    if (await dismissButton.isVisible()) {
-      await dismissButton.click();
-      // Wait for it to disappear or the page to refresh
-      await expect(dismissButton).not.toBeVisible();
-    }
+    await dismissButton.click();
+    
+    // Wait for it to disappear
+    await expect(page.getByText("E2E Test Spike Notice")).not.toBeVisible();
   });
 });

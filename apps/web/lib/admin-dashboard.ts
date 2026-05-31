@@ -364,6 +364,36 @@ export async function getAdminDashboardSummary(window: AdminDashboardWindow = "2
   fixNext.sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
 
   await recordSpikeAlerts(window, spikes, trends);
+
+  // Add Strict Redis Ops alert if configured
+  const { isRedisStrict, pingRateLimitRedis } = await import("@/lib/redis-rate-limit");
+  if (isRedisStrict()) {
+    const redisStatus = await pingRateLimitRedis();
+    if (redisStatus !== "ok") {
+      const alertKey = "infra:redis:strict";
+      await db.dashboardAlert.upsert({
+        where: { alertKey },
+        create: {
+          alertKey,
+          category: "infrastructure",
+          severity: "danger",
+          message: `Strict Redis rate-limiting is failing (status: ${redisStatus}). Application is currently dropping requests with 503s!`,
+          metadata: JSON.stringify({ redisStatus }),
+          firstSeenAt: new Date(),
+          lastSeenAt: new Date(),
+        },
+        update: {
+          severity: "danger",
+          message: `Strict Redis rate-limiting is failing (status: ${redisStatus}). Application is currently dropping requests with 503s!`,
+          metadata: JSON.stringify({ redisStatus }),
+          lastSeenAt: new Date(),
+          acknowledgedAt: null,
+          acknowledgedBy: null,
+        },
+      });
+    }
+  }
+
   const activeAlerts = await listActiveDashboardAlerts();
 
   return {

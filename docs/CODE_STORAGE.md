@@ -29,14 +29,21 @@ Three candidate approaches for storing code directly on SavigeSystemZ.com:
 4. **Size budget:** per-repo cap, total bucket cap, GC for dead branches.
 5. **Webhook intake:** `POST /api/webhooks/github` with HMAC signature (in the M5.4 plan) auto-syncs metadata today; same endpoint extended in M11 to trigger blob sync.
 
-### Decision criteria
+### Decision: Next.js + `git-http-backend` CGI (Self-Hosted Bare Repos)
 
-Pick an option when:
-- Owner confirms that metadata-only (current) is insufficient
-- At least one repo has a concrete need to be hosted here (not on GitHub)
-- Storage cost / ops cost estimate against the marketplace revenue line suggests it's worth operating
+After evaluating the trade-offs, we are moving forward with **Next.js wrapping `git-http-backend`** for the `SELF_HOSTED` storage backend.
 
-Until then: **current state (metadata only) is the decision**.
+**Why:**
+1. **No sidecar required:** We don't need the overhead of Gitea or a separate Docker container just to host git repos.
+2. **Reliability:** `git-http-backend` is the standard Git CGI binary. It fully implements smart HTTP (push/pull/fetch).
+3. **Seamless Auth:** By proxying through a Next.js API route (`/api/git/[repo]/[...path]`), we can intercept requests, validate our existing session cookies (or a vault-style access token for git CLI clients), and then hand off the stream to the local git CGI process.
+4. **Data Protection:** Satisfies the owner's requirement to pull sensitive repos off GitHub to prevent unauthorized scraping or copyright theft. Repos reside exclusively on the foundry's infrastructure.
+
+**Implementation Steps (M11):**
+1. Define a local repository storage path (e.g., `DATA_DIR/repos`).
+2. Implement `app/api/git/[repo]/[...path]/route.ts` using `child_process.spawn("git", ["http-backend"])`.
+3. Add an admin action to `POST /api/admin/code/[id]/init-local` to `git init --bare` the repo on disk and set `storageBackend = SELF_HOSTED`.
+4. Build the public `GET /repos/[slug]` tree/blob viewer reading directly from the local bare repo.
 
 ## References
 

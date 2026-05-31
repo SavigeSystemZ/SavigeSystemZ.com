@@ -18,7 +18,7 @@ const PASSKEY_WINDOW_MS = 60_000;
 const PASSKEY_MAX_PER_IP = 60;
 
 export async function POST(request: Request) {
-  if (!allowAuthRequest(request, "passkey_login_verify", PASSKEY_MAX_PER_IP, PASSKEY_WINDOW_MS)) {
+  if (!(await allowAuthRequest(request, "passkey_login_verify", PASSKEY_MAX_PER_IP, PASSKEY_WINDOW_MS))) {
     return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   }
 

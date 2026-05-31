@@ -1,16 +1,31 @@
 import { getRequestClientIp } from "@/lib/client-ip";
 import { rateLimit } from "@/lib/rate-limit";
+import { isRedisRateLimitConfigured, slidingWindowAllowRedis, isRedisStrict } from "@/lib/redis-rate-limit";
 
 /**
  * Per-IP sliding window limit for authentication-related routes.
- * In-memory only: for multi-instance production, replace with Redis/edge limiter.
+ * Uses Redis if configured; falls back to in-memory otherwise.
  */
-export function allowAuthRequest(
+export async function allowAuthRequest(
   request: Request,
   routeKey: string,
   maxRequests: number,
   windowMs: number = 60_000,
-): boolean {
+): Promise<boolean> {
   const ip = getRequestClientIp(request);
-  return rateLimit(`auth:${routeKey}:${ip}`, maxRequests, windowMs);
+  const logicalKey = `auth:${routeKey}:${ip}`;
+
+  if (isRedisRateLimitConfigured()) {
+    try {
+      return await slidingWindowAllowRedis(logicalKey, maxRequests, windowMs);
+    } catch (e) {
+      if (isRedisStrict()) {
+        console.error("[auth-rate-limit] redis strict mode blocked request due to error:", e);
+        return false;
+      }
+      console.error("[auth-rate-limit] redis error; falling back to in-memory:", e);
+    }
+  }
+
+  return rateLimit(logicalKey, maxRequests, windowMs);
 }

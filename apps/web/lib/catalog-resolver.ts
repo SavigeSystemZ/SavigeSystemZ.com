@@ -36,6 +36,7 @@ export type PublicCodeRepositoryRecord = {
   slug: string;
   name: string;
   description: string | null;
+  storageBackend: "GITHUB" | "SELF_HOSTED";
   githubUrl: string | null;
   githubOwner: string | null;
   githubRepo: string | null;
@@ -150,6 +151,7 @@ type CodeRepositoryRow = {
   name: string;
   description: string | null;
   visibility: string;
+  storageBackend: "GITHUB" | "SELF_HOSTED";
   githubUrl: string | null;
   githubOwner: string | null;
   githubRepo: string | null;
@@ -170,6 +172,7 @@ function mapPublicCodeRepository(row: CodeRepositoryRow | null | undefined): Pub
     slug: row.slug,
     name: row.name,
     description: row.description,
+    storageBackend: row.storageBackend,
     githubUrl: row.githubUrl,
     githubOwner: row.githubOwner,
     githubRepo: row.githubRepo,
@@ -194,6 +197,7 @@ export async function listPublicRepos(): Promise<PublicCodeRepositoryRecord[]> {
         name: true,
         description: true,
         visibility: true,
+        storageBackend: true,
         githubUrl: true,
         githubOwner: true,
         githubRepo: true,
@@ -218,14 +222,19 @@ export async function listPublicRepos(): Promise<PublicCodeRepositoryRecord[]> {
 }
 
 export async function getPublicRepoBySlug(slug: string): Promise<PublicRepositoryDetailRecord | null> {
+  return getEntitledRepoBySlug(slug, null, false);
+}
+
+export async function getEntitledRepoBySlug(slug: string, userId: string | null, isOwner: boolean): Promise<PublicRepositoryDetailRecord | null> {
   try {
     const row = await db.codeRepository.findFirst({
-      where: { slug, visibility: "PUBLIC" },
+      where: { slug },
       select: {
         id: true,
         slug: true,
         name: true,
         description: true,
+        storageBackend: true,
         githubUrl: true,
         githubOwner: true,
         githubRepo: true,
@@ -239,11 +248,46 @@ export async function getPublicRepoBySlug(slug: string): Promise<PublicRepositor
         latestCommitAt: true,
         updatedAt: true,
         visibility: true,
+        applications: {
+          select: { id: true },
+        }
       },
     });
     if (!row) return null;
-    const mapped = mapPublicCodeRepository(row);
-    if (!mapped) return null;
+
+    if (row.visibility === "DRAFT" && !isOwner) return null;
+    
+    if (row.visibility === "PRIVATE" && !isOwner) {
+      if (!userId) return null;
+      if (row.applications.length === 0) return null;
+      const license = await db.license.findFirst({
+        where: {
+          userId,
+          applicationId: { in: row.applications.map((a) => a.id) },
+          status: "ACTIVE",
+        },
+      });
+      if (!license) return null;
+    }
+
+    const mapped = {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      description: row.description,
+      storageBackend: row.storageBackend,
+      githubUrl: row.githubUrl,
+      githubOwner: row.githubOwner,
+      githubRepo: row.githubRepo,
+      defaultBranch: row.defaultBranch,
+      primaryLanguage: row.primaryLanguage,
+      starCount: row.starCount,
+      forkCount: row.forkCount,
+      openIssueCount: row.openIssueCount,
+      latestCommitSha: row.latestCommitSha,
+      latestCommitMessage: row.latestCommitMessage,
+      latestCommitAt: row.latestCommitAt ? row.latestCommitAt.toISOString() : null,
+    };
     return { ...mapped, updatedAt: row.updatedAt.toISOString() };
   } catch {
     return null;
