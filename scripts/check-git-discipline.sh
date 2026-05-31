@@ -19,8 +19,8 @@ WARNINGS=0
 
 # Helper functions
 log_pass() { echo -e "${GREEN}✓${NC} $1"; }
-log_fail() { echo -e "${RED}✗${NC} $1"; ((VIOLATIONS++)); }
-log_warn() { echo -e "${YELLOW}⚠${NC} $1"; ((WARNINGS++)); }
+log_fail() { echo -e "${RED}✗${NC} $1"; ((VIOLATIONS++)) || true; }
+log_warn() { echo -e "${YELLOW}⚠${NC} $1"; ((WARNINGS++)) || true; }
 
 # Check 1: Verify git repository
 check_git_repo() {
@@ -138,7 +138,9 @@ check_no_divergent_branches() {
   # Check each branch for unmerged commits
   local found_divergent=0
   while IFS= read -r branch; do
-    [ "$branch" = "main" ] && continue
+    if [ "$branch" = "main" ]; then
+      continue
+    fi
     
     # Check if branch has unique commits not in main
     local unique_count
@@ -148,11 +150,13 @@ check_no_divergent_branches() {
       log_warn "Branch '$branch' has $unique_count unmerged commits"
       found_divergent=1
     fi
+    true
   done <<< "$branches"
   
   if [ $found_divergent -eq 0 ]; then
     log_pass "No divergent branches detected"
   fi
+  return 0
 }
 
 # Check 7: Verify no protected-branch rules blocking main

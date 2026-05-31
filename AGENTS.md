@@ -9,7 +9,7 @@ Human and AI coding agents: read this before large changes. See also root [`CLAU
 | `.cursor/rules/ssz-*.mdc` | Cursor project rules (namespaced **SavigeSystemZ** pack; see `.cursor/README.md`) |
 | `.cursor/apps/savigesystemz/APP_PACK.md` | Index of the same rule pack |
 | `apps/web/AGENTS.md` | Next.js app–specific agent notes |
-| `_ai_operating_ai_operating_system/` | **`SESSION_RECALL.md`** (full checklist), **`WHERE_LEFT_OFF.md`** (pulse), **`TODO.md`**, **`VISION_AND_ROADMAP.md`** |
+| `_ai_operating_system/` | **`SESSION_RECALL.md`** (full checklist), **`WHERE_LEFT_OFF.md`** (pulse), **`TODO.md`**, **`VISION_AND_ROADMAP.md`** |
 | `docs/DATABASE.md` | Migrations, seed, Postgres path |
 | `docs/SECURITY_HARDENING.md` | Threat model and enforced controls |
 
