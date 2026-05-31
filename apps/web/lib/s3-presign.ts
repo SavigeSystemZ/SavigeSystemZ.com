@@ -2,6 +2,7 @@ import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const DEFAULT_EXPIRES = 300;
+const MAX_EXPIRES = 3600;
 
 /**
  * Returns a time-limited HTTPS URL for GET when AWS credentials and bucket/key are valid.
@@ -22,9 +23,12 @@ export async function presignS3GetUrl(params: {
       Bucket: params.bucket,
       Key: params.key,
     });
-    return await getSignedUrl(client, command, {
-      expiresIn: params.expiresInSeconds ?? DEFAULT_EXPIRES,
-    });
+    // Cap caller-supplied TTL at 1h so a buggy caller cannot mint a 24h URL.
+    const expiresIn = Math.min(
+      Math.max(params.expiresInSeconds ?? DEFAULT_EXPIRES, 1),
+      MAX_EXPIRES,
+    );
+    return await getSignedUrl(client, command, { expiresIn });
   } catch {
     return null;
   }

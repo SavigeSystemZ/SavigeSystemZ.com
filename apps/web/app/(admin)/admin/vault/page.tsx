@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { VaultClientPanel } from "@/components/vault-client-panel";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Vault",
 };

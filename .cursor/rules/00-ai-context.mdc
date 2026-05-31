@@ -1,6 +1,20 @@
 ---
-description: Universal AI Context Handoff
+description: Universal AI Context Handoff for SavigeSystemZ.com
 globs: *
+alwaysApply: true
 ---
+
 # Universal AI Context
-Always review `.ai/PROJECT_RULES.md` and `.ai/CURRENT_STATUS.md` to understand the current project state, rules, and objectives before generating code or modifying files. When finishing a major task, remind the user to update `.ai/CURRENT_STATUS.md`.
+
+Before generating or modifying code, load the project state in this order:
+
+1. **Root `CLAUDE.md`** — non-negotiable rules and stack reference.
+2. **`_ai_operating_system/WHERE_LEFT_OFF.md`** — short pulse: timestamp, status, next actionable step.
+3. **`_ai_operating_system/SESSION_RECALL.md`** — full done/not-done checklist for current milestones.
+4. **`_ai_operating_system/TODO.md`** — prioritized P0/P1/P2 backlog.
+5. **`_ai_operating_system/PLAN.md`** — current execution phase.
+6. Workspace-local: **`apps/web/AGENTS.md`** and **`apps/web/CLAUDE.md`** when touching the web app.
+
+When finishing a major task, update `_ai_operating_system/WHERE_LEFT_OFF.md`, `SESSION_RECALL.md`, and `VALIDATION_LOG.md` (if you ran `pnpm check:all`). Legacy `.ai/PROJECT_RULES.md` / `.ai/CURRENT_STATUS.md` are still consulted for repo-wide invariants.
+
+**Canonical local dev URL:** `http://127.0.0.1:43907/`. Never hardcode port 3000 (collides with the local Immortality app).

@@ -6,6 +6,18 @@ vi.mock("@/lib/checkout-complete", () => ({
   completePurchaseFromSessionId: vi.fn(async () => ({ ok: true })),
 }));
 
+vi.mock("@/lib/db", () => ({
+  db: {
+    stripeWebhookEvent: {
+      create: vi.fn(async () => ({})),
+      update: vi.fn(async () => ({})),
+    },
+    purchase: {
+      updateMany: vi.fn(async () => ({ count: 0 })),
+    },
+  },
+}));
+
 import { completePurchaseFromSessionId } from "@/lib/checkout-complete";
 
 describe("processStripeWebhookEvent", () => {

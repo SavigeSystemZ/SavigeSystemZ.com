@@ -1,3 +1,121 @@
 #!/usr/bin/env bash
+# AppRun — entrypoint for the SavigeSystemZ.com AppImage.
+#
+# Behavior:
+#   1. Resolve the repository on disk (env override → $HOME/.MyAppZ/SavigeSystemZ.com).
+#   2. Take a single-instance lock so double-clicks do not spawn a second dev
+#      server (which would race for the SQLite/Postgres connection).
+#   3. If port 43907 is already bound, just open the browser and exit.
+#   4. Otherwise spawn `pnpm dev:web`, poll the port for up to 30 s, then open
+#      the browser. The script `wait`s on the dev process so closing the
+#      launcher (or `kill`ing it) tears the dev server down too.
+#
+# Exit codes:
+#   0  — success (browser opened)
+#   1  — repository not found
+#   2  — required tool missing (node / pnpm / xdg-open)
+#   3  — port did not come up within timeout
 set -euo pipefail
-exec /opt/savigesystemz/start.sh
+
+readonly PORT="${SITE_PORT:-43907}"
+readonly URL="http://127.0.0.1:${PORT}/"
+readonly LOCK_FILE="${XDG_RUNTIME_DIR:-/tmp}/savigesystemz.lock"
+readonly LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/savigesystemz"
+readonly LOG_FILE="${LOG_DIR}/dev.log"
+readonly TIMEOUT_SECONDS=30
+
+notify() {
+  local title="$1" body="$2"
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send --app-name="SavigeSystemZ" "${title}" "${body}" || true
+  fi
+  printf '[savigesystemz] %s — %s\n' "${title}" "${body}" >&2
+}
+
+resolve_repo() {
+  if [[ -n "${SAVIGESYSTEMZ_REPO:-}" && -d "${SAVIGESYSTEMZ_REPO}" ]]; then
+    printf '%s\n' "${SAVIGESYSTEMZ_REPO}"
+    return 0
+  fi
+  local default="${HOME}/.MyAppZ/SavigeSystemZ.com"
+  if [[ -d "${default}" ]]; then
+    printf '%s\n' "${default}"
+    return 0
+  fi
+  return 1
+}
+
+probe_port() {
+  # POSIX-portable port probe via /dev/tcp (bash builtin) — no nc dependency.
+  (echo > "/dev/tcp/127.0.0.1/${PORT}") >/dev/null 2>&1
+}
+
+require_tools() {
+  local missing=()
+  for tool in node pnpm xdg-open; do
+    command -v "${tool}" >/dev/null 2>&1 || missing+=("${tool}")
+  done
+  if (( ${#missing[@]} > 0 )); then
+    notify "Missing tools" "Required: ${missing[*]}. Install via apt or your package manager."
+    exit 2
+  fi
+}
+
+main() {
+  local repo
+  if ! repo="$(resolve_repo)"; then
+    notify "Repository not found" \
+      "Set SAVIGESYSTEMZ_REPO=/path/to/SavigeSystemZ.com or clone to \$HOME/.MyAppZ/SavigeSystemZ.com"
+    exit 1
+  fi
+
+  mkdir -p "${LOG_DIR}"
+
+  # Single-instance lock. flock returns immediately (-n) if another launcher
+  # already holds it, in which case we simply open the browser and exit.
+  exec 9>"${LOCK_FILE}"
+  if ! flock -n 9; then
+    notify "Already running" "Another launcher is active — opening browser."
+    xdg-open "${URL}" >/dev/null 2>&1 &
+    exit 0
+  fi
+
+  # Fast path: dev server already up (started by another tool / terminal).
+  if probe_port; then
+    xdg-open "${URL}" >/dev/null 2>&1 &
+    exit 0
+  fi
+
+  require_tools
+
+  # Spawn dev server. Detach stdin; pipe both streams to the rolling log.
+  cd "${repo}"
+  : > "${LOG_FILE}"
+  pnpm dev:web </dev/null >>"${LOG_FILE}" 2>&1 &
+  local dev_pid=$!
+
+  # Best-effort: tear down the dev server if the launcher is killed.
+  trap 'kill "${dev_pid}" 2>/dev/null || true' EXIT INT TERM
+
+  # Poll for the port up to TIMEOUT_SECONDS.
+  local waited=0
+  until probe_port; do
+    if (( waited >= TIMEOUT_SECONDS )); then
+      notify "Dev server timeout" "Did not bind ${PORT} within ${TIMEOUT_SECONDS}s. See ${LOG_FILE}."
+      exit 3
+    fi
+    if ! kill -0 "${dev_pid}" 2>/dev/null; then
+      notify "Dev server exited" "pnpm dev:web exited before binding. See ${LOG_FILE}."
+      exit 3
+    fi
+    sleep 1
+    waited=$((waited + 1))
+  done
+
+  xdg-open "${URL}" >/dev/null 2>&1 &
+
+  # Block on the dev process so closing the launcher kills the server.
+  wait "${dev_pid}"
+}
+
+main "$@"

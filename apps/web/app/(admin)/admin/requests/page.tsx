@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { ProjectRequestsPanel } from "@/components/admin/project-requests-panel";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Project requests",
 };

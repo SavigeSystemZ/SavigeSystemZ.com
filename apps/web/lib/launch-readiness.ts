@@ -75,6 +75,99 @@ export function evaluateApplicationLaunchReadiness(input: {
   };
 }
 
+export type ProductionEnvCheck = {
+  key: string;
+  label: string;
+  status: "ok" | "missing" | "weak";
+  detail?: string;
+};
+
+export type ProductionLaunchReadiness = {
+  ready: boolean;
+  checks: ProductionEnvCheck[];
+  blockers: ProductionEnvCheck[];
+};
+
+/**
+ * Evaluate whether the runtime environment is configured for a production
+ * launch. Reads only `process.env` — no DB, no network — so it is safe to
+ * call at request time on a Server Component.
+ *
+ * The /admin/launch page surfaces the result and gates the production
+ * "Go live" affordance until every check is `ok`.
+ */
+export function evaluateProductionLaunchReadiness(
+  env: NodeJS.ProcessEnv = process.env,
+): ProductionLaunchReadiness {
+  const checks: ProductionEnvCheck[] = [
+    requiredSecret(env, "OWNER_LOGIN_SECRET", "Owner session signing key", 32),
+    requiredSecret(env, "OWNER_ACCESS_CODE", "Owner login access code", 12),
+    requiredString(env, "DATABASE_URL", "Database connection string"),
+    requiredString(env, "SITE_URL", "Public site URL"),
+    requiredSecret(env, "STRIPE_SECRET_KEY", "Stripe secret key", 16),
+    requiredSecret(env, "STRIPE_WEBHOOK_SECRET", "Stripe webhook signing secret", 16),
+    requiredString(env, "AWS_S3_RELEASE_BUCKET", "S3 release bucket"),
+    requiredString(env, "AWS_S3_VAULT_BUCKET", "S3 vault bucket"),
+    requiredSecret(env, "AWS_ACCESS_KEY_ID", "AWS access key id", 16),
+    requiredSecret(env, "AWS_SECRET_ACCESS_KEY", "AWS secret access key", 32),
+    requiredString(env, "AWS_REGION", "AWS region"),
+    optionalSecret(env, "GITHUB_WEBHOOK_SECRET", "GitHub webhook secret", 16),
+    optionalSecret(env, "GITHUB_TOKEN", "GitHub API token (for private repos / higher rate limit)", 8),
+  ];
+
+  const blockers = checks.filter((c) => c.status !== "ok" && !c.label.startsWith("GitHub"));
+  return {
+    ready: blockers.length === 0,
+    checks,
+    blockers,
+  };
+}
+
+function requiredString(env: NodeJS.ProcessEnv, key: string, label: string): ProductionEnvCheck {
+  const value = env[key];
+  if (!value || value.trim().length === 0) {
+    return { key, label, status: "missing", detail: "Not set." };
+  }
+  return { key, label, status: "ok" };
+}
+
+function requiredSecret(
+  env: NodeJS.ProcessEnv,
+  key: string,
+  label: string,
+  minLength: number,
+): ProductionEnvCheck {
+  const value = env[key];
+  if (!value || value.trim().length === 0) {
+    return { key, label, status: "missing", detail: "Not set." };
+  }
+  if (value === "change-me-in-production" || value.length < minLength) {
+    return {
+      key,
+      label,
+      status: "weak",
+      detail: `Must be at least ${minLength} characters and not the placeholder.`,
+    };
+  }
+  return { key, label, status: "ok" };
+}
+
+function optionalSecret(
+  env: NodeJS.ProcessEnv,
+  key: string,
+  label: string,
+  minLength: number,
+): ProductionEnvCheck {
+  const value = env[key];
+  if (!value || value.trim().length === 0) {
+    return { key, label, status: "missing", detail: "Optional — recommended for production." };
+  }
+  if (value.length < minLength) {
+    return { key, label, status: "weak", detail: `Should be at least ${minLength} characters.` };
+  }
+  return { key, label, status: "ok" };
+}
+
 export function evaluateArchiveLaunchReadiness(input: {
   stageLabel?: string | null;
   artifactFormat?: string | null;

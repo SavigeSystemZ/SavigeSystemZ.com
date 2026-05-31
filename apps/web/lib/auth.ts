@@ -10,9 +10,23 @@ export type AuthContext = {
 
 const SESSION_COOKIE = "sz_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
+const DEFAULT_SECRET = "change-me-in-production";
+const MIN_SECRET_LENGTH = 32;
+
+// Fail-fast on misconfigured production deploys: an unset or default
+// OWNER_LOGIN_SECRET would forge owner sessions, so refuse to boot rather
+// than silently accept a weak secret.
+if (process.env.NODE_ENV === "production") {
+  const secret = process.env.OWNER_LOGIN_SECRET;
+  if (!secret || secret === DEFAULT_SECRET || secret.length < MIN_SECRET_LENGTH) {
+    throw new Error(
+      `OWNER_LOGIN_SECRET must be set to a unique value of at least ${MIN_SECRET_LENGTH} characters in production.`,
+    );
+  }
+}
 
 function getSessionSecret(): string {
-  return process.env.OWNER_LOGIN_SECRET ?? "change-me-in-production";
+  return process.env.OWNER_LOGIN_SECRET ?? DEFAULT_SECRET;
 }
 
 function sign(value: string): string {

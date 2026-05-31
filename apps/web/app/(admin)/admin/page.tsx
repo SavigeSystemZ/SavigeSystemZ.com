@@ -3,12 +3,15 @@ import Link from "next/link";
 import { CommandPaletteRow, Panel, SectionHeading, StatusChip } from "@savige/ui";
 import { ApplicationManager } from "@/components/admin/application-manager";
 import { AdminAutoRefresh } from "@/components/admin/auto-refresh";
+import { DashboardSpikeNotices } from "@/components/admin/dashboard-spike-notices";
 import { PasskeyRegistration } from "@/components/admin/passkey-registration";
 import {
   type AdminDashboardFocus,
   type AdminDashboardWindow,
   getAdminDashboardSummary,
 } from "@/lib/admin-dashboard";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Overview",
@@ -132,6 +135,8 @@ export default async function AdminPage(props: AdminPageProps) {
           description="This is the private operating surface behind the flagship site: application narrative, release operations, moderation, audit visibility, passkeys, and vault artifacts."
         />
       </Panel>
+
+      <DashboardSpikeNotices alerts={dashboard.activeAlerts} />
 
       <section className="mt-6 grid gap-4 xl:grid-cols-6">
         {quickPanels.map((panel) => (

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe-client";
-import { processStripeWebhookEvent } from "@/lib/stripe-webhook-processor";
+import {
+  claimStripeWebhookEvent,
+  processStripeWebhookEvent,
+} from "@/lib/stripe-webhook-processor";
 
 export async function POST(request: Request) {
   const stripe = getStripe();
@@ -21,6 +24,14 @@ export async function POST(request: Request) {
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch {
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
+  }
+
+  // Idempotency: claim this event.id; if Stripe retries (network glitch, our
+  // 5xx, etc.) the second delivery short-circuits here without re-running the
+  // mutation. We still return 200 so Stripe stops retrying.
+  const claimed = await claimStripeWebhookEvent(event);
+  if (!claimed) {
+    return NextResponse.json({ received: true, idempotent: true });
   }
 
   await processStripeWebhookEvent(event);

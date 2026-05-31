@@ -1,12 +1,59 @@
 name: packaging
 
 on:
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
   linux-packages:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      - run: chmod +x installer/scripts/build-packages.sh
-      - run: installer/scripts/build-packages.sh
+
+      - name: Install appimagetool
+        run: |
+          set -e
+          curl -L -o appimagetool \
+            https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          chmod +x appimagetool
+          sudo mv appimagetool /usr/local/bin/appimagetool
+          # GitHub runners no longer ship libfuse2; use the extract-and-run path.
+          echo 'APPIMAGETOOL=/usr/local/bin/appimagetool --appimage-extract-and-run' >> "$GITHUB_ENV"
+
+      - name: Determine version
+        run: |
+          set -e
+          REF="${GITHUB_REF##*/}"
+          if [[ "$REF" == v* ]]; then
+            echo "VERSION=${REF#v}" >> "$GITHUB_ENV"
+          else
+            echo "VERSION=$(node -p "require('./package.json').version")" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build AppImage and .deb
+        run: |
+          chmod +x installer/scripts/build-packages.sh
+          installer/scripts/build-packages.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: savigesystemz-linux-${{ env.VERSION }}
+          path: |
+            dist/packages/SavigeSystemZ-*-x86_64.AppImage
+            dist/packages/savigesystemz_*_all.deb
+            dist/packages/SHA256SUMS
+          if-no-files-found: error
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/packages/SavigeSystemZ-*-x86_64.AppImage
+            dist/packages/savigesystemz_*_all.deb
+            dist/packages/SHA256SUMS

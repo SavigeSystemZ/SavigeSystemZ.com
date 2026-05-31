@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   const forbidden = requireOwner(context);
   if (forbidden) return forbidden;
 
-  const rateBlocked = await vaultMutationGate(request);
+  const rateBlocked = await vaultMutationGate(request, context.userId);
   if (rateBlocked) return rateBlocked;
 
   const result = await presignVaultPutUrl(context.userId!);

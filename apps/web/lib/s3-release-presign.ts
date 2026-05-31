@@ -4,6 +4,30 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const DEFAULT_PUT_EXPIRES = 900;
 
+// Allow-list of upload content types for the releases bucket. Reject anything
+// outside this set so an admin token leak cannot be used to host arbitrary
+// browser-executable files (HTML, JS, SVG with active content, etc.).
+const ALLOWED_CONTENT_TYPES = new Set<string>([
+  "application/octet-stream",
+  "application/zip",
+  "application/x-zip",
+  "application/x-zip-compressed",
+  "application/gzip",
+  "application/x-gzip",
+  "application/x-tar",
+  "application/x-xz",
+  "application/x-7z-compressed",
+  "application/json",
+  "text/plain",
+  "application/x-debian-package",
+  "application/vnd.appimage",
+]);
+
+export function isAllowedReleaseContentType(value: string | null | undefined): boolean {
+  if (!value) return true; // omitted → S3 defaults to application/octet-stream, fine
+  return ALLOWED_CONTENT_TYPES.has(value.toLowerCase());
+}
+
 export function getReleaseS3Bucket(): string | null {
   const bucket = process.env.AWS_S3_RELEASE_BUCKET?.trim();
   if (!bucket) return null;
@@ -53,6 +77,7 @@ export async function presignReleaseAssetPutUrl(params: {
 } | null> {
   const bucket = getReleaseS3Bucket();
   if (!bucket) return null;
+  if (!isAllowedReleaseContentType(params.contentType)) return null;
 
   const region = process.env.AWS_REGION ?? "us-east-1";
   const safeFileName = sanitizeFileName(params.fileName);

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { ReleaseManager } from "@/components/admin/release-manager";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Releases",
 };

@@ -1,16 +1,32 @@
 ---
-description: "ssz — SavigeSystemZ.com monorepo (pnpm, CI, DB, secrets)"
+description: "ssz — SavigeSystemZ.com monorepo (pnpm 10, Turborepo, Postgres, CI, secrets)"
 alwaysApply: true
 ---
 
 # SavigeSystemZ.com — monorepo
 
-**Namespace `ssz-`:** Rules in this repo apply only when the workspace root is **`SavigeSystemZ.com`** (not the parent `MyAppZ` folder). See `.cursor/README.md`.
+**Namespace `ssz-`:** Applies only when the workspace root is **`SavigeSystemZ.com`** (not the parent `MyAppZ` folder).
 
-- **Package manager:** `pnpm` only (see root `package.json` `packageManager`).
-- **Web app:** `apps/web` (Next.js 16 App Router). Shared libs: `packages/*`.
-- **Before PR / merge:** run `pnpm check:all` from repo root (`lint`, `typecheck`, `test`, `build`).
-- **Web E2E:** `pnpm --filter web test:e2e` with `DATABASE_URL=file:./dev.db` (→ `apps/web/prisma/dev.db`), `CI=1` for deterministic Playwright.
-- **DB:** Prefer `prisma migrate deploy` + `prisma db seed`, not `db push`, for anything shared or CI. See `docs/DATABASE.md`.
-- **Secrets:** Never commit `.env*`, `*.db`, or real keys. Use `apps/web/.env.example` as template.
-- **License:** MIT — see root `LICENSE`.
+## Stack & layout
+- **Package manager:** pnpm 10.x (pinned in root `package.json` `packageManager`). No npm, no yarn.
+- **Build orchestrator:** Turborepo (`turbo.json`). Use `pnpm --filter <pkg>` for scoped commands.
+- **Workspaces:**
+  - `apps/web` — Next.js 16 App Router (the website).
+  - `packages/{ai,config,domain,security,ui}` — shared libs.
+  - `modules/{admin,ai,auth,catalog,creator-submissions,payments,project-requests,releases,reviews,vault}` — domain contracts.
+  - `services/workers` — background pipeline shell.
+  - `scripts/` — `dev-web.mjs`, `build-web.mjs`, `dev-postgres.sh`, `dev-sqlite.sh`, `full-cycle.sh`.
+
+## Local dev
+- **Canonical port: 43907.** `pnpm dev:web` resolves `SITE_PORT` env → 43907 → random in 43000–44999. Bind 127.0.0.1 only.
+- **Database:** Postgres is the default and matches production. Start with `./scripts/dev-postgres.sh` (Docker on `localhost:5433`, db `savige`, user `ssz`). SQLite (`./scripts/dev-sqlite.sh`) is a quick fallback only.
+- **Desktop launcher:** `installer/desktop/install-desktop-launcher.sh` for the dev shortcut; packaged AppImage/.deb pipeline at `installer/packaging/` and `installer/scripts/build-packages.sh`.
+
+## Quality gate
+- **Before PR / merge:** `pnpm check:all` at the repo root (`lint`, `typecheck`, `test`, `build`) must be green.
+- **E2E:** `pnpm --filter web test:e2e` with `DATABASE_URL=postgresql://ssz:dev@localhost:5433/savige` and owner secrets. `CI=1` for deterministic Playwright.
+
+## DB & secrets
+- **Migrations:** `prisma migrate dev --name <descriptive>` locally; `prisma migrate deploy` in CI/prod. **Never** `prisma db push` for shared schema.
+- **Secrets:** Never commit `.env*`, `*.db`, or real keys. Use `apps/web/.env.example` as the only template. Compose env at `infra/.env.example`.
+- **License:** MIT (root `LICENSE`).

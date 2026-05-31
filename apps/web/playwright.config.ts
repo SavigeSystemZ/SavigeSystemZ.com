@@ -13,7 +13,10 @@ export default defineConfig({
   use: {
     baseURL: `http://127.0.0.1:${E2E_PORT}`,
     trace: "on-first-retry",
+    screenshot: "only-on-failure",
+    video: "retain-on-failure",
   },
+  reporter: process.env.CI ? [["github"], ["list"]] : [["list"]],
   webServer: {
     command: `pnpm exec next dev --hostname 127.0.0.1 --port ${E2E_PORT}`,
     url: `http://127.0.0.1:${E2E_PORT}`,

@@ -18,4 +18,29 @@ describe("markdown render sanitization helpers", () => {
       '<a href="https://safe.example" >safe</a>',
     );
   });
+
+  it("rejects non-http(s) hrefs", () => {
+    expect(isSafeHref("data:text/html,<script>alert(1)</script>")).toBe(false);
+    expect(isSafeHref("file:///etc/passwd")).toBe(false);
+    expect(isSafeHref("ftp://example.com/x")).toBe(false);
+    expect(isSafeHref("mailto:a@b.c")).toBe(false);
+    expect(isSafeHref("//example.com")).toBe(false);
+    expect(isSafeHref("/relative")).toBe(false);
+    expect(isSafeHref("")).toBe(false);
+  });
+
+  it("strips mixed-case script tags and multiline payloads", () => {
+    expect(sanitizeLine('before<ScRiPt>alert(1)</ScRiPt>after')).toBe("beforeafter");
+    expect(sanitizeLine('a<script\n>x</script\n>b')).toBe("ab");
+  });
+
+  it("strips event handlers with single quotes and unusual whitespace", () => {
+    expect(sanitizeLine("<div ONLOAD = 'do()' >x</div>")).toBe("<div  >x</div>");
+    expect(sanitizeLine('<img src="ok" onerror="boom()">')).toBe('<img src="ok" >');
+  });
+
+  it("does not mistake plain text for tags", () => {
+    expect(sanitizeLine("a < b && c > d")).toBe("a < b && c > d");
+    expect(sanitizeLine("function on(x) { return x; }")).toBe("function on(x) { return x; }");
+  });
 });

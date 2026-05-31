@@ -3,14 +3,26 @@ import { db } from "@/lib/db";
 import { getAuthContext, requireOwner } from "@/lib/auth";
 import { updateVersionSchema } from "@/lib/validation";
 import { writeAuditLog } from "@/lib/audit";
+import { readJsonBody } from "@/lib/json-body";
+
+const MAX_BODY_BYTES = 64 * 1024;
 
 export async function PATCH(request: Request, props: { params: Promise<{ id: string }> }) {
   const context = await getAuthContext();
   const forbidden = requireOwner(context);
   if (forbidden) return forbidden;
   const { id } = await props.params;
-  const payload = await request.json();
-  const parsed = updateVersionSchema.safeParse(payload);
+  const body = await readJsonBody(request, MAX_BODY_BYTES);
+  if (!body.ok) {
+    if (body.reason === "too_large") {
+      return NextResponse.json(
+        { error: "payload_too_large", limitBytes: body.limitBytes, sawBytes: body.sawBytes },
+        { status: 413 },
+      );
+    }
+    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+  }
+  const parsed = updateVersionSchema.safeParse(body.data);
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid_payload", issues: parsed.error.issues }, { status: 400 });
   }

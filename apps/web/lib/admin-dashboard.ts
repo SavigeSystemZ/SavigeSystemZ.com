@@ -22,6 +22,33 @@ type AdminTrend = {
   direction: "up" | "down" | "flat";
 };
 
+export type AdminDashboardAlert = {
+  id: string;
+  alertKey: string;
+  category: string;
+  severity: "info" | "warn" | "danger";
+  message: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  metadata: Record<string, unknown> | null;
+};
+
+type SpikeLane = "repoErrorInflow" | "moderationInflow" | "requestInflow" | "auditAnomalies";
+
+const SPIKE_LANE_LABEL: Record<SpikeLane, string> = {
+  repoErrorInflow: "Repo sync errors",
+  moderationInflow: "Moderation inflow",
+  requestInflow: "Project request inflow",
+  auditAnomalies: "Audit anomaly bursts",
+};
+
+const SPIKE_LANE_HREF: Record<SpikeLane, string> = {
+  repoErrorInflow: "/admin?focus=repos",
+  moderationInflow: "/admin?focus=moderation",
+  requestInflow: "/admin?focus=requests",
+  auditAnomalies: "/admin?focus=audit",
+};
+
 export type AdminDashboardSummary = {
   window: AdminDashboardWindow;
   generatedAt: string;
@@ -31,6 +58,7 @@ export type AdminDashboardSummary = {
   pendingRequestCount: number;
   recentAuditAnomalyCount: number;
   fixNext: AdminFixNextItem[];
+  activeAlerts: AdminDashboardAlert[];
   trends: {
     repoErrorInflow: AdminTrend;
     moderationInflow: AdminTrend;
@@ -335,6 +363,9 @@ export async function getAdminDashboardSummary(window: AdminDashboardWindow = "2
 
   fixNext.sort((a, b) => severityRank(b.severity) - severityRank(a.severity));
 
+  await recordSpikeAlerts(window, spikes, trends);
+  const activeAlerts = await listActiveDashboardAlerts();
+
   return {
     window,
     generatedAt: new Date().toISOString(),
@@ -344,6 +375,7 @@ export async function getAdminDashboardSummary(window: AdminDashboardWindow = "2
     pendingRequestCount,
     recentAuditAnomalyCount,
     fixNext: fixNext.slice(0, 8),
+    activeAlerts,
     trends,
     spikes,
     drilldowns: {
@@ -381,3 +413,92 @@ export async function getAdminDashboardSummary(window: AdminDashboardWindow = "2
     },
   };
 }
+
+function spikeSeverity(trend: AdminTrend): "info" | "warn" | "danger" {
+  if (trend.delta >= 5 || trend.current >= 10) return "danger";
+  if (trend.delta >= 3 || trend.current >= 5) return "warn";
+  return "info";
+}
+
+function spikeMessage(lane: SpikeLane, trend: AdminTrend, window: AdminDashboardWindow): string {
+  const label = SPIKE_LANE_LABEL[lane];
+  const deltaText = trend.delta > 0 ? `+${trend.delta} vs prior ${window}` : `${trend.delta} vs prior ${window}`;
+  return `${label}: ${trend.current} in last ${window} (${deltaText}).`;
+}
+
+async function recordSpikeAlerts(
+  window: AdminDashboardWindow,
+  spikes: AdminDashboardSummary["spikes"],
+  trends: AdminDashboardSummary["trends"],
+): Promise<void> {
+  const lanes: SpikeLane[] = ["repoErrorInflow", "moderationInflow", "requestInflow", "auditAnomalies"];
+  const now = new Date();
+  for (const lane of lanes) {
+    if (!spikes[lane]) continue;
+    const trend = trends[lane];
+    const alertKey = `spike:${lane}:${window}`;
+    const severity = spikeSeverity(trend);
+    const message = spikeMessage(lane, trend, window);
+    const metadata = JSON.stringify({
+      lane,
+      window,
+      current: trend.current,
+      previous: trend.previous,
+      delta: trend.delta,
+      href: SPIKE_LANE_HREF[lane],
+    });
+    // Re-firing the same spike updates lastSeenAt + clears any prior ack so
+    // the operator sees the recurrence; firstSeenAt is preserved.
+    await db.dashboardAlert.upsert({
+      where: { alertKey },
+      create: {
+        alertKey,
+        category: "spike",
+        severity,
+        message,
+        metadata,
+        firstSeenAt: now,
+        lastSeenAt: now,
+      },
+      update: {
+        severity,
+        message,
+        metadata,
+        lastSeenAt: now,
+        acknowledgedAt: null,
+        acknowledgedBy: null,
+      },
+    });
+  }
+}
+
+export async function listActiveDashboardAlerts(): Promise<AdminDashboardAlert[]> {
+  const rows = await db.dashboardAlert.findMany({
+    where: { acknowledgedAt: null },
+    orderBy: [{ lastSeenAt: "desc" }],
+    take: 12,
+  });
+  return rows.map((row) => {
+    let metadata: Record<string, unknown> | null = null;
+    if (row.metadata) {
+      try {
+        metadata = JSON.parse(row.metadata) as Record<string, unknown>;
+      } catch {
+        metadata = null;
+      }
+    }
+    const severity: AdminDashboardAlert["severity"] =
+      row.severity === "danger" || row.severity === "warn" ? row.severity : "info";
+    return {
+      id: row.id,
+      alertKey: row.alertKey,
+      category: row.category,
+      severity,
+      message: row.message,
+      firstSeenAt: row.firstSeenAt.toISOString(),
+      lastSeenAt: row.lastSeenAt.toISOString(),
+      metadata,
+    };
+  });
+}
+

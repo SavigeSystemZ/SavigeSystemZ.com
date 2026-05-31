@@ -2,6 +2,14 @@ Package: savigesystemz
 Version: 0.1.0
 Section: web
 Priority: optional
-Architecture: amd64
+Architecture: all
+Depends: nodejs (>= 20), libnotify-bin, xdg-utils, bash (>= 5)
+Recommends: pnpm
 Maintainer: Michael Spaulding <mtspaulding87@gmail.com>
-Description: SavigeSystemZ desktop launcher and web platform package scaffold
+Homepage: https://savigesystemz.com
+Description: SavigeSystemZ desktop launcher
+ Smart launcher for the SavigeSystemZ.com Next.js dev server. Resolves the
+ repository on disk (SAVIGESYSTEMZ_REPO env or $HOME/.MyAppZ/SavigeSystemZ.com),
+ acquires a single-instance lock to prevent duplicate processes, spawns
+ pnpm dev:web on port 43907, waits for the port to bind, and opens the
+ default browser. Useful for one-click local development sessions.

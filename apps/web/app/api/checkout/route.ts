@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getStripe } from "@/lib/stripe-client";
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
   const stripe = getStripe();
 
   if (!stripe) {
-    const sessionId = `cs_mock_${randomBytes(16).toString("hex")}`;
+    const sessionId = `cs_mock_${randomUUID().replace(/-/g, "")}`;
     await db.purchase.create({
       data: {
         stripeCheckoutSessionId: sessionId,

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { ArchiveManager } from "@/components/admin/archive-manager";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Archive",
 };

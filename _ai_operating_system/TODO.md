@@ -12,6 +12,16 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Code module tests:** 10 unit tests (`tests/unit/code-repository.test.ts` + `tests/unit/github-client.test.ts`), 6 E2E (`tests/e2e/admin-code.spec.ts`). All green.
 - [ ] **Owner uploads live:** configure real S3 buckets/credentials and verify direct upload from release/media/launch composer surfaces.
 - [ ] **Manual /admin/code round-trip:** owner to connect their own GitHub repo in-browser and confirm UX.
+- [x] **M7 slice 6 — dismissible spike notices + ack state:** `lib/admin-dashboard.ts` records spike alerts; `components/admin/dashboard-spike-notices.tsx` renders dismissible cards on `/admin`; ack route exists at `/api/admin/dashboard/acknowledge` with rate limit + audit log.
+- [x] **Public `/repos` index page:** ranks PUBLIC code repositories by latest commit; links to existing `/repos/[slug]` detail page.
+- [x] **Admin JSON size limits sweep:** all admin POST/PATCH JSON routes now use `readJsonBody` with per-route caps (8 KB → 256 KB).
+- [x] **README sanitizer hardening:** mixed-case + multiline `<script>` tags, single-quoted/unquoted event handlers, non-http(s) protocols all rejected; fixtures in `tests/unit/markdown-render.test.ts`.
+- [ ] **Stripe REFUNDED status:** add `REFUNDED` to `PurchaseStatus` enum + migration; wire `POST /api/admin/purchases/[id]/refund` calling Stripe `refunds.create` + audit log.
+- [ ] **Checkout transaction wrap:** `lib/checkout-complete.ts` license-grant + purchase-update should be a single `db.$transaction` to avoid the License-granted-but-Purchase-not-completed window.
+- [ ] **GitHub README rate-limit + sync debounce:** `lib/github-client.ts` README fetcher + per-repo sync should debounce to prevent burst calls.
+- [ ] **Audit-log retention:** delete or archive `AuditLog` rows older than 90 days (cron or pg_partman).
+- [ ] **E2E coverage gaps:** `/repos` index, spike-notice dismiss flow, admin publish flows.
+- [ ] **S3 vault scan Lambda:** wire `infra/s3-vault-scan-lambda/` to vault bucket S3 events for AV/YARA scanning (blocked: AWS deploy access).
 
 ## P1 — product quality and coverage
 
@@ -30,7 +40,7 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **M7 slice 3:** queue trend snapshots (current vs previous window deltas) and inline quick actions shipped across admin drill-down lanes.
 - [x] **M7 slice 4:** admin dashboard E2E coverage landed for window/focus trend rendering; fix-next `/admin` deep links now preserve dashboard window+focus context.
 - [x] **M7 slice 5:** dashboard freshness telemetry (`last updated` + optional `30s` auto-refresh) and trend-threshold spike highlighting shipped on `/admin`.
-- [ ] **Next actionable — M7 slice 6:** add operator alert ergonomics (dismissible spike notices + audit/burst acknowledgment state) and optional webhook/notification fanout hooks.
+- [~] **M7 slice 6 — operator alert ergonomics (in progress, 2026-04-27):** schema (`DashboardAlert` model + migration `0005`) and `POST /api/admin/dashboard/acknowledge` route landed; component (`components/admin/dashboard-spike.tsx`) and wiring into `lib/admin-dashboard.ts` deferred — those source files were root-owned at session time and could not be edited until `sudo chown -R whyte:whyte` runs. Resume by reading `lib/admin-dashboard.ts`, adding alert-emission on spike trends, then a `<DashboardSpike>` component that renders dismissible pills calling the acknowledge route.
 - [ ] **Code module polish (execution-ready, see `PROMPT_PACK.md` Part II):**
   - [x] **M5.1** — Visibility toggle in `/admin/code` (done: PATCH supports `visibility`, UI select, `code.repository.visibility` audit)
   - [x] **M5.2** — "Sync all" batch action (done: `/api/admin/code/sync-all`, serial sync, `code.repository.sync-all` audit, UI status feedback)
@@ -48,10 +58,31 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 ## P3 — M11 self-hosted code storage (new milestone)
 
-- [ ] **Backend decision:** evaluate Gitea sidecar container vs. S3-mirrored bare-repo approach. Capture trade-offs in `docs/CODE_STORAGE.md`.
+- [x] **Schema stub (2026-04-27):** `CodeRepositoryStorageBackend` enum (`GITHUB | SELF_HOSTED`) + `CodeRepository.storageBackend` column with `GITHUB` default in migration `0005_dashboard_alert_and_code_storage_backend`. Avoids a future migration ordering churn when self-hosted backend lands.
+- [ ] **Backend decision:** evaluate Gitea sidecar container vs. `isomorphic-git` over S3 bare-repo approach. Capture trade-offs in `docs/CODE_STORAGE.md`.
 - [ ] **Git hosting surface:** public `GET /repos/<slug>` detail page (README render, tree/blob browser), owner-only `POST /api/admin/code/<id>/sync-contents` to cache selected files.
 - [ ] **Access control:** extend `AssetVisibility` reuse for code blobs, wire entitlements for PRIVATE repos.
-- [ ] **Webhook intake:** GitHub webhook endpoint for push events → auto-trigger sync.
+- [x] **Webhook intake (M5.4):** `POST /api/webhooks/github` with HMAC verification + auto-sync on push events.
+
+## P0 — landed this session (2026-04-27, uncommitted, blocked on chown)
+
+- [x] **Codebase audit:** `_ai_operating_system/REVIEW_2026-04.md` — 68 findings (12 P0 / 40 P1 / 16 P2) with `file:line` citations.
+- [x] **Cursor rules refresh + master rule:** `.cursor/rules/{00-ai-context,ssz-01-monorepo,ssz-02-apps-web,ssz-03-prisma,ssz-04-security-web}.mdc` rewritten; `ssz-05-agent-execution.mdc` added with execution discipline + hard "do not" list.
+- [x] **Claude memory mirroring:** `~/.claude/projects/-home-whyte--MyAppZ-SavigeSystemZ-com/memory/{feedback_execution_discipline.md,reference_architecture_invariants.md}` — future Claude sessions auto-load the same standards.
+- [x] **P0 review fixes:** `force-dynamic` on 8 admin pages; Stripe webhook idempotency (`StripeWebhookEvent` model + `claimStripeWebhookEvent` + dedupe); `Purchase.purchaserEmail` index; `OWNER_LOGIN_SECRET` startup guard in `lib/auth.ts`; vault rate-limit per-user scope.
+- [x] **M9 launch readiness page:** `app/(admin)/admin/launch/page.tsx` reading new `evaluateProductionLaunchReadiness()` env helper; gates a "Go live" affordance until 11 required env keys are set + ≥ minimum strength.
+- [x] **Workstream B — packaged launcher:** rewritten `installer/packaging/appimage/AppRun` (single-instance flock, `/dev/tcp` probe, repo resolution, browser open, server tear-down trap); new AppImage `.desktop`; filled `installer/packaging/deb/{control,postinst,prerm}`; real `installer/scripts/build-packages.sh` (AppDir + dpkg-deb + SHA256SUMS); `installer/scripts/validate-install.sh --appimage` smoke test; `installer/desktop/install-desktop-launcher.sh --smart` and `--package` modes; `.github/workflows/packaging.yml` builds on tag push and attaches to GitHub Release.
+- [x] **Workstream C foundations:** `next.config.ts` (AVIF/WebP, remote patterns, `@next/bundle-analyzer` behind `ANALYZE=1`); `vitest.config.ts` (V8 coverage, soft 60% thresholds); `playwright.config.ts` (screenshot + video on failure, GitHub reporter under CI); `app/error.tsx` corrected to nested-boundary; new `app/global-error.tsx`; `lighthouserc.json` (perf ≥ 0.9, a11y ≥ 0.95, CLS ≤ 0.05).
+- [x] **P1 review fixes:** S3 presign TTL cap; release-presign content-type allow-list; `randomUUID()` mock checkout id; admin code rate limits (PATCH 60 / sync 12 / DELETE 30 per min); Stripe `checkout.session.expired` + `payment_intent.payment_failed` handlers; `lib/json-body.ts` size-capped reader adopted by versions + release-assets routes.
+- [x] **Operator tooling:** `scripts/post-chown-verify.sh` — single-command verify after the user runs `sudo chown`. Ownership sweep → `git fsck` → Postgres up → `prisma migrate deploy` → `pnpm check:all` → dev boot → `/api/health`. Bails on first failure with the next step. `scripts/post-chown-commit.sh` — staged commit script that breaks the uncommitted work into 7 logical commits.
+
+## Pending after chown (resume order)
+
+1. Run `./scripts/post-chown-verify.sh` end-to-end.
+2. Run `./scripts/post-chown-commit.sh` to land the work in 7 commits.
+3. Wire `DashboardAlert` into `lib/admin-dashboard.ts` and create `components/admin/dashboard-spike.tsx` (M7.6 finish).
+4. Create `app/(public)/repos/page.tsx` (public repo index).
+5. Triage the remaining 40 P1 + 16 P2 review items (refund flow, AI per-user rate limit + audit, Application JSON-blob field typing, soft-delete utility, License/Purchase transaction wrap, README markdown sanitizer fixtures).
 
 ## Done (archive reference)
 

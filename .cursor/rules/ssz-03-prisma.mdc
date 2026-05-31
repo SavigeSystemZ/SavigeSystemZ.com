@@ -1,13 +1,28 @@
 ---
-description: "ssz — Prisma schema, migrations, seed"
+description: "ssz — Prisma schema, migrations, seed (Postgres-first, SQLite fallback)"
 globs: apps/web/prisma/**/*
 alwaysApply: false
 ---
 
 # Prisma and database
 
-- **Schema:** `apps/web/prisma/schema.prisma`. SQLite locally; production target is Postgres — see `docs/DATABASE.md`.
-- **DATABASE_URL:** Use `file:./dev.db` in env — resolves to `apps/web/prisma/dev.db`. Avoid `file:./prisma/dev.db` (wrong nested path).
-- **Migrations:** SQL in `prisma/migrations/`. Use `prisma migrate deploy` in CI and production.
-- **Seed:** `prisma/seed.ts` via `pnpm prisma db seed`; idempotent upserts.
-- **Client:** Import `db` only from `@/lib/db`.
+## Provider
+- **Production & default dev:** PostgreSQL. Connection: `postgresql://ssz:dev@localhost:5433/savige` for local Docker, real DSN in prod.
+- **SQLite fallback** (`file:./dev.db` → `apps/web/prisma/dev.db`) is supported for quick offline work but should not be the assumption when authoring migrations.
+
+## Schema
+- File: `apps/web/prisma/schema.prisma`.
+- Current models (17): `User`, `Application`, `ArchiveEntry`, `ApplicationMedia`, `ApplicationVersion`, `ReleaseAsset`, `Session`, `PasskeyCredential`, `License`, `Purchase`, `PasskeyChallenge`, `DownloadEvent`, `AuditLog`, `VaultArtifact`, `ProjectRequest`, `CreatorSubmission`, `CodeRepository`.
+- Postgres + SQLite parity rules: avoid `@db.*` annotations that only one provider supports unless gated. Prefer `String` + length checks over `@db.VarChar(n)` on shared schemas.
+
+## Migrations
+- **Local dev:** `pnpm --filter web exec prisma migrate dev --name <descriptive_name>` — generates SQL into `prisma/migrations/`.
+- **CI / prod:** `prisma migrate deploy`. Never `prisma db push` for shared schema or anything that will reach `main`.
+- **Seed:** `prisma/seed.ts` via `pnpm prisma db seed`. Must be idempotent (upserts only).
+
+## Client
+- Always `import { db } from "@/lib/db"`. Never instantiate `new PrismaClient()` outside `lib/db.ts`.
+- Never log raw query results that may contain PII.
+
+## Indexes
+- Hot-path lookups must have explicit indexes: session/token hashes, audit-log timestamps, foreign keys used in dashboards (DownloadEvent.releaseId, Purchase.userId, CodeRepository.slug).

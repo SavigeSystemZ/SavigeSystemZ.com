@@ -1,15 +1,44 @@
 ---
-description: "ssz — apps/web Next.js 16, proxy, auth, catalog"
+description: "ssz — apps/web Next.js 16, proxy, auth, catalog, code module"
 globs: apps/web/**/*
 alwaysApply: false
 ---
 
-# apps/web — Next.js 16
+# apps/web — Next.js 16 (App Router, Turbopack dev, React 19)
 
-- **Proxy:** `apps/web/proxy.ts` (`export async function proxy`). Do not add deprecated `middleware.ts`. Use Web Crypto via `lib/hmac-web.ts`, not `node:crypto`, for Edge compatibility.
-- **Auth:** Never trust `x-user-*` headers. Use `getAuthContext()` from `lib/auth.ts` (session cookie + DB). Owner APIs use `requireOwner()`.
-- **Validation:** Zod in `lib/validation.ts` for API bodies; return `400` with `issues` on failure.
-- **Audit:** Important mutations call `writeAuditLog` from `lib/audit.ts` with stable `action` strings.
-- **Catalog:** `getPublicCatalog()` / `getPublicApplicationBySlug()` from `lib/catalog-resolver.ts`. Use `export const dynamic = "force-dynamic"` when Prisma must not run at `next build` without `DATABASE_URL`.
-- **Public API:** `GET /api/catalog` — no auth.
-- **Tests:** Vitest `tests/unit/`; Playwright `tests/e2e/`.
+## Routing
+- **Edge logic:** `apps/web/proxy.ts` (`export async function proxy`). **Never** create `middleware.ts` — Next.js 16 deprecated it.
+- **Route groups:** `(public)`, `(admin)`, `(auth)`. API under `app/api/`.
+- **RSC default.** Add `"use client"` only at leaf interactivity nodes.
+- **`force-dynamic`:** Add `export const dynamic = "force-dynamic"` to any Server Component using Prisma so `next build` does not run DB queries without `DATABASE_URL`.
+
+## Crypto & runtime split
+- **Edge code paths** (`proxy.ts` and anything it imports): use `lib/hmac-web.ts` (Web Crypto). Never `node:crypto` here — it is unavailable on Edge.
+- **Node runtime** (API routes, Server Components, Server Actions): `node:crypto` is fine. `lib/auth.ts` runs in Node runtime and uses it for session signing.
+
+## Auth
+- **Never trust `x-user-*` headers** — they are trivially spoofable.
+- `getAuthContext()` from `lib/auth.ts` reads `sz_session` cookie → DB.
+- Owner APIs / pages call `requireOwner()`; admin HTML routes are also gated in `proxy.ts` for production secret strength.
+
+## Validation, audit, rate limits
+- **Validation:** Zod via `lib/validation.ts` for every API body. Return `400` with `issues` on failure.
+- **Audit:** Mutations call `writeAuditLog` from `lib/audit.ts` with stable `action` strings (e.g., `"admin.code.sync"`).
+- **Rate limits:** `lib/rate-limit.ts` for public endpoints, `lib/auth-rate-limit.ts` for login, `lib/vault-rate-limit.ts` (`vaultMutationGate`) for vault mutations. Optional `REDIS_URL`; `VAULT_REDIS_STRICT=1` to fail closed.
+
+## Catalog
+- Public pages: `getPublicCatalog()` / `getPublicApplicationBySlug()` from `lib/catalog-resolver.ts`.
+- Public API: `GET /api/catalog` — no auth, JSON list of `PUBLIC` apps.
+
+## Code module (M10 — mini self-hosted GitHub mirror)
+- Admin UI: `app/(admin)/admin/code/` (gated by `requireOwner()`).
+- Public detail: `app/(public)/repos/[slug]/page.tsx` (PUBLIC repos only, README sanitized).
+- Helpers: `lib/code-repository.ts`, `lib/github-client.ts`.
+- Webhook: `app/api/webhooks/github/route.ts` — HMAC-verified push events trigger sync.
+- `Application.codeRepositoryId` (FK, `onDelete: SetNull`) — repo metadata surfaces on linked app pages.
+- Env: `GITHUB_TOKEN` optional (required for private repos / >60 req/hr).
+
+## Tests
+- **Vitest unit:** `apps/web/tests/unit/*.test.ts`.
+- **Playwright E2E:** `apps/web/tests/e2e/*.spec.ts` (run with Postgres service, `CI=1`).
+- **Axe a11y:** baked into `tests/e2e/a11y.spec.ts` — extend it when adding routes.

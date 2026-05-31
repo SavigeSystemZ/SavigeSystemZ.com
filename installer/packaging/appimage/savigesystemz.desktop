@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SavigeSystemZ
+GenericName=SavigeSystemZ Local Launcher
+Comment=Spin up the local dev server on port 43907 and open it in your browser
+Exec=AppRun
+Icon=savigesystemz
+Terminal=false
+Categories=Development;WebDevelopment;
+StartupNotify=true
+StartupWMClass=savigesystemz
+Keywords=SavigeSystemZ;NextJS;Dev;Local;

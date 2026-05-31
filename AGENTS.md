@@ -9,7 +9,7 @@ Human and AI coding agents: read this before large changes. See also root [`CLAU
 | `.cursor/rules/ssz-*.mdc` | Cursor project rules (namespaced **SavigeSystemZ** pack; see `.cursor/README.md`) |
 | `.cursor/apps/savigesystemz/APP_PACK.md` | Index of the same rule pack |
 | `apps/web/AGENTS.md` | Next.js app–specific agent notes |
-| `_ai_operating_system/` | **`SESSION_RECALL.md`** (full checklist), **`WHERE_LEFT_OFF.md`** (pulse), **`TODO.md`**, **`VISION_AND_ROADMAP.md`** |
+| `_ai_operating_ai_operating_system/` | **`SESSION_RECALL.md`** (full checklist), **`WHERE_LEFT_OFF.md`** (pulse), **`TODO.md`**, **`VISION_AND_ROADMAP.md`** |
 | `docs/DATABASE.md` | Migrations, seed, Postgres path |
 | `docs/SECURITY_HARDENING.md` | Threat model and enforced controls |
 
@@ -33,3 +33,14 @@ pnpm --filter web test:e2e   # with DATABASE_URL + owner env — see README
 - Rules use `.mdc` frontmatter (`alwaysApply` or `globs`). Edit under `.cursor/rules/` (`ssz-*` files) to teach future sessions project conventions.
 - **Open this repo** (`SavigeSystemZ.com`) as the workspace root — not the parent `~/.MyAppZ` folder — so rules load correctly; see `.cursor/README.md` and `~/.MyAppZ/.cursor/rules/myappz-00-myappz-root.mdc` for multi-app layouts.
 - `.vscode/settings.json` enables format-on-save and ESLint fixes when the recommended extensions are installed.
+
+
+## Tool-memory writes
+
+Before appending non-trivial content to any `_ai_operating_system/tool-memory/*.md` file, invoke:
+
+```
+bash scripts/stamp-tool-memory.sh --adapter <host> --file <path> --agent-id <agent-id>
+```
+
+This prepends (or augments) the per-host isolation stamp required by `_ai_operating_system/TOOL_MEMORY_ISOLATION_STAMP.md`. The validator `scripts/check-tool-memory-isolation.sh` enforces the same contract after the fact.

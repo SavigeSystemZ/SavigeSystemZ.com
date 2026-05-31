@@ -10,6 +10,8 @@ const {
   mockProjectRequestCount,
   mockProjectRequestFindMany,
   mockAuditLogFindMany,
+  mockDashboardAlertUpsert,
+  mockDashboardAlertFindMany,
 } = vi.hoisted(() => ({
   mockApplicationFindMany: vi.fn(),
   mockArchiveFindMany: vi.fn(),
@@ -20,6 +22,8 @@ const {
   mockProjectRequestCount: vi.fn(),
   mockProjectRequestFindMany: vi.fn(),
   mockAuditLogFindMany: vi.fn(),
+  mockDashboardAlertUpsert: vi.fn(),
+  mockDashboardAlertFindMany: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -30,6 +34,7 @@ vi.mock("@/lib/db", () => ({
     creatorSubmission: { count: mockCreatorSubmissionCount, findMany: mockCreatorSubmissionFindMany },
     projectRequest: { count: mockProjectRequestCount, findMany: mockProjectRequestFindMany },
     auditLog: { findMany: mockAuditLogFindMany },
+    dashboardAlert: { upsert: mockDashboardAlertUpsert, findMany: mockDashboardAlertFindMany },
   },
 }));
 
@@ -46,6 +51,10 @@ describe("getAdminDashboardSummary", () => {
     mockProjectRequestCount.mockReset();
     mockProjectRequestFindMany.mockReset();
     mockAuditLogFindMany.mockReset();
+    mockDashboardAlertUpsert.mockReset();
+    mockDashboardAlertFindMany.mockReset();
+    mockDashboardAlertUpsert.mockResolvedValue({});
+    mockDashboardAlertFindMany.mockResolvedValue([]);
   });
 
   it("builds fix-next queue from draft blockers and counters", async () => {
@@ -121,5 +130,47 @@ describe("getAdminDashboardSummary", () => {
     expect(summary.spikes.moderationInflow).toBe(true);
     expect(summary.spikes.requestInflow).toBe(true);
     expect(summary.spikes.auditAnomalies).toBe(false);
+
+    // Each detected spike upserts a DashboardAlert keyed by lane+window so
+    // operators can see/dismiss them on the admin overview.
+    const upsertedKeys = mockDashboardAlertUpsert.mock.calls.map(
+      (call) => (call[0] as { where: { alertKey: string } }).where.alertKey,
+    );
+    expect(upsertedKeys).toContain("spike:moderationInflow:7d");
+    expect(upsertedKeys).toContain("spike:requestInflow:7d");
+    expect(upsertedKeys).not.toContain("spike:auditAnomalies:7d");
+    expect(summary.activeAlerts).toEqual([]);
+  });
+
+  it("surfaces unacknowledged dashboard alerts via activeAlerts", async () => {
+    mockApplicationFindMany.mockResolvedValue([]);
+    mockArchiveFindMany.mockResolvedValue([]);
+    mockCodeRepositoryCount.mockResolvedValue(0);
+    mockCodeRepositoryFindMany.mockResolvedValue([]);
+    mockCreatorSubmissionCount.mockResolvedValue(0);
+    mockCreatorSubmissionFindMany.mockResolvedValue([]);
+    mockProjectRequestCount.mockResolvedValue(0);
+    mockProjectRequestFindMany.mockResolvedValue([]);
+    mockAuditLogFindMany.mockResolvedValue([]);
+    const seen = new Date("2026-04-29T20:00:00.000Z");
+    mockDashboardAlertFindMany.mockResolvedValue([
+      {
+        id: "al_1",
+        alertKey: "spike:repoErrorInflow:24h",
+        category: "spike",
+        severity: "warn",
+        message: "Repo sync errors: 6 in last 24h (+4 vs prior 24h).",
+        firstSeenAt: seen,
+        lastSeenAt: seen,
+        metadata: JSON.stringify({ lane: "repoErrorInflow", href: "/admin?focus=repos" }),
+      },
+    ]);
+
+    const summary = await getAdminDashboardSummary("24h");
+
+    expect(summary.activeAlerts).toHaveLength(1);
+    expect(summary.activeAlerts[0]?.alertKey).toBe("spike:repoErrorInflow:24h");
+    expect(summary.activeAlerts[0]?.severity).toBe("warn");
+    expect(summary.activeAlerts[0]?.metadata).toEqual({ lane: "repoErrorInflow", href: "/admin?focus=repos" });
   });
 });

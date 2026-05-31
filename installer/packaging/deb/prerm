@@ -1,0 +1,5 @@
+#!/bin/sh
+# Pre-remove for the savigesystemz .deb. No-op today; kept as a hook point
+# for future cleanup (e.g. removing per-user state under XDG_STATE_HOME).
+set -e
+exit 0

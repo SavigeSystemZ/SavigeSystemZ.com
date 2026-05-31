@@ -6,9 +6,9 @@ function isSafeHref(href: string): boolean {
 
 function sanitizeLine(line: string): string {
   return line
-    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, "")
-    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, "")
-    .replace(/on\w+\s*=\s*["'][^"']*["']/gi, "");
+    .replace(/<script\b[\s\S]*?<\/script\s*>/gi, "")
+    .replace(/<iframe\b[\s\S]*?<\/iframe\s*>/gi, "")
+    .replace(/(\s)on\w+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, "$1");
 }
 
 function renderInline(text: string, keyPrefix: string): React.ReactNode[] {

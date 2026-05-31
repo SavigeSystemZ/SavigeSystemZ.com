@@ -175,6 +175,21 @@ model Purchase {
   @@index([applicationId])
   @@index([status])
   @@index([createdAt])
+  @@index([purchaserEmail])
+}
+
+/// Idempotency log for Stripe webhook events. Insert is the dedupe primitive:
+/// the unique constraint on `eventId` causes a P2002 (Prisma) / 23505 (Postgres) error
+/// on replay, which the webhook route translates into an immediate 200 OK.
+model StripeWebhookEvent {
+  id          String   @id @default(cuid())
+  eventId     String   @unique
+  eventType   String
+  receivedAt  DateTime @default(now())
+  processedAt DateTime?
+
+  @@index([eventType])
+  @@index([receivedAt])
 }
 
 model PasskeyChallenge {
@@ -352,6 +367,11 @@ enum CreatorPromotionTarget {
   ARCHIVE_ENTRY
 }
 
+enum CodeRepositoryStorageBackend {
+  GITHUB
+  SELF_HOSTED
+}
+
 model CodeRepository {
   id                   String                @id @default(cuid())
   slug                 String                @unique
@@ -359,6 +379,10 @@ model CodeRepository {
   description          String?
   provider             CodeRepositoryProvider @default(GITHUB)
   visibility           ApplicationVisibility @default(DRAFT)
+  /// M11 stub — selects between mirroring GitHub metadata and serving git
+  /// pack files directly from this platform via app/api/git/[repo]/[...path].
+  /// Defaults to GITHUB; SELF_HOSTED is reserved for the milestone landing.
+  storageBackend       CodeRepositoryStorageBackend @default(GITHUB)
   githubOwner          String?
   githubRepo           String?
   githubUrl            String?
@@ -381,6 +405,30 @@ model CodeRepository {
   @@unique([provider, githubOwner, githubRepo])
   @@index([visibility, provider])
   @@index([updatedAt])
+  @@index([storageBackend])
+}
+
+/// M7.6 — operator-acknowledged dashboard alerts (spike notices, sync errors).
+/// Created by `getAdminDashboardSummary`; acknowledged via
+/// `POST /api/admin/dashboard/acknowledge` and filtered out of the active
+/// alert lane until they re-fire.
+model DashboardAlert {
+  id             String   @id @default(cuid())
+  /// Stable key — e.g. `spike:repoErrorInflow:24h` — so re-firing the same
+  /// alert reuses the row rather than producing duplicates.
+  alertKey       String   @unique
+  category       String
+  severity       String   @default("info")
+  message        String
+  metadata       String?
+  firstSeenAt    DateTime @default(now())
+  lastSeenAt     DateTime @default(now())
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
+
+  @@index([category])
+  @@index([acknowledgedAt])
+  @@index([lastSeenAt])
 }
 
 enum CodeRepositoryProvider {

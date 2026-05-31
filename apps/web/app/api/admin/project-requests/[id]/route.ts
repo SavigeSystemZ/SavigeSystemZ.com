@@ -3,6 +3,9 @@ import { getAuthContext, requireOwner } from "@/lib/auth";
 import { writeAuditLog } from "@/lib/audit";
 import { db } from "@/lib/db";
 import { updateProjectRequestSchema } from "@/lib/validation";
+import { readJsonBody } from "@/lib/json-body";
+
+const MAX_BODY_BYTES = 16 * 1024;
 
 export async function PATCH(request: Request, props: { params: Promise<{ id: string }> }) {
   const context = await getAuthContext();
@@ -13,8 +16,17 @@ export async function PATCH(request: Request, props: { params: Promise<{ id: str
   }
 
   const { id } = await props.params;
-  const raw = await request.json().catch(() => null);
-  const parsed = updateProjectRequestSchema.safeParse(raw);
+  const body = await readJsonBody<unknown>(request, MAX_BODY_BYTES);
+  if (!body.ok) {
+    if (body.reason === "too_large") {
+      return NextResponse.json(
+        { error: "payload_too_large", limitBytes: body.limitBytes, sawBytes: body.sawBytes },
+        { status: 413 },
+      );
+    }
+    return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
+  }
+  const parsed = updateProjectRequestSchema.safeParse(body.data);
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid_payload", issues: parsed.error.issues }, { status: 400 });
   }

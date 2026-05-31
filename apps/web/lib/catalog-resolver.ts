@@ -184,6 +184,39 @@ function mapPublicCodeRepository(row: CodeRepositoryRow | null | undefined): Pub
   };
 }
 
+export async function listPublicRepos(): Promise<PublicCodeRepositoryRecord[]> {
+  try {
+    const rows = await db.codeRepository.findMany({
+      where: { visibility: "PUBLIC" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        description: true,
+        visibility: true,
+        githubUrl: true,
+        githubOwner: true,
+        githubRepo: true,
+        defaultBranch: true,
+        primaryLanguage: true,
+        starCount: true,
+        forkCount: true,
+        openIssueCount: true,
+        latestCommitSha: true,
+        latestCommitMessage: true,
+        latestCommitAt: true,
+      },
+      orderBy: [{ latestCommitAt: "desc" }, { updatedAt: "desc" }],
+      take: 60,
+    });
+    return rows
+      .map((row) => mapPublicCodeRepository(row))
+      .filter((row): row is PublicCodeRepositoryRecord => row !== null);
+  } catch {
+    return [];
+  }
+}
+
 export async function getPublicRepoBySlug(slug: string): Promise<PublicRepositoryDetailRecord | null> {
   try {
     const row = await db.codeRepository.findFirst({

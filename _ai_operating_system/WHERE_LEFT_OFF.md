@@ -1,5 +1,71 @@
 # Where Left Off
 
+- **Timestamp:** 2026-04-29 (Claude Code session; ownership unblocked, M7 slice 6 + /repos index + admin JSON size sweep landed; full quality gate green)
+- **Status:** Site is live on `http://127.0.0.1:43907/` again. Ownership corruption fully resolved — `sudo chown -R whyte:whyte` ran cleanly, 0 files outside `whyte:whyte`. Migrations `0004_purchase_email_index_and_stripe_event_dedupe` and `0005_dashboard_alert_and_code_storage_backend` applied to local Postgres. `pnpm check:all` green (lint + typecheck + 138 unit tests + build).
+- **Shipped this session (uncommitted working tree):**
+  - **Smart desktop launcher:** `~/Desktop/SavigeSystemZ-local.desktop` re-installed via `installer/desktop/install-desktop-launcher.sh --smart`. Now invokes `installer/packaging/appimage/AppRun` which acquires a single-instance flock, probes 43907 via /dev/tcp, spawns `pnpm dev:web` if free, polls 30s, then opens browser. No more "connection refused" when the icon is clicked cold.
+  - **`apps/web/app/error.tsx`:** swapped raw `<a href="/">` for `next/link` `<Link>` to clear the @next/next/no-html-link-for-pages lint that was blocking `pnpm check:all`.
+  - **Stripe webhook unit test fix:** `tests/unit/stripe-webhook-processor.test.ts` now mocks `@/lib/db` (stripeWebhookEvent + purchase) so it doesn't crash on missing DATABASE_URL after the P0 idempotency fix added `markEventProcessed()` to the dispatcher.
+  - **M7 slice 6 — dismissible spike notices + ack state (CLOSED):**
+    - `lib/admin-dashboard.ts`: new `recordSpikeAlerts(window, spikes, trends)` helper upserts `DashboardAlert` rows keyed `spike:<lane>:<window>` whenever a lane fires a spike (re-firing clears any prior ack). New `listActiveDashboardAlerts()` returns unacknowledged alerts ordered by `lastSeenAt`. `getAdminDashboardSummary()` now records spikes + returns `activeAlerts: AdminDashboardAlert[]` on the summary.
+    - `components/admin/dashboard-spike-notices.tsx`: new client component that renders unack'd alerts as severity-toned dismissible cards with an Inspect link (from metadata.href) and a Dismiss button that POSTs `/api/admin/dashboard/acknowledge` and calls `router.refresh()`.
+    - `app/(admin)/admin/page.tsx`: mounted `<DashboardSpikeNotices alerts={dashboard.activeAlerts} />` directly under the owner header banner.
+    - Pre-existing `app/api/admin/dashboard/acknowledge/route.ts` is the backing API (Zod-validated, owner-gated, IP+user rate-limited at 60/min, audit log `admin.dashboard.alert.acknowledge`, idempotent).
+    - `tests/unit/admin-dashboard.test.ts` now mocks `dashboardAlert.upsert` + `findMany`, asserts spike upserts happen for the right lanes, and adds a second test that surfaces an unack'd alert via `summary.activeAlerts`. 134 → 138 unit tests.
+  - **Public `/repos` index page (CLOSED):** `app/(public)/repos/page.tsx` lists PUBLIC `CodeRepository` rows (60 max) ordered by latest commit, each card showing description, primary language chip, stars/forks/open-issues, latest-commit relative time, default branch, "Open repository" → `/repos/[slug]` and "View on GitHub" links. Backed by new `listPublicRepos()` in `lib/catalog-resolver.ts`.
+  - **README sanitizer hardening:** `components/markdown-render.tsx` regex updated — script/iframe close-tag now allows trailing whitespace (`<\/script\s*>`), event-handler regex now requires a leading whitespace boundary (`(\s)on\w+\s*=`) so it cannot eat `function on(x)` or other non-attribute occurrences, and accepts unquoted/single-quoted/double-quoted values. `tests/unit/markdown-render.test.ts` extended with 4 new fixtures: data:/file:/ftp:/mailto:/protocol-relative href rejection, mixed-case + multiline `<ScRiPt>` payloads, single-quoted + unusual-whitespace event handlers, and a "plain text isn't a tag" guard.
+  - **Admin JSON size limits sweep (P1):** all admin POST/PATCH JSON routes now use `readJsonBody(request, MAX_BYTES)` returning 413 on oversize and 400 on invalid JSON. Caps: 256 KB for `applications/[id]/launch-compose` + `archive/launch-compose` (markdown changelogs), 64 KB for `applications` POST/PATCH + `archive` POST/PATCH + `versions/[id]` PATCH, 32 KB for `application-media` POST/PATCH + `creator-submissions/[id]` PATCH + `release-assets/[id]` PATCH, 16 KB for `code` POST + `code/[id]` PATCH + `project-requests/[id]` PATCH, 8 KB for the three `s3-upload-url` routes. All paired with the existing Zod schemas.
+- **Validation:** `pnpm check:all` exit 0 (5 cached, 1 live; 8.13s). 25 test files / 138 unit tests pass. `curl http://127.0.0.1:43907/api/health` → `{ok:true}`. `curl /repos` → 200.
+- **Next actionable (in order):**
+  1. Commit the working tree — many P0/P1 changes from prior session + this session are still uncommitted. Recommended split: (a) ownership-unrelated P0/P1 (cursor rules, force-dynamic, audit, vault per-user gate, OWNER_LOGIN_SECRET guard, Stripe idempotency, smart launcher, packaging workflow), (b) this-session work (M7 slice 6, /repos index, sanitizer hardening, JSON size sweep, error.tsx fix).
+  2. Burn remaining P1s: REFUNDED PurchaseStatus + `POST /api/admin/purchases/[id]/refund` (needs schema migration), wrap `lib/checkout-complete.ts` license-grant + purchase-update in a `db.$transaction`, GitHub README rate-limit + per-repo sync debounce, audit-log retention policy.
+  3. Add E2E coverage for the new `/repos` index, the spike-notice dismiss flow, and admin publish flows.
+  4. Workstream B owner round-trip: connect a real GitHub repo via `/admin/code`, flip to PUBLIC, verify the public `/repos` and `/repos/[slug]` surfaces.
+- **Blocked / external input (unchanged):** S3 creds, Stripe live keys, Vercel DNS, GITHUB_TOKEN for private-repo sync, AWS Lambda deploy access for vault scan.
+
+---
+
+- **Timestamp:** 2026-04-27 (Claude Code session; review + P0 fixes + cursor rules + packaged launcher landed)
+- **Status:** Ownership corruption from a prior `sudo` run on 2026-04-22 has spread beyond `.git` to ~321 source files (root:root, mode 640) including `packages/ui/src/Panel.tsx`, `packages/ui/src/StatusChip.tsx`, `packages/ui/src/SectionHeading.tsx`, `packages/ui/src/CommandPaletteRow.tsx`, `apps/web/lib/admin-dashboard.ts`, `apps/web/lib/github-webhook.ts`, `apps/web/components/markdown-render.tsx`, `apps/web/components/admin/command-palette.tsx`, `apps/web/components/admin/auto-refresh.tsx`, `apps/web/app/(public)/repos/`, all admin/code/dashboard tests, and `.turbo/cache/*`. **`pnpm dev:web` cannot start — site is unreachable.** Single fix: `sudo chown -R whyte:whyte /home/whyte/.MyAppZ/SavigeSystemZ.com`. This also unblocks ultraplan (`git bundle create --all` was failing), git fsck, and any future commits.
+- **Shipped this session (no commits — git is locked):**
+  - **Plan:** `/home/whyte/.claude/plans/further-enhance-and-improve-eager-nygaard.md`.
+  - **Comprehensive review:** `_ai_operating_system/REVIEW_2026-04.md` — 68 findings (12 P0 / 40 P1 / 16 P2) with `file:line` citations.
+  - **P0 fixes applied:**
+    - `force-dynamic` on 8 admin pages (`app/(admin)/admin/{,audit,archive,media,moderation,releases,vault,requests}/page.tsx`).
+    - Stripe webhook idempotency: new `StripeWebhookEvent` Prisma model + `claimStripeWebhookEvent()` helper in `lib/stripe-webhook-processor.ts` + dedupe in `app/api/webhooks/stripe/route.ts`. Migration `prisma/migrations/0004_purchase_email_index_and_stripe_event_dedupe/migration.sql` created (apply with `pnpm --filter web exec prisma migrate deploy` once DB is reachable).
+    - `Purchase.purchaserEmail` index added to schema + same migration above.
+    - `OWNER_LOGIN_SECRET` startup guard in `lib/auth.ts` — fails boot in production if unset / default / `< 32` chars.
+    - Vault rate limit per-user scoping: `vaultMutationGate(request, userId?)` keys on user when authed; both callers (`app/api/vault/route.ts`, `app/api/vault/s3-upload-url/route.ts`) updated to pass `context.userId`.
+    - Soft-delete on admin/project-requests already correct via `projectRequestsWhere` helper — no change needed.
+  - **Cursor rules refreshed and added:** `.cursor/rules/00-ai-context.mdc`, `ssz-01-monorepo.mdc`, `ssz-02-apps-web.mdc`, `ssz-03-prisma.mdc`, `ssz-04-security-web.mdc` rewritten for current Next.js 16 / Postgres-first / port 43907 reality. New master rule `ssz-05-agent-execution.mdc` covers execution discipline, output standards, hard "do not" list, pre-merge checklist.
+  - **Claude memory mirroring:** `~/.claude/projects/-home-whyte--MyAppZ-SavigeSystemZ-com/memory/feedback_execution_discipline.md` and `reference_architecture_invariants.md` added; `MEMORY.md` index updated. Future Claude sessions auto-load the same standards as Cursor.
+  - **Workstream B — packaged launcher:** rewritten `installer/packaging/appimage/AppRun` (single-instance `flock`, `/dev/tcp` port probe, repo resolution via `SAVIGESYSTEMZ_REPO` or `$HOME/.MyAppZ/SavigeSystemZ.com`, spawns `pnpm dev:web`, polls 30s, opens browser, traps to tear server down). New AppImage desktop file `installer/packaging/appimage/savigesystemz.desktop`. Filled in `installer/packaging/deb/{control,postinst,prerm}`. Real `installer/scripts/build-packages.sh` pipeline (stages AppDir + dpkg-deb tree, calls `appimagetool`, emits `dist/packages/{*.AppImage,*.deb,SHA256SUMS}`). Extended `installer/scripts/validate-install.sh` with `--appimage` smoke mode (launches latest AppImage, polls port, hits `/api/health`). Added `--smart` and `--package` modes to `installer/desktop/install-desktop-launcher.sh`. `.github/workflows/packaging.yml` rewritten to vendor `appimagetool`, build on tag push or manual dispatch, upload artifacts, attach to GitHub Release.
+- **Validation:** Bash syntax-checked all installer scripts (`bash -n`) — clean. `pnpm check:all` **not run** — the chown blocker prevents reading `node_modules` and source files.
+- **Additional Workstream C / P1 polish landed (post-summary):**
+  - `next.config.ts` — AVIF/WebP image formats, S3 + GitHub remote patterns, `@next/bundle-analyzer` wired behind `ANALYZE=1`. Add devDep with `pnpm add -D -F web @next/bundle-analyzer`.
+  - `vitest.config.ts` — V8 coverage with text/html/lcov reporters, soft thresholds (60% lines/functions/statements, 50% branches).
+  - `playwright.config.ts` — `screenshot: "only-on-failure"`, `video: "retain-on-failure"`, GitHub reporter under CI.
+  - `app/error.tsx` — rewritten as a proper nested error boundary (no `<html>`/`<body>`); branded retry UI with digest exposure.
+  - `app/global-error.tsx` — new; root-layout-failure boundary with `<html>`/`<body>` wrapper.
+  - `lib/s3-presign.ts` — TTL capped at 1h via `Math.min`.
+  - `lib/s3-release-presign.ts` — content-type allow-list (`isAllowedReleaseContentType`); rejects browser-executable types before signing.
+  - `app/api/checkout/route.ts` — mock session id now `randomUUID()` instead of `randomBytes(16)`.
+  - `app/api/admin/code/[id]/route.ts` — per-owner rate limits: PATCH 60/min, sync 12/min, DELETE 30/min.
+  - `lib/stripe-webhook-processor.ts` — switch dispatch handles `checkout.session.expired` (mark FAILED) and `payment_intent.payment_failed` (audit log); unknown types accepted.
+  - `lighthouserc.json` — perf ≥ 0.9, a11y ≥ 0.95, CLS ≤ 0.05 thresholds across 6 public routes.
+  - `lib/json-body.ts` — new `readJsonBody(request, maxBytes)` helper with `content-length` + post-decode size enforcement, default 256 KB cap.
+  - `app/api/admin/versions/route.ts`, `app/api/admin/release-assets/route.ts` — adopt `readJsonBody` (64 KB cap, 413 on oversize).
+  - `scripts/post-chown-verify.sh` — single-command verifier the user runs after the chown: ownership sweep, `git fsck`, Postgres up-check, `prisma migrate deploy`, `pnpm check:all`, dev-server boot, `/api/health` probe. Bails on first failure with a clear message.
+- **Next actionable (in order):**
+  1. **You:** `sudo chown -R whyte:whyte /home/whyte/.MyAppZ/SavigeSystemZ.com`. Optionally `sudo chmod -R u+rwX,go+rX .git` if anything still 640.
+  2. Verify: `git fsck --full` clean, `pnpm dev:web` boots, `curl -fsS http://127.0.0.1:43907/api/health`.
+  3. Apply migrations: `pnpm --filter web exec prisma migrate deploy` (requires Postgres up — `./scripts/dev-postgres.sh`). Two new migrations: `0004_purchase_email_index_and_stripe_event_dedupe` and `0005_dashboard_alert_and_code_storage_backend`.
+  4. Run gates: `pnpm check:all`; expected to pass given changes are additive + scoped. For coverage: `pnpm --filter web exec vitest run --coverage`.
+  5. Resume: wire `DashboardAlert` into `lib/admin-dashboard.ts` + new `dashboard-spike.tsx` component (M7.6 finish, ~1h); public `/repos` index page (~30m); remaining P1 review items (admin JSON size limits, refund flow, README markdown sanitizer fixtures, S3 vault scan Lambda hook).
+- **Blocked / external input:** S3 creds (live uploads), Stripe live keys (staging/prod), Vercel DNS for `savigesystemz.com`, `GITHUB_TOKEN` for private-repo sync.
+
+---
+
 - **Timestamp:** 2026-04-22 (night continuation; M7 slice 5 shipped)
 - **Status:** M0 remains complete, M5.1–M5.4 is shipped, M1 slices 1+2 plus slice-3 groundwork are landed, and M7 slices 1+2+3+4+5 are complete:
   - M5.1 shipped: `/admin/code` visibility selector (`DRAFT|PRIVATE|PUBLIC`), PATCH schema now supports `visibility`, and audit action `code.repository.visibility`.

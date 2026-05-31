@@ -2,6 +2,36 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-04-29 — ownership unblocked + M7 slice 6 + /repos index + admin JSON size sweep
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**138 / 138**, 25 test files)
+- **Build**: PASS (turbo: 5 cached, 1 live; 8.13s total)
+
+### Focused verification
+- **Ownership sweep**: `find . -path ./node_modules -prune -o -not -user whyte -print` → 0 results (was 529).
+- **Migrations applied**: `0004_purchase_email_index_and_stripe_event_dedupe` and `0005_dashboard_alert_and_code_storage_backend` applied cleanly to local Postgres on `localhost:5433/savige`.
+- **Site live**: `curl http://127.0.0.1:43907/api/health` → `{ok:true,service:"savigesystemz-web",vaultMutationRateLimit:"memory"}`.
+- **Public /repos index**: HTTP 200 (no public repos seeded — empty-state copy renders).
+- **Smart desktop launcher**: `desktop-file-validate ~/Desktop/SavigeSystemZ-local.desktop` → exit 0; `Exec=` line points to `installer/packaging/appimage/AppRun` so cold clicks now boot the dev server.
+
+### Files touched (uncommitted working tree)
+- `apps/web/app/error.tsx` — `<a>` → `<Link>` for `/`.
+- `apps/web/lib/admin-dashboard.ts` — `recordSpikeAlerts` + `listActiveDashboardAlerts` + `activeAlerts` on summary.
+- `apps/web/components/admin/dashboard-spike-notices.tsx` — new client component.
+- `apps/web/app/(admin)/admin/page.tsx` — mount notices.
+- `apps/web/app/(public)/repos/page.tsx` — new public index.
+- `apps/web/lib/catalog-resolver.ts` — `listPublicRepos()` helper.
+- `apps/web/components/markdown-render.tsx` — sanitizer regex hardening.
+- `apps/web/tests/unit/markdown-render.test.ts` — 4 new fixtures.
+- `apps/web/tests/unit/admin-dashboard.test.ts` — DashboardAlert mocks + 1 new test.
+- `apps/web/tests/unit/stripe-webhook-processor.test.ts` — `@/lib/db` mock.
+- 18 admin POST/PATCH routes — adopt `readJsonBody` + per-route MAX_BODY_BYTES.
+
+---
+
 ## 2026-04-22 — M7 dashboard intelligence slices 1-5 + night operational wrap
 
 ### Code quality gates (`pnpm check:all`)

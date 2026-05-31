@@ -1,12 +1,50 @@
 ---
-description: "ssz — API security, rate limits, webhooks"
+description: "ssz — API security, rate limits, webhooks, audit, CSRF"
 globs: apps/web/app/api/**/*
 alwaysApply: false
 ---
 
-# Security (web APIs)
+# Security (web APIs and Server Actions)
 
-- **Owner/admin:** `requireOwner()` after `getAuthContext()`; never header-based impersonation.
-- **Rate limits:** Use `lib/rate-limit.ts` / `lib/auth-rate-limit.ts` on abuse-prone public endpoints.
-- **Stripe webhook:** Verify `stripe-signature` before mutations.
-- **Downloads:** Validate signed tokens and entitlements in handlers (`lib/signed-download.ts`, `lib/entitlements.ts`).
+## Auth gate (every admin/owner route)
+1. `const ctx = await getAuthContext();`
+2. `const denied = requireOwner(ctx); if (denied) return denied;`
+3. Then validate body with Zod via `lib/validation.ts`.
+4. Then mutate.
+5. Then `writeAuditLog({ action, actorId: ctx.userId, target, ip })`.
+
+Never use `x-user-*` headers, query params, or cookies other than `sz_session` to identify the actor.
+
+## Validation
+- **Every** body-bearing API route (`POST`/`PATCH`/`PUT`/`DELETE`) parses input through a Zod schema. On failure return `400` with `{ error: "invalid", issues }`.
+- Path params and query strings are also validated when used for DB lookups.
+
+## Rate limits (per route type)
+
+| Route class | Limiter | Defaults |
+|-------------|---------|----------|
+| Public catalog/info | `lib/rate-limit.ts` | 60 req/min/IP |
+| Auth (login, passkey) | `lib/auth-rate-limit.ts` | 10 req/min/IP, exponential backoff |
+| Vault mutation | `lib/vault-rate-limit.ts` `vaultMutationGate` | per `docs/RATE_LIMITS.md` |
+| Webhooks | signature first, then per-source dedupe | event.id dedupe required |
+
+Optional `REDIS_URL` enables distributed counters; `VAULT_REDIS_STRICT=1` fails closed when Redis is down.
+
+## Webhooks
+- **Stripe:** verify `stripe-signature` with `stripe.webhooks.constructEvent` before any mutation. Use `stripe-webhook-processor.ts` for idempotent handling — dedupe on `event.id`.
+- **GitHub:** verify HMAC-SHA256 with the configured secret in constant time before mutation. Reject unknown event types with `204` (do not 500).
+
+## CSRF
+- Server Actions: rely on Next.js's built-in origin check, but additionally require an `sz_session` cookie (Same-Site: Lax). Mutating Server Actions must call `requireOwner()` on the inferred context, not trust form data alone.
+- API routes called from external sites must implement origin allow-list checks.
+
+## Crypto (edge vs node)
+- `proxy.ts` and any module imported transitively by it: **only** Web Crypto via `lib/hmac-web.ts`.
+- Node-runtime API routes / Server Components: `node:crypto` is fine.
+
+## Downloads
+- Validate signed tokens (`lib/signed-download.ts`) and entitlements (`lib/entitlements.ts`) before issuing presigned S3 URLs. TTL ≤ 5 minutes. Audit every download event.
+
+## Secrets posture
+- `OWNER_LOGIN_SECRET` ≥ 32 chars in production (`proxy.ts` already 503s otherwise).
+- `OWNER_ACCESS_CODE`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, S3 creds, `GITHUB_WEBHOOK_SECRET`, `GITHUB_TOKEN` all loaded from env — never embedded.

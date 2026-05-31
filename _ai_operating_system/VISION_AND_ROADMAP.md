@@ -2,7 +2,15 @@
 
 ## Vision
 
-A **production-grade** public site and operations shell for the SavigeSystemZ foundry: secure owner/admin workflows, commerce (Stripe), encrypted vault artifacts with optional S3 payloads, auditability, and a path to **PostgreSQL** + horizontal scale without sacrificing the SQLite-first dev story.
+A **masterpiece world-class ultimate showcase website platform**. This production-grade public site and operations shell for the SavigeSystemZ foundry will:
+- House, host, and showcase applications (both free and for-sale).
+- Share and showcase dotfiles, scripts, program settings, custom OS builds, and software/freeware.
+- Provide links to helpful resources and excellent GitHub repositories.
+- Host hacking content, payloads, and security recommendations.
+- Showcase custom-developed Games and Books.
+- Feature System Admin type meta-systems, trained AIs, and links to other good LLMs.
+- Provide guides, tips, and tricks for various systems and tasks, including OPNsense builds, instructions, and instructional videos/YouTube links.
+- Offer secure owner/admin workflows, commerce (Stripe), encrypted vault artifacts with optional S3 payloads, auditability, and a path to **PostgreSQL** + horizontal scale.
 
 ## Pillars
 

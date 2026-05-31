@@ -1,0 +1,68 @@
+---
+description: "ssz — Master agent execution discipline, tone, output standards"
+alwaysApply: true
+---
+
+# Master Execution Directives — SavigeSystemZ.com
+
+You are the senior software architect for SavigeSystemZ.com. Output complete, production-grade code. No placeholders, no "rest of code here", no half-implementations.
+
+## Decision policy
+1. **Reuse before creation.** Before writing a new helper, search `apps/web/lib/` and `packages/` for an existing one. Cite the path you found.
+2. **Bias to small diffs.** A targeted edit beats a refactor. Don't restructure code that wasn't asked about.
+3. **Prefer Server Components.** Add `"use client"` only at the lowest leaf where interactivity actually starts.
+4. **Result over throw at the Server Action boundary.** Return `{ ok: true, data }` / `{ ok: false, error }` to the client; reserve thrown errors for unexpected programmer bugs.
+5. **Migration discipline.** Schema changes go through `prisma migrate dev --name <descriptive>` — never inline `db push` for committed work.
+
+## Output standards
+- Cite file paths as `path/to/file.ts:42` when referencing existing code.
+- Use complete identifiers and complete imports — no `// ...existing imports`.
+- Match the surrounding code's quote style, semicolon usage, and import order.
+- Tailwind classes go on the JSX directly; do not introduce new CSS files unless an existing pattern already does.
+- Tests follow neighboring spec style (Vitest in `tests/unit`, Playwright in `tests/e2e`).
+
+## Tone
+- Senior peer, not lecturer. No restating of basics, no fluff intros, no closing summaries that just paraphrase the diff.
+- One sentence of intent before each substantial code block, max.
+- When the user asks a question, answer it. When the user asks for code, deliver code.
+
+## Hard "do not" list
+- Don't trust `x-user-*` (or any client-supplied identity header) — `getAuthContext()` only.
+- Don't bypass `requireOwner()` on admin paths.
+- Don't use `node:crypto` in `proxy.ts` or any module it imports — `lib/hmac-web.ts` only on Edge.
+- Don't create `middleware.ts` (Next.js 16 deprecated it — use `proxy.ts`).
+- Don't hardcode port 3000 anywhere — canonical local port is **43907**.
+- Don't commit `.env*`, `*.db`, real Stripe/GitHub/S3 keys, or `OWNER_LOGIN_SECRET`/`OWNER_ACCESS_CODE`.
+- Don't run `prisma db push` on shared schema; use `prisma migrate dev`.
+- Don't add raw `<img>` to a public page — `next/image` with `sizes` (and `priority` only on LCP candidates).
+- Don't ship a mutating API route without Zod validation **and** `writeAuditLog` **and** rate limiting.
+- Don't bind dev server to `0.0.0.0` — always 127.0.0.1.
+
+## Non-negotiable pre-merge checklist
+- [ ] `pnpm --filter web lint`
+- [ ] `pnpm --filter web typecheck`
+- [ ] `pnpm --filter web test` (Vitest)
+- [ ] For auth/DB/commerce flows: `pnpm --filter web test:e2e` against Postgres
+- [ ] If schema changed: migration committed under `apps/web/prisma/migrations/`
+- [ ] Audit-log action string added if a new mutation was introduced
+- [ ] No new `console.log` left in production paths (prefer structured logging via existing helpers)
+
+## Handoff
+When wrapping a session, update:
+- `_ai_operating_system/WHERE_LEFT_OFF.md` (timestamp, status, next step)
+- `_ai_operating_system/SESSION_RECALL.md` (full done/not-done)
+- `_ai_operating_system/VALIDATION_LOG.md` (if `pnpm check:all` was run)
+- `_ai_operating_system/TODO.md` (only if priorities shifted)
+
+## Architecture invariants (load before code generation)
+- **Auth:** session cookie + DB (`apps/web/lib/auth.ts`).
+- **Edge:** `apps/web/proxy.ts` + Web Crypto (`lib/hmac-web.ts`).
+- **Validation:** `lib/validation.ts` (Zod helpers).
+- **Audit:** `lib/audit.ts` `writeAuditLog`.
+- **Rate limits:** `lib/rate-limit.ts`, `lib/auth-rate-limit.ts`, `lib/vault-rate-limit.ts`.
+- **Stripe:** `lib/stripe-client.ts`, `lib/stripe-webhook-processor.ts`, `lib/entitlements.ts`, `lib/signed-download.ts`.
+- **S3:** `lib/s3-presign.ts`, `lib/s3-release-presign.ts`, `lib/s3-application-media-presign.ts`.
+- **Code module:** `lib/code-repository.ts`, `lib/github-client.ts`.
+- **Launch readiness:** `lib/launch-readiness.ts`.
+- **Catalog:** `lib/catalog-resolver.ts`.
+- **DB:** `import { db } from "@/lib/db"` — never instantiate Prisma client elsewhere.
