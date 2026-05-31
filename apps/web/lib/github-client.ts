@@ -151,7 +151,17 @@ export async function fetchGithubLatestCommit(
   }
 }
 
+type CachedReadme = { expiresAt: number; data: GithubReadme | null };
+const README_CACHE = new Map<string, CachedReadme>();
+const CACHE_TTL_MS = 5 * 60 * 1000;
+
 export async function fetchGithubReadme(owner: string, repo: string): Promise<GithubReadme | null> {
+  const cacheKey = `${owner}/${repo}`.toLowerCase();
+  const now = Date.now();
+  const cached = README_CACHE.get(cacheKey);
+  if (cached && cached.expiresAt > now) {
+    return cached.data;
+  }
   if (isGithubMockMode()) {
     return {
       sha: "feedbeeffeedbeeffeedbeeffeedbeeffeedbeef",
@@ -169,8 +179,11 @@ export async function fetchGithubReadme(owner: string, repo: string): Promise<Gi
     const raw = await ghFetch<Raw>(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/readme`);
     if (raw.encoding !== "base64" || !raw.content) return null;
     const content = Buffer.from(raw.content.replace(/\n/g, ""), "base64").toString("utf8");
-    return { sha: raw.sha, path: raw.path, content };
+    const result = { sha: raw.sha, path: raw.path, content };
+    README_CACHE.set(cacheKey, { expiresAt: now + CACHE_TTL_MS, data: result });
+    return result;
   } catch {
+    README_CACHE.set(cacheKey, { expiresAt: now + CACHE_TTL_MS, data: null });
     return null;
   }
 }

@@ -7,35 +7,6 @@ export const dynamic = "force-dynamic";
 
 type Params = { params: Promise<{ slug: string }> };
 
-type CachedReadme = { expiresAt: number; content: string | null; sha: string | null };
-const README_CACHE = new Map<string, CachedReadme>();
-const FIVE_MINUTES_MS = 5 * 60 * 1000;
-
-async function getCachedReadme(owner: string, repo: string): Promise<string | null> {
-  const repoKey = `${owner}/${repo}`.toLowerCase();
-  const now = Date.now();
-  const cached = README_CACHE.get(repoKey);
-  if (cached && cached.expiresAt > now) return cached.content;
-
-  const readme = await fetchGithubReadme(owner, repo);
-  if (!readme) {
-    README_CACHE.set(repoKey, { expiresAt: now + FIVE_MINUTES_MS, content: null, sha: null });
-    return null;
-  }
-
-  const shaKey = `${repoKey}:${readme.sha}`;
-  const shaCached = README_CACHE.get(shaKey);
-  if (shaCached && shaCached.expiresAt > now) {
-    README_CACHE.set(repoKey, { ...shaCached });
-    return shaCached.content;
-  }
-
-  const value = { expiresAt: now + FIVE_MINUTES_MS, content: readme.content, sha: readme.sha };
-  README_CACHE.set(repoKey, value);
-  README_CACHE.set(shaKey, value);
-  return readme.content;
-}
-
 export default async function PublicRepoPage({ params }: Params) {
   const { slug } = await params;
   const repo = await getPublicRepoBySlug(slug);
@@ -43,7 +14,7 @@ export default async function PublicRepoPage({ params }: Params) {
 
   const readme =
     repo.githubOwner && repo.githubRepo
-      ? await getCachedReadme(repo.githubOwner, repo.githubRepo)
+      ? await fetchGithubReadme(repo.githubOwner, repo.githubRepo)
       : null;
 
   return (
@@ -72,7 +43,7 @@ export default async function PublicRepoPage({ params }: Params) {
         <h2 className="text-xl font-semibold text-white">README</h2>
         {readme ? (
           <div className="mt-4">
-            <MarkdownRender markdown={readme} />
+            <MarkdownRender markdown={readme.content} />
           </div>
         ) : (
           <p className="mt-3 text-sm text-slate-400">No README content available for this repository.</p>

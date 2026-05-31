@@ -29,10 +29,15 @@ echo "  ok — HEAD resolves to $(git rev-parse --short HEAD)"
 step "3. Postgres reachability"
 if ! docker compose -f docker-compose.postgres.yml ps 2>/dev/null | grep -q 'savige.*Up'; then
   echo "  Postgres container not up. Starting…"
-  ./scripts/dev-postgres.sh || true
+  docker compose -f docker-compose.postgres.yml up -d
+  echo "  Waiting for Postgres to be healthy..."
+  until docker compose -f docker-compose.postgres.yml exec -T postgres pg_isready -U ssz -d savige >/dev/null 2>&1; do
+    sleep 1
+  done
 fi
 
 step "4. Apply pending migrations"
+export DATABASE_URL="postgresql://ssz:dev@localhost:5433/savige"
 pnpm --filter web exec prisma migrate deploy
 
 step "5. Quality gate"

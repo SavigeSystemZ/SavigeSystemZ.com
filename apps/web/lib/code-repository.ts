@@ -86,9 +86,15 @@ export async function createCodeRepositoryFromGithub(input: CodeRepositoryCreate
   });
 }
 
-export async function syncCodeRepository(id: string) {
+export async function syncCodeRepository(id: string, options?: { force?: boolean }) {
   const row = await db.codeRepository.findUnique({ where: { id } });
   if (!row) throw new Error("Not found");
+
+  if (!options?.force && row.syncStatus === "OK" && row.lastSyncedAt) {
+    if (Date.now() - row.lastSyncedAt.getTime() < 5 * 60 * 1000) {
+      return row; // debounce sync if recent
+    }
+  }
   if (row.provider !== "GITHUB" || !row.githubOwner || !row.githubRepo) {
     throw new Error("Only GitHub-backed repositories can be synced.");
   }
@@ -124,14 +130,14 @@ export async function syncCodeRepository(id: string) {
   }
 }
 
-export async function syncCodeRepositoryByGithubRef(owner: string, repo: string) {
+export async function syncCodeRepositoryByGithubRef(owner: string, repo: string, options?: { force?: boolean }) {
   const row = await db.codeRepository.findFirst({
     where: { provider: "GITHUB", githubOwner: owner, githubRepo: repo },
   });
   if (!row) {
     throw new Error("Repository not tracked");
   }
-  return syncCodeRepository(row.id);
+  return syncCodeRepository(row.id, options);
 }
 
 export async function listCodeRepositories() {

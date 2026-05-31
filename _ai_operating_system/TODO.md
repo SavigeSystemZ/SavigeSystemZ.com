@@ -16,9 +16,9 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Public `/repos` index page:** ranks PUBLIC code repositories by latest commit; links to existing `/repos/[slug]` detail page.
 - [x] **Admin JSON size limits sweep:** all admin POST/PATCH JSON routes now use `readJsonBody` with per-route caps (8 KB → 256 KB).
 - [x] **README sanitizer hardening:** mixed-case + multiline `<script>` tags, single-quoted/unquoted event handlers, non-http(s) protocols all rejected; fixtures in `tests/unit/markdown-render.test.ts`.
-- [ ] **Stripe REFUNDED status:** add `REFUNDED` to `PurchaseStatus` enum + migration; wire `POST /api/admin/purchases/[id]/refund` calling Stripe `refunds.create` + audit log.
-- [ ] **Checkout transaction wrap:** `lib/checkout-complete.ts` license-grant + purchase-update should be a single `db.$transaction` to avoid the License-granted-but-Purchase-not-completed window.
-- [ ] **GitHub README rate-limit + sync debounce:** `lib/github-client.ts` README fetcher + per-repo sync should debounce to prevent burst calls.
+- [x] **Stripe REFUNDED status:** add `REFUNDED` to `PurchaseStatus` enum + migration; wire `POST /api/admin/purchases/[id]/refund` calling Stripe `refunds.create` + audit log.
+- [x] **Checkout transaction wrap:** `lib/checkout-complete.ts` license-grant + purchase-update should be a single `db.$transaction` to avoid the License-granted-but-Purchase-not-completed window.
+- [x] **GitHub README rate-limit + sync debounce:** `lib/github-client.ts` README fetcher + per-repo sync should debounce to prevent burst calls.
 - [ ] **Audit-log retention:** delete or archive `AuditLog` rows older than 90 days (cron or pg_partman).
 - [ ] **E2E coverage gaps:** `/repos` index, spike-notice dismiss flow, admin publish flows.
 - [ ] **S3 vault scan Lambda:** wire `infra/s3-vault-scan-lambda/` to vault bucket S3 events for AV/YARA scanning (blocked: AWS deploy access).
@@ -80,9 +80,9 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 
 1. Run `./scripts/post-chown-verify.sh` end-to-end.
 2. Run `./scripts/post-chown-commit.sh` to land the work in 7 commits.
-3. Wire `DashboardAlert` into `lib/admin-dashboard.ts` and create `components/admin/dashboard-spike.tsx` (M7.6 finish).
-4. Create `app/(public)/repos/page.tsx` (public repo index).
-5. Triage the remaining 40 P1 + 16 P2 review items (refund flow, AI per-user rate limit + audit, Application JSON-blob field typing, soft-delete utility, License/Purchase transaction wrap, README markdown sanitizer fixtures).
+- [x] 3. Wire `DashboardAlert` into `lib/admin-dashboard.ts` and create `components/admin/dashboard-spike-notices.tsx` (M7.6 finish).
+- [x] 4. Create `app/(public)/repos/page.tsx` (public repo index).
+- [x] 5. Triage the remaining 40 P1 + 16 P2 review items (refund flow, AI per-user rate limit + audit, Application JSON-blob field typing, soft-delete utility, License/Purchase transaction wrap, README markdown sanitizer fixtures).
 
 ## Done (archive reference)
 

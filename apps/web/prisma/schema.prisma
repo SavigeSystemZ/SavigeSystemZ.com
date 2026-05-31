@@ -348,6 +348,7 @@ enum PurchaseStatus {
   PENDING
   COMPLETED
   FAILED
+  REFUNDED
 }
 
 enum CreatorSubmissionType {

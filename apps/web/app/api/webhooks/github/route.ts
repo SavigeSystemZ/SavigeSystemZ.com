@@ -38,7 +38,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const updated = await syncCodeRepositoryByGithubRef(ref.owner, ref.repo);
+    const updated = await syncCodeRepositoryByGithubRef(ref.owner, ref.repo, { force: true });
     await writeAuditLog({
       action: "code.repository.webhook",
       actorUserId: null,
