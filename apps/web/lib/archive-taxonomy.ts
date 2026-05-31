@@ -20,21 +20,21 @@ export const archiveCategoryOptions = [
 export type ArchiveCategoryRecord = (typeof archiveCategoryOptions)[number];
 
 export const archiveCategoryLabels: Record<ArchiveCategoryRecord, string> = {
-  OPERATING_SYSTEM: "Linux build",
-  AUTOMATION: "Automation",
-  CONFIGURATION: "Config layer",
+  OPERATING_SYSTEM: "Custom OS builds",
+  AUTOMATION: "Scripts & Automation",
+  CONFIGURATION: "Dotfiles & Settings",
   CONTAINER_STACK: "Container stack",
   VIRTUAL_MACHINE: "VM kit",
-  MODEL: "Model lab",
+  MODEL: "Trained AIs & Models",
   RESEARCH: "Research archive",
-  WRITING: "Writing",
-  SECURITY_TOOL: "Security tool",
+  WRITING: "Guides, Tips & Tricks",
+  SECURITY_TOOL: "Security Recommendations",
   HACKING_CONTENT: "Hacking & Payloads",
   GAMES: "Games",
-  BOOKS: "Books & Literature",
-  TUTORIALS: "Tutorials & Guides",
+  BOOKS: "Books",
+  TUTORIALS: "Instructional Videos & Links",
   SOFTWARE_FREEWARE: "Software & Freeware",
-  AI_META_SYSTEMS: "AI & Meta-systems",
+  AI_META_SYSTEMS: "SysAdmin Meta Systems & AIs",
   OPNSENSE_BUILDS: "OPNsense builds",
 };
 

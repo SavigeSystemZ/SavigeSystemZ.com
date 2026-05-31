@@ -87,7 +87,7 @@ export default async function ArchivePage(props: ArchivePageProps) {
         <SectionHeading
           eyebrow="Engineering archive"
           title="A publication surface for the rest of the operator stack."
-          description="This is where Linux builds, dotfiles, containers, VMs, research notes, books, AI work, and security tooling can live with the same level of framing as the application catalog."
+          description="This is where dotfiles, scripts, program settings, custom OS builds, software/freeware, games, books, security recommendations, AI meta systems, hacking payloads, and OPNsense builds can live with the same level of framing as the application catalog."
           action={
             <Link href="/services" className="action-secondary text-sm">
               Commission archive work

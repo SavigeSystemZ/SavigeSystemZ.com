@@ -4,6 +4,7 @@ const links = [
   { href: "/", label: "Home" },
   { href: "/applications", label: "Applications" },
   { href: "/archive", label: "Archive" },
+  { href: "/repos", label: "GitHub Repos" },
   { href: "/downloads", label: "Downloads" },
   { href: "/pricing", label: "Pricing" },
   { href: "/creator", label: "Creator" },
