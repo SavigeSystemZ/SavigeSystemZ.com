@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { OwnerShell } from "@/components/owner/owner-shell";
+import { OperatorDock } from "@/components/admin/operator-dock";
 
 export const metadata: Metadata = {
   title: {
@@ -24,6 +25,7 @@ export default function OwnerPrivateLayout({
       >
         {children}
       </div>
+      <OperatorDock />
     </div>
   );
 }

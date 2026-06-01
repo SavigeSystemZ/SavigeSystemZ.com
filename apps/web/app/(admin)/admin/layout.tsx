@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { OperatorDock } from "@/components/admin/operator-dock";
 
 export const metadata: Metadata = {
   title: {
@@ -24,6 +25,7 @@ export default function AdminSectionLayout({
       >
         {children}
       </div>
+      <OperatorDock />
     </div>
   );
 }
