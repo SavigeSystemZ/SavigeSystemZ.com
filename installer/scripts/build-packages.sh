@@ -78,6 +78,8 @@ build_deb() {
     "${pkg_dir}/usr/share/applications" \
     "${pkg_dir}/usr/share/icons/hicolor/scalable/apps" \
     "${pkg_dir}/usr/share/savigesystemz"
+  
+  chmod 0755 "${pkg_dir}/DEBIAN"
 
   # Render the control file with the resolved version.
   sed -e "s/^Version:.*/Version: ${VERSION}/" \
