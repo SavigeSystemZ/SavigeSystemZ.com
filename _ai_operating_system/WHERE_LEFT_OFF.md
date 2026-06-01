@@ -1,18 +1,24 @@
 # Where Left Off
 
-- **Timestamp:** 2026-05-31 (Current session; M11 Self-Hosted Code Storage landed)
-- **Status:** M11 is fully completed. Local bare git repositories are now supported, bypassing the need for sidecar containers by using a direct Node.js to `git-http-backend` integration.
+- **Timestamp:** 2026-05-31 (Current session; M8 + M9 + Installer Polishing)
+- **Status:** M8 (Owner Workspace) and M9 (Operator AI Copilot) are completed. The website is properly installed locally via the desktop launcher, and the `.deb` package builder was fixed and runs successfully.
 - **Shipped this session:**
-  - **M11 - Git HTTP Backend (`/api/git/[slug]/[...path]`):** Full smart-HTTP Git implementation enabling `git clone`, `fetch`, and `push` directly against the Next.js API. Supports session auth for browsers and Basic Auth (using `OWNER_ACCESS_CODE`) for git CLI clients.
-  - **M11 - Private Repo Entitlements:** Integrated `db.license` checks into the Git HTTP backend and Catalog Resolver. Users with an `ACTIVE` license to an application can clone and view its linked `PRIVATE` repository code, without needing `OWNER` privileges.
-  - **M11 - Tree/Blob Viewer (`/repos/[slug]/[[...path]]/page.tsx`):** The public repository detail page now supports full file-system navigation and blob viewing for `SELF_HOSTED` repositories, extracting the contents locally using `git ls-tree` and `git show`.
-  - **M11 - Admin Init Local (`/admin/code`):** Added an "Init Self-Host" button to the admin code panel that creates a local bare repository (`git init --bare`) and flips the `storageBackend` to `SELF_HOSTED`.
-- **Validation:** `pnpm check:all` is green (lint, typecheck, tests). Next.js `.next` cache cleared to resolve stale typecheck errors.
+  - **M8 - Owner Workspace:** Implemented the hermetically sealed private owner workspace including CRUD flows for Projects, Notes, and Journals.
+  - **M9 - AI Split (Operator Copilot):** Built a dedicated Operator AI endpoint (`/api/owner/ai/chat`) guarded by `requireOwner()`. Injected `<OperatorDock />` securely into the admin and owner shell layouts while hiding the public Concierge in those views.
+  - **Installer & Setup:** Verified `installer/desktop/install-desktop-launcher.sh --smart` successfully drops the desktop icon. Fixed a 750-permission error in `build-packages.sh` for the `DEBIAN` directory so `dpkg-deb` correctly builds `.deb` installers.
+- **Validation:** 
+  - `pnpm check:all` passed (lint, typecheck, tests, and build) for the M9 implementation.
+  - The local desktop launcher (`--smart` mode) is installed and functional.
+  - Dev server tested and responding 200 OK at `/api/health`.
 - **Next actionable (in order):**
   1. Add E2E coverage for the new `/repos` index, the spike-notice dismiss flow, and admin publish flows.
   2. Implement Audit-log retention policy (delete/archive `AuditLog` rows older than 90 days).
   3. Stripe live-path staging smoke and S3 direct uploads (once credentials are provided).
-- **Blocked / external input:** S3 creds, Stripe live keys, Vercel DNS, GITHUB_TOKEN for private-repo sync, AWS Lambda deploy access for vault scan.
+- **Blocked / external input:** 
+  - S3 creds, Stripe live keys, Vercel DNS.
+  - GITHUB_TOKEN for private-repo sync.
+  - Change GitHub repo to PUBLIC to enable repository sync and public facing repo surfaces.
+  - AWS Lambda deploy access for vault scan.
 
 ---
 
