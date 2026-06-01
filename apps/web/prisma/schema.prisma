@@ -8,44 +8,44 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
-  email     String    @unique
-  name      String?
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  auditLogs AuditLog[]
-  sessions  Session[]
-  licenses  License[]
-  passkeys  PasskeyCredential[]
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String?
+  role              Role                @default(USER)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  auditLogs         AuditLog[]
+  sessions          Session[]
+  licenses          License[]
+  passkeys          PasskeyCredential[]
   passkeyChallenges PasskeyChallenge[]
-  vaultArtifacts VaultArtifact[]
+  vaultArtifacts    VaultArtifact[]
 }
 
 model Application {
-  id          String               @id @default(cuid())
-  slug        String               @unique
-  name        String
-  summary     String
-  label       String?
-  tagline     String?
-  audience    String?
-  priceLabel  String?
-  releaseChannel String?
-  details     String?
-  highlights  String?
-  surfaceAreas String?
-  stackItems  String?
-  visibility  ApplicationVisibility @default(DRAFT)
-  featured    Boolean              @default(false)
+  id               String                @id @default(cuid())
+  slug             String                @unique
+  name             String
+  summary          String
+  label            String?
+  tagline          String?
+  audience         String?
+  priceLabel       String?
+  releaseChannel   String?
+  details          String?
+  highlights       String?
+  surfaceAreas     String?
+  stackItems       String?
+  visibility       ApplicationVisibility @default(DRAFT)
+  featured         Boolean               @default(false)
   codeRepositoryId String?
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  versions    ApplicationVersion[]
-  media       ApplicationMedia[]
-  licenses    License[]
-  purchases   Purchase[]
-  codeRepository CodeRepository? @relation(fields: [codeRepositoryId], references: [id], onDelete: SetNull)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  versions         ApplicationVersion[]
+  media            ApplicationMedia[]
+  licenses         License[]
+  purchases        Purchase[]
+  codeRepository   CodeRepository?       @relation(fields: [codeRepositoryId], references: [id], onDelete: SetNull)
 
   @@index([visibility, featured])
   @@index([codeRepositoryId])
@@ -94,12 +94,12 @@ model ApplicationMedia {
 }
 
 model ApplicationVersion {
-  id            String       @id @default(cuid())
+  id            String         @id @default(cuid())
   applicationId String
   version       String
   changelog     String
-  createdAt     DateTime     @default(now())
-  application   Application  @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   assets        ReleaseAsset[]
 
   @@unique([applicationId, version])
@@ -108,18 +108,18 @@ model ApplicationVersion {
 }
 
 model ReleaseAsset {
-  id          String             @id @default(cuid())
-  versionId   String
-  fileName    String
-  fileUrl     String
+  id         String             @id @default(cuid())
+  versionId  String
+  fileName   String
+  fileUrl    String
   /// When set with s3Key, `/api/files/signed` may redirect to a presigned GET URL instead of fileUrl.
-  s3Bucket    String?
-  s3Key       String?
-  checksum    String?
-  visibility  AssetVisibility    @default(PUBLIC)
-  createdAt   DateTime           @default(now())
-  version     ApplicationVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
-  downloads   DownloadEvent[]
+  s3Bucket   String?
+  s3Key      String?
+  checksum   String?
+  visibility AssetVisibility    @default(PUBLIC)
+  createdAt  DateTime           @default(now())
+  version    ApplicationVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  downloads  DownloadEvent[]
 
   @@index([versionId])
 }
@@ -137,40 +137,40 @@ model Session {
 }
 
 model PasskeyCredential {
-  id            String   @id @default(cuid())
-  userId        String
-  credentialId  String   @unique
-  publicKey     String
-  counter       Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  userId       String
+  credentialId String   @unique
+  publicKey    String
+  counter      Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model License {
-  id            String   @id @default(cuid())
-  userId        String
-  applicationId String
-  status        LicenseStatus @default(ACTIVE)
-  createdAt     DateTime @default(now())
-  stripeCheckoutSessionId String? @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  id                      String        @id @default(cuid())
+  userId                  String
+  applicationId           String
+  status                  LicenseStatus @default(ACTIVE)
+  createdAt               DateTime      @default(now())
+  stripeCheckoutSessionId String?       @unique
+  user                    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application             Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([userId, applicationId])
 }
 
 model Purchase {
-  id                      String   @id @default(cuid())
-  stripeCheckoutSessionId String   @unique
+  id                      String         @id @default(cuid())
+  stripeCheckoutSessionId String         @unique
   applicationId           String
   purchaserEmail          String
   status                  PurchaseStatus @default(PENDING)
-  createdAt               DateTime @default(now())
+  createdAt               DateTime       @default(now())
   completedAt             DateTime?
-  application             Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  application             Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([applicationId])
   @@index([status])
@@ -182,10 +182,10 @@ model Purchase {
 /// the unique constraint on `eventId` causes a P2002 (Prisma) / 23505 (Postgres) error
 /// on replay, which the webhook route translates into an immediate 200 OK.
 model StripeWebhookEvent {
-  id          String   @id @default(cuid())
-  eventId     String   @unique
+  id          String    @id @default(cuid())
+  eventId     String    @unique
   eventType   String
-  receivedAt  DateTime @default(now())
+  receivedAt  DateTime  @default(now())
   processedAt DateTime?
 
   @@index([eventType])
@@ -193,14 +193,14 @@ model StripeWebhookEvent {
 }
 
 model PasskeyChallenge {
-  id          String               @id @default(cuid())
+  id        String               @id @default(cuid())
   /// Null for discoverable-style login challenges (resolved via credential id after verify).
-  userId      String?
-  kind        PasskeyChallengeKind @default(AUTHENTICATION)
-  challenge   String               @unique
-  expiresAt   DateTime
-  createdAt   DateTime             @default(now())
-  user        User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?
+  kind      PasskeyChallengeKind @default(AUTHENTICATION)
+  challenge String               @unique
+  expiresAt DateTime
+  createdAt DateTime             @default(now())
+  user      User?                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([expiresAt])
   @@index([userId])
@@ -212,11 +212,11 @@ enum PasskeyChallengeKind {
 }
 
 model DownloadEvent {
-  id           String   @id @default(cuid())
-  userId       String?
+  id             String       @id @default(cuid())
+  userId         String?
   releaseAssetId String
-  createdAt    DateTime @default(now())
-  releaseAsset ReleaseAsset @relation(fields: [releaseAssetId], references: [id], onDelete: Cascade)
+  createdAt      DateTime     @default(now())
+  releaseAsset   ReleaseAsset @relation(fields: [releaseAssetId], references: [id], onDelete: Cascade)
 
   @@index([releaseAssetId])
   @@index([userId])
@@ -241,28 +241,31 @@ model AuditLog {
 
 /// Owner-scoped encrypted vault row (payload is AES-256-GCM JSON: note + tags).
 model VaultArtifact {
-  id            String   @id @default(cuid())
+  id            String             @id @default(cuid())
   ownerUserId   String
-  createdAt     DateTime @default(now())
+  createdAt     DateTime           @default(now())
   payloadCipher String
   /// Ciphertext key epoch; matches `VAULT_STORED_KEY_VERSION` in app code until format changes.
-  keyVersion    Int      @default(1)
-  owner         User     @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  keyVersion    Int                @default(1)
+  scanStatus    ArtifactScanStatus @default(PENDING)
+  scanError     String?
+  owner         User               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
 
   @@index([ownerUserId, createdAt])
+  @@index([scanStatus])
 }
 
 model ProjectRequest {
-  id           String                @id @default(cuid())
+  id           String               @id @default(cuid())
   title        String
   description  String
   contactEmail String?
-  status       ProjectRequestStatus  @default(PENDING)
+  status       ProjectRequestStatus @default(PENDING)
   sourceIp     String?
   /// When set, the row is hidden from default admin lists (soft-delete / archive).
   deletedAt    DateTime?
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
 
   @@index([deletedAt])
   @@index([status, createdAt])
@@ -270,25 +273,25 @@ model ProjectRequest {
 }
 
 model CreatorSubmission {
-  id                String                   @id @default(cuid())
-  title             String
-  summary           String
-  details           String
-  type              CreatorSubmissionType
-  plannedVisibility ApplicationVisibility   @default(DRAFT)
-  status            CreatorSubmissionStatus @default(PENDING)
-  contactEmail      String?
-  repoUrl           String?
-  artifactUrl       String?
-  ownerNotes        String?
+  id                 String                  @id @default(cuid())
+  title              String
+  summary            String
+  details            String
+  type               CreatorSubmissionType
+  plannedVisibility  ApplicationVisibility   @default(DRAFT)
+  status             CreatorSubmissionStatus @default(PENDING)
+  contactEmail       String?
+  repoUrl            String?
+  artifactUrl        String?
+  ownerNotes         String?
   promotedTargetType CreatorPromotionTarget?
   promotedTargetId   String?
   promotedTargetSlug String?
   promotedAt         DateTime?
-  sourceIp          String?
-  deletedAt         DateTime?
-  createdAt         DateTime                 @default(now())
-  updatedAt         DateTime                 @updatedAt
+  sourceIp           String?
+  deletedAt          DateTime?
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
 
   @@index([status, createdAt])
   @@index([type, createdAt])
@@ -381,34 +384,34 @@ enum CodeRepositoryStorageBackend {
 }
 
 model CodeRepository {
-  id                   String                @id @default(cuid())
-  slug                 String                @unique
-  name                 String
-  description          String?
-  provider             CodeRepositoryProvider @default(GITHUB)
-  visibility           ApplicationVisibility @default(DRAFT)
+  id                  String                       @id @default(cuid())
+  slug                String                       @unique
+  name                String
+  description         String?
+  provider            CodeRepositoryProvider       @default(GITHUB)
+  visibility          ApplicationVisibility        @default(DRAFT)
   /// M11 stub — selects between mirroring GitHub metadata and serving git
   /// pack files directly from this platform via app/api/git/[repo]/[...path].
   /// Defaults to GITHUB; SELF_HOSTED is reserved for the milestone landing.
-  storageBackend       CodeRepositoryStorageBackend @default(GITHUB)
-  githubOwner          String?
-  githubRepo           String?
-  githubUrl            String?
-  defaultBranch        String?
-  homepageUrl          String?
-  primaryLanguage      String?
-  starCount            Int?
-  forkCount            Int?
-  openIssueCount       Int?
-  latestCommitSha      String?
-  latestCommitMessage  String?
-  latestCommitAt       DateTime?
-  syncStatus           CodeRepositorySyncStatus @default(PENDING)
-  syncError            String?
-  lastSyncedAt         DateTime?
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
-  applications         Application[]
+  storageBackend      CodeRepositoryStorageBackend @default(GITHUB)
+  githubOwner         String?
+  githubRepo          String?
+  githubUrl           String?
+  defaultBranch       String?
+  homepageUrl         String?
+  primaryLanguage     String?
+  starCount           Int?
+  forkCount           Int?
+  openIssueCount      Int?
+  latestCommitSha     String?
+  latestCommitMessage String?
+  latestCommitAt      DateTime?
+  syncStatus          CodeRepositorySyncStatus     @default(PENDING)
+  syncError           String?
+  lastSyncedAt        DateTime?
+  createdAt           DateTime                     @default(now())
+  updatedAt           DateTime                     @updatedAt
+  applications        Application[]
 
   @@unique([provider, githubOwner, githubRepo])
   @@index([visibility, provider])
@@ -421,16 +424,16 @@ model CodeRepository {
 /// `POST /api/admin/dashboard/acknowledge` and filtered out of the active
 /// alert lane until they re-fire.
 model DashboardAlert {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   /// Stable key — e.g. `spike:repoErrorInflow:24h` — so re-firing the same
   /// alert reuses the row rather than producing duplicates.
-  alertKey       String   @unique
+  alertKey       String    @unique
   category       String
-  severity       String   @default("info")
+  severity       String    @default("info")
   message        String
   metadata       String?
-  firstSeenAt    DateTime @default(now())
-  lastSeenAt     DateTime @default(now())
+  firstSeenAt    DateTime  @default(now())
+  lastSeenAt     DateTime  @default(now())
   acknowledgedAt DateTime?
   acknowledgedBy String?
 
@@ -448,4 +451,108 @@ enum CodeRepositorySyncStatus {
   PENDING
   OK
   ERROR
+}
+
+enum ArtifactScanStatus {
+  PENDING
+  CLEAN
+  INFECTED
+  ERROR
+}
+
+enum OwnerProjectStatus {
+  IDEA
+  ACTIVE
+  PAUSED
+  SHIPPED
+  ARCHIVED
+}
+
+enum OwnerProjectPriority {
+  LOW
+  MED
+  HIGH
+}
+
+enum OwnerArtifactKind {
+  FILE
+  LINK
+  REPO_POINTER
+  IMAGE
+}
+
+model OwnerProject {
+  id                     String               @id @default(cuid())
+  slug                   String               @unique
+  title                  String
+  summary                String
+  status                 OwnerProjectStatus   @default(IDEA)
+  priority               OwnerProjectPriority @default(MED)
+  startedAt              DateTime?
+  targetAt               DateTime?
+  linkedApplicationId    String?
+  linkedArchiveEntryId   String?
+  linkedCodeRepositoryId String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  notes                  OwnerNote[]
+  artifacts              OwnerArtifact[]
+  tags                   OwnerTag[]
+  journals               OwnerJournal[]       @relation("ProjectToJournal")
+
+  @@index([status])
+  @@index([priority])
+}
+
+model OwnerNote {
+  id           String        @id @default(cuid())
+  projectId    String?
+  title        String
+  bodyMarkdown String
+  pinned       Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  project      OwnerProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, pinned])
+  @@index([createdAt])
+}
+
+model OwnerArtifact {
+  id          String             @id @default(cuid())
+  projectId   String
+  kind        OwnerArtifactKind
+  name        String
+  s3Key       String?
+  externalUrl String?
+  fileSize    Int?
+  mimeType    String?
+  scanStatus  ArtifactScanStatus @default(PENDING)
+  scanError   String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  project     OwnerProject       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([kind])
+  @@index([scanStatus])
+}
+
+model OwnerTag {
+  id        String       @id @default(cuid())
+  projectId String
+  label     String
+  color     String
+  project   OwnerProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, label])
+}
+
+model OwnerJournal {
+  id           String         @id @default(cuid())
+  date         DateTime       @unique /// Unique per day (e.g. 2026-05-31T00:00:00Z)
+  bodyMarkdown String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  projects     OwnerProject[] @relation("ProjectToJournal")
 }

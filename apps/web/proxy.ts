@@ -26,7 +26,8 @@ export async function proxy(request: NextRequest) {
     response.headers.set(key, value);
   }
 
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  const pathname = request.nextUrl.pathname;
+  if (pathname.startsWith("/admin") || (pathname.startsWith("/owner") && pathname !== "/owner/login")) {
     if (!productionOwnerSecretIsStrong()) {
       return new NextResponse(
         "Server misconfiguration: set OWNER_LOGIN_SECRET to a unique value of at least 32 characters in production.",
