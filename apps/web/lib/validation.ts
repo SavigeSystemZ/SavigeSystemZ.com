@@ -288,6 +288,11 @@ export const checkoutRequestSchema = z.object({
   purchaserEmail: z.string().email(),
 });
 
+export const donateRequestSchema = z.object({
+  applicationId: z.string().min(1),
+  donorEmail: z.string().email().max(320).optional(),
+});
+
 export const projectRequestSchema = z.object({
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().min(10).max(8000),

@@ -5,7 +5,7 @@ import { pricingPlans } from "@/lib/showcase-content";
 
 export const metadata: Metadata = {
   title: "Pricing",
-  description: "Plans and purchase options for SavigeSystemZ software and releases.",
+  description: "Pricing lanes for SavigeSystemZ catalog entries — currently TBD while the foundry catalog expands.",
 };
 
 export default function PricingPage() {
