@@ -14,6 +14,7 @@ import {
   getCatalogLaunchEntry,
   resolveLaunchTargetForCatalog,
   resolveMyAppZRepoPath,
+  type LaunchUrlDiscoverySource,
 } from "../lib/catalog-launch-registry";
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -68,7 +69,12 @@ async function main(): Promise<void> {
     const target = resolveLaunchTargetForCatalog(seed.slug, seed.githubRepo);
     const repoPath = resolveMyAppZRepoPath(seed.githubRepo, registry?.repoDir);
     const repoExists = fs.existsSync(repoPath);
-    const inferredOnly = !registry?.launchUrl && Boolean(discoverLaunchUrlForRepo(seed.githubRepo, registry?.repoDir));
+    const discovery = discoverLaunchUrlForRepo(seed.githubRepo, registry?.repoDir);
+    const source: LaunchUrlDiscoverySource = registry?.launchUrl
+      ? "registry"
+      : registry?.surface === "desktop"
+        ? "registry"
+        : discovery.source;
     const live = target.launchUrl ? await probeHttp(target.launchUrl) : false;
 
     rows.push({
@@ -77,7 +83,8 @@ async function main(): Promise<void> {
       surface: target.surface,
       launchUrl: target.launchUrl ?? null,
       repoExists,
-      source: registry?.launchUrl ? "registry" : inferredOnly ? "env.example" : "none",
+      repoPath,
+      source,
       live,
       startHint: target.startHint ?? null,
     });
@@ -94,7 +101,8 @@ async function main(): Promise<void> {
   console.log(`Catalog launch discovery — ${liveCount} live / ${withUrl.length} with URL / ${rows.length} total\n`);
   for (const row of rows) {
     const status = row.live ? "LIVE" : row.launchUrl ? "DOWN" : row.surface === "desktop" ? "DESKTOP" : "NO_URL";
-    console.log(`${status.padEnd(8)} ${row.slug.padEnd(24)} ${row.launchUrl ?? "—"}`);
+    const source = row.source !== "none" ? ` [${row.source}]` : "";
+    console.log(`${status.padEnd(8)} ${row.slug.padEnd(24)} ${row.launchUrl ?? "—"}${source}`);
   }
 }
 

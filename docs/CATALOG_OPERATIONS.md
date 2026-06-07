@@ -67,7 +67,7 @@ Outputs:
 | `public/showcase/ui-catalog/{slug}.png` | SavigeSystemZ `/applications/{slug}` render |
 | `docs/CATALOG_UI_SCREENSHOT_REPORT.md` | Operator follow-up for apps that did not launch |
 
-Registry: `apps/web/lib/catalog-launch-registry.ts`. Exit code **2** when apps need operator action (use `--allow-partial` to continue).
+Registry: `apps/web/lib/catalog-launch-registry.ts`. Discovery order: explicit registry → sibling `ops/LOCAL_DEV_PORTS.md` → `.env.example` → `~/.MyAppZ/PORTS_REGISTRY.md`. Generic AIAAST bootstrap port `46300` is ignored. Exit code **2** when apps need operator action (use `--allow-partial` to continue).
 
 ```bash
 pnpm code:capture-ui-screenshots -- --catalog-only          # SSZ catalog pages only
