@@ -1,26 +1,25 @@
 import { expect, test } from "@playwright/test";
+import { seedOwnerSession } from "./helpers/owner-auth";
 
-const OWNER_CODE = process.env.E2E_OWNER_CODE ?? "e2e-owner-code";
-
-async function loginOwner(page: import("@playwright/test").Page) {
-  await page.goto("/owner/login");
-  await page.getByPlaceholder("Owner access code").fill(OWNER_CODE);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.waitForURL("**/admin**");
+async function loginOwner(page: import("@playwright/test").Page, request: import("@playwright/test").APIRequestContext) {
+  await seedOwnerSession(request, page);
+  await page.goto("/admin");
 }
 
 test.describe("admin publish flows", () => {
-  test("creates a new application draft, saves it, and publishes it", async ({ page }) => {
-    await loginOwner(page);
+  test("creates a new application draft, saves it, and publishes it", async ({ page, request }) => {
+    await loginOwner(page, request);
 
     await page.goto("/admin");
 
     // Create a new draft application
     const uniqueSlug = `e2e-app-${Date.now()}`;
-    await page.getByPlaceholder("slug").fill(uniqueSlug);
-    await page.getByPlaceholder("name").fill("E2E Test App");
-    await page.getByPlaceholder("summary").fill("An app created by E2E testing.");
-    await page.getByRole("button", { name: "Create app" }).click();
+    // Create form is the first block on /admin — avoid matching per-app edit forms.
+    const createForm = page.locator("form").filter({ has: page.getByRole("button", { name: "Create app" }) });
+    await createForm.getByPlaceholder("slug").fill(uniqueSlug);
+    await createForm.getByPlaceholder("name").fill("E2E Test App");
+    await createForm.getByPlaceholder("summary").fill("An app created by E2E testing.");
+    await createForm.getByRole("button", { name: "Create app" }).click();
 
     await expect(page.getByText("Application created.")).toBeVisible();
 

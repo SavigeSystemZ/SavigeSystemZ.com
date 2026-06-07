@@ -1,6 +1,5 @@
 import { test, expect, type APIRequestContext } from "@playwright/test";
-
-const OWNER_CODE = process.env.OWNER_ACCESS_CODE ?? "e2e-owner-code";
+import { OWNER_CODE } from "./helpers/owner-auth";
 
 async function ownerLogin(request: APIRequestContext) {
   const login = await request.post("/api/auth/login", {

@@ -1,7 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "@playwright/test";
-
-const OWNER_CODE = process.env.OWNER_ACCESS_CODE ?? "e2e-owner-code";
+import { seedOwnerSession } from "./helpers/owner-auth";
 
 /**
  * Automated WCAG checks (axe-core). Fails on serious/critical issues excluding
@@ -29,8 +28,20 @@ test.describe("accessibility — public routes (axe)", () => {
     expect(seriousViolations(violations)).toEqual([]);
   });
 
+  test("application detail (ledgerloop)", async ({ page }) => {
+    await page.goto("/applications/ledgerloop");
+    const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
+    expect(seriousViolations(violations)).toEqual([]);
+  });
+
+  test("application detail (vetraxis)", async ({ page }) => {
+    await page.goto("/applications/vetraxis");
+    const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
+    expect(seriousViolations(violations)).toEqual([]);
+  });
+
   test("application detail (seeded slug)", async ({ page }) => {
-    await page.goto("/applications/wireless-ops-suite");
+    await page.goto("/applications/immortality");
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
     expect(seriousViolations(violations)).toEqual([]);
   });
@@ -71,6 +82,12 @@ test.describe("accessibility — public routes (axe)", () => {
     expect(seriousViolations(violations)).toEqual([]);
   });
 
+  test("repos index", async ({ page }) => {
+    await page.goto("/repos");
+    const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
+    expect(seriousViolations(violations)).toEqual([]);
+  });
+
   test("creator intake page", async ({ page }) => {
     await page.goto("/creator");
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
@@ -100,20 +117,15 @@ test.describe("accessibility — public routes (axe)", () => {
 });
 
 test.describe("accessibility — admin routes (axe)", () => {
-  test("admin overview after owner login", async ({ page }) => {
-    await page.goto("/owner/login");
-    await page.getByPlaceholder("Owner access code").fill(OWNER_CODE);
-    await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/admin**");
+  test("admin overview after owner login", async ({ page, request }) => {
+    await seedOwnerSession(request, page);
+    await page.goto("/admin");
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
     expect(seriousViolations(violations)).toEqual([]);
   });
 
-  test("admin archive manager", async ({ page }) => {
-    await page.goto("/owner/login");
-    await page.getByPlaceholder("Owner access code").fill(OWNER_CODE);
-    await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/admin**");
+  test("admin archive manager", async ({ page, request }) => {
+    await seedOwnerSession(request, page);
     await page.goto("/admin/archive");
     const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag21a"]).analyze();
     expect(seriousViolations(violations)).toEqual([]);

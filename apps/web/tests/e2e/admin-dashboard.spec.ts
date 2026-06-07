@@ -1,14 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
+import { seedOwnerSession } from "./helpers/owner-auth";
 
-const OWNER_CODE = process.env.E2E_OWNER_CODE ?? "e2e-owner-code";
 const prisma = new PrismaClient();
 
-async function loginOwner(page: import("@playwright/test").Page) {
-  await page.goto("/owner/login");
-  await page.getByPlaceholder("Owner access code").fill(OWNER_CODE);
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.waitForURL("**/admin**");
+async function loginOwner(page: import("@playwright/test").Page, request: import("@playwright/test").APIRequestContext) {
+  await seedOwnerSession(request, page);
+  await page.goto("/admin");
 }
 
 test.describe("admin dashboard intelligence", () => {
@@ -40,8 +38,8 @@ test.describe("admin dashboard intelligence", () => {
     await prisma.$disconnect();
   });
 
-  test("keeps focus when switching timeframe", async ({ page }) => {
-    await loginOwner(page);
+  test("keeps focus when switching timeframe", async ({ page, request }) => {
+    await loginOwner(page, request);
 
     await page.goto("/admin?window=24h&focus=requests");
     await expect(page.getByRole("heading", { name: /project request queue details/i })).toBeVisible();
@@ -51,16 +49,16 @@ test.describe("admin dashboard intelligence", () => {
     await expect(page.getByRole("heading", { name: /project request queue details/i })).toBeVisible();
   });
 
-  test("renders audit focus drilldown and trend lane", async ({ page }) => {
-    await loginOwner(page);
+  test("renders audit focus drilldown and trend lane", async ({ page, request }) => {
+    await loginOwner(page, request);
 
     await page.goto("/admin?window=7d&focus=audit");
     await expect(page.getByRole("heading", { name: /audit anomaly details \(7d\)/i })).toBeVisible();
     await expect(page.getByRole("link", { name: /review bursts/i })).toBeVisible();
   });
 
-  test("supports refresh controls and shows freshness telemetry", async ({ page }) => {
-    await loginOwner(page);
+  test("supports refresh controls and shows freshness telemetry", async ({ page, request }) => {
+    await loginOwner(page, request);
 
     await page.goto("/admin?window=24h&focus=repos&refresh=off");
     await expect(page.getByText(/last updated/i)).toBeVisible();
@@ -70,16 +68,19 @@ test.describe("admin dashboard intelligence", () => {
     await expect(page.getByRole("heading", { name: /repository sync errors/i })).toBeVisible();
   });
 
-  test("dismisses spike notices", async ({ page }) => {
-    await loginOwner(page);
+  test("dismisses spike notices", async ({ page, request }) => {
+    await loginOwner(page, request);
 
     await page.goto("/admin");
-    await expect(page.getByText("E2E Test Spike Notice")).toBeVisible();
-    
-    const dismissButton = page.getByRole("button", { name: /dismiss/i }).first();
-    await dismissButton.click();
-    
-    // Wait for it to disappear
-    await expect(page.getByText("E2E Test Spike Notice")).not.toBeVisible();
+    const spikeNotice = page.locator('[role="status"]').filter({ hasText: "E2E Test Spike Notice" });
+    await expect(spikeNotice).toBeVisible();
+
+    const ackPromise = page.waitForResponse(
+      (response) => response.url().includes("/api/admin/dashboard/acknowledge") && response.ok(),
+    );
+    await spikeNotice.getByRole("button", { name: "Dismiss" }).click();
+    await ackPromise;
+
+    await expect(spikeNotice).not.toBeVisible();
   });
 });

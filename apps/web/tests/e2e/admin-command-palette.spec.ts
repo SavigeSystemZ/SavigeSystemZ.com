@@ -1,13 +1,10 @@
 import { expect, test } from "@playwright/test";
-
-const OWNER_CODE = process.env.E2E_OWNER_CODE ?? "e2e-owner-code";
+import { seedOwnerSession } from "./helpers/owner-auth";
 
 test.describe("admin command palette", () => {
-  test("owner can open palette, filter commands, and navigate", async ({ page }) => {
-    await page.goto("/owner/login");
-    await page.getByPlaceholder("Owner access code").fill(OWNER_CODE);
-    await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/admin**");
+  test("owner can open palette, filter commands, and navigate", async ({ page, request }) => {
+    await seedOwnerSession(request, page);
+    await page.goto("/admin");
 
     await page.getByRole("button", { name: /open command palette/i }).click();
     await expect(page.getByRole("dialog")).toBeVisible();

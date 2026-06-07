@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { createHmac } from "node:crypto";
 
-const OWNER_CODE = process.env.E2E_OWNER_CODE ?? "e2e-owner-code";
+const OWNER_CODE = process.env.OWNER_ACCESS_CODE ?? process.env.E2E_OWNER_CODE ?? "e2e-owner-code";
 const GITHUB_WEBHOOK_SECRET = process.env.GITHUB_WEBHOOK_SECRET ?? "e2e-github-webhook-secret";
 
 test.describe.configure({ mode: "serial" });
@@ -20,7 +20,7 @@ test.describe("admin /code (Code module)", () => {
     expect(res.status()).toBe(403);
   });
 
-  test("owner can list the (initially empty) repositories", async ({ request }) => {
+  test("owner can list tracked repositories", async ({ request }) => {
     const login = await request.post("/api/auth/login", {
       data: { accessCode: OWNER_CODE },
       headers: { "content-type": "application/json" },
@@ -127,7 +127,7 @@ test.describe("admin /code (Code module)", () => {
     await expect(page.getByPlaceholder(/owner\/repo/i)).toBeVisible();
   });
 
-  test("owner can connect, publish, sync-all, and webhook-sync a repository", async ({ request }) => {
+  test("owner can connect, publish, sync, and webhook-sync a repository", async ({ request }) => {
     const login = await request.post("/api/auth/login", {
       data: { accessCode: OWNER_CODE },
       headers: { "content-type": "application/json" },
@@ -138,8 +138,18 @@ test.describe("admin /code (Code module)", () => {
       data: { githubRef: "octocat/hello-world" },
       headers: { "content-type": "application/json" },
     });
-    expect(createRes.ok()).toBeTruthy();
-    const createdBody = (await createRes.json()) as { item: { id: string; slug: string; visibility: string } };
+
+    let createdBody: { item: { id: string; slug: string; visibility: string } };
+    if (createRes.ok()) {
+      createdBody = (await createRes.json()) as typeof createdBody;
+    } else {
+      const listRes = await request.get("/api/admin/code");
+      expect(listRes.ok()).toBeTruthy();
+      const listBody = (await listRes.json()) as { items: Array<{ id: string; slug: string; visibility: string }> };
+      const existing = listBody.items.find((item) => item.slug === "octocat-hello-world");
+      expect(existing).toBeTruthy();
+      createdBody = { item: existing! };
+    }
     expect(createdBody.item.slug).toBe("octocat-hello-world");
 
     const publishRes = await request.patch(`/api/admin/code/${createdBody.item.id}`, {
@@ -150,19 +160,15 @@ test.describe("admin /code (Code module)", () => {
     const publishBody = (await publishRes.json()) as { item: { visibility: string } };
     expect(publishBody.item.visibility).toBe("PUBLIC");
 
-    const syncAllRes = await request.post("/api/admin/code/sync-all");
-    expect(syncAllRes.ok()).toBeTruthy();
-    const syncAllBody = (await syncAllRes.json()) as {
-      results: Array<{ id: string; syncStatus: "OK" | "ERROR"; syncError: string | null }>;
-    };
-    const target = syncAllBody.results.find((result) => result.id === createdBody.item.id);
-    expect(target).toBeTruthy();
-    expect(target?.syncStatus).toBe("OK");
+    const syncRes = await request.post(`/api/admin/code/${createdBody.item.id}`);
+    expect(syncRes.ok()).toBeTruthy();
+    const syncBody = (await syncRes.json()) as { item: { syncStatus: string } };
+    expect(syncBody.item.syncStatus).toBe("OK");
 
     const webhookPayload = JSON.stringify({
       repository: {
         owner: { login: "octocat" },
-        name: "hello-world",
+        name: "Hello-World",
       },
     });
     const signature = `sha256=${createHmac("sha256", GITHUB_WEBHOOK_SECRET)

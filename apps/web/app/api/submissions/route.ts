@@ -7,7 +7,8 @@ import { rateLimit } from "@/lib/rate-limit";
 import { creatorSubmissionSchema } from "@/lib/validation";
 
 const WINDOW_MS = 60_000;
-const MAX_PER_IP = 6;
+/** Parallel E2E hammers one IP; keep production tight. */
+const MAX_PER_IP = process.env.NODE_ENV === "production" ? 6 : 1000;
 
 export async function POST(request: Request) {
   const ip = getRequestClientIp(request);

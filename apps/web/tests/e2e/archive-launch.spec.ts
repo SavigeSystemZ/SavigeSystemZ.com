@@ -1,6 +1,5 @@
 import { test, expect, type APIRequestContext } from "@playwright/test";
-
-const OWNER_CODE = process.env.OWNER_ACCESS_CODE ?? "e2e-owner-code";
+import { OWNER_CODE, seedOwnerSession } from "./helpers/owner-auth";
 
 /** Helper: log in as owner via API and return authenticated request context. */
 async function ownerLogin(request: APIRequestContext) {
@@ -134,12 +133,8 @@ test.describe("archive publish API", () => {
 });
 
 test.describe("archive admin UI", () => {
-  test("archive manager loads and shows launch composer toggle", async ({ page }) => {
-    await page.goto("/owner/login");
-    await page.getByPlaceholder("Owner access code").fill(OWNER_CODE);
-    await page.getByRole("button", { name: "Sign in", exact: true }).click();
-    await page.waitForURL("**/admin**");
-
+  test("archive manager loads and shows launch composer toggle", async ({ page, request }) => {
+    await seedOwnerSession(request, page);
     await page.goto("/admin/archive");
     await expect(page.getByRole("heading", { name: "Archive Manager" })).toBeVisible();
     await expect(page.getByText("Archive Launch Composer")).toBeVisible();

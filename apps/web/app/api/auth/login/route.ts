@@ -10,7 +10,8 @@ import {
 import { db } from "@/lib/db";
 
 const LOGIN_WINDOW_MS = 60_000;
-const LOGIN_MAX_PER_IP = 30;
+/** Local/E2E hammers login from one IP; keep production tight. */
+const LOGIN_MAX_PER_IP = process.env.NODE_ENV === "production" ? 30 : 1000;
 
 export async function POST(request: Request) {
   if (!(await allowAuthRequest(request, "login", LOGIN_MAX_PER_IP, LOGIN_WINDOW_MS))) {
