@@ -168,7 +168,7 @@ test.describe("admin /code (Code module)", () => {
     const webhookPayload = JSON.stringify({
       repository: {
         owner: { login: "octocat" },
-        name: "hello-world",
+        name: "Hello-World",
       },
     });
     const signature = `sha256=${createHmac("sha256", GITHUB_WEBHOOK_SECRET)

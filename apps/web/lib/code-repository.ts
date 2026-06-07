@@ -260,7 +260,11 @@ export async function syncCodeRepository(id: string, options?: { force?: boolean
 
 export async function syncCodeRepositoryByGithubRef(owner: string, repo: string, options?: { force?: boolean }) {
   const row = await db.codeRepository.findFirst({
-    where: { provider: "GITHUB", githubOwner: owner, githubRepo: repo },
+    where: {
+      provider: "GITHUB",
+      githubOwner: { equals: owner, mode: "insensitive" },
+      githubRepo: { equals: repo, mode: "insensitive" },
+    },
   });
   if (!row) {
     throw new Error("Repository not tracked");
