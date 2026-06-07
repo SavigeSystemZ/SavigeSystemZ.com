@@ -5,6 +5,7 @@ import {
   evaluateProductionLaunchReadiness,
   type ProductionEnvCheck,
 } from "@/lib/launch-readiness";
+import { verifyCatalogCompleteness } from "@/lib/verify-catalog-completeness";
 
 export const dynamic = "force-dynamic";
 
@@ -24,9 +25,22 @@ function chipLabel(status: ProductionEnvCheck["status"]): string {
   return "Missing";
 }
 
-export default function LaunchReadinessPage() {
+export default async function LaunchReadinessPage() {
   const readiness = evaluateProductionLaunchReadiness();
-  const goLiveDisabled = !readiness.ready;
+  let catalogOk = false;
+  let catalogCount = 0;
+  let catalogIssues: string[] = [];
+
+  try {
+    const catalog = await verifyCatalogCompleteness();
+    catalogOk = catalog.ok;
+    catalogCount = catalog.applicationCount;
+    catalogIssues = catalog.issues.slice(0, 5).map((issue) => issue.message);
+  } catch {
+    catalogIssues = ["Catalog verify failed — check DATABASE_URL and run pnpm code:bootstrap."];
+  }
+
+  const goLiveDisabled = !readiness.ready || !catalogOk;
 
   return (
     <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6 lg:py-10">
@@ -34,14 +48,20 @@ export default function LaunchReadinessPage() {
         <SectionHeading
           eyebrow="Owner launch gate"
           title="Production launch readiness"
-          description="Environment-level checks that gate the production go-live affordance. Each row reads from process.env at request time. Missing or weak entries block the Go live button until corrected."
+          description="Environment-level checks plus catalog completeness gate the production go-live affordance."
         />
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <StatusChip
             variant={readiness.ready ? "success" : "danger"}
             className="text-[0.62rem] uppercase tracking-[0.2em]"
           >
-            {readiness.ready ? "All checks passing" : `${readiness.blockers.length} blocker${readiness.blockers.length === 1 ? "" : "s"}`}
+            {readiness.ready ? "Env checks passing" : `${readiness.blockers.length} env blocker${readiness.blockers.length === 1 ? "" : "s"}`}
+          </StatusChip>
+          <StatusChip
+            variant={catalogOk ? "success" : "danger"}
+            className="text-[0.62rem] uppercase tracking-[0.2em]"
+          >
+            {catalogOk ? `${catalogCount} catalog entries OK` : "Catalog incomplete"}
           </StatusChip>
           <button
             type="button"
@@ -56,16 +76,31 @@ export default function LaunchReadinessPage() {
             {goLiveDisabled ? "Go live (gated)" : "Go live"}
           </button>
           <span className="text-xs text-slate-400">
-            This button is informational today — production cutover still happens via the platform deploy pipeline.
+            Staging checklist: <code className="font-mono text-cyan-200">pnpm staging:verify</code>
           </span>
         </div>
       </Panel>
+
+      {!catalogOk ? (
+        <Panel className="mt-6 rounded-[1.6rem] border border-rose-300/20 bg-rose-400/5 p-5 sm:p-6">
+          <SectionHeading
+            eyebrow="Catalog gate"
+            title="Bootstrap catalog before launch"
+            description="Run pnpm code:bootstrap locally or in CI, then pnpm code:verify-catalog until green."
+          />
+          <ul className="mt-4 list-disc space-y-2 pl-6 text-sm text-slate-300">
+            {catalogIssues.map((issue) => (
+              <li key={issue}>{issue}</li>
+            ))}
+          </ul>
+        </Panel>
+      ) : null}
 
       <Panel className="mt-6 rounded-[1.6rem] p-5 sm:p-6">
         <SectionHeading
           eyebrow="Environment checks"
           title="Required and optional secrets"
-          description="GitHub entries are optional and never block launch; AWS and Stripe keys are required."
+          description="GitHub entries are optional and never block launch; AWS media/release buckets and presign flag are required."
         />
         <div className="mt-5 space-y-2">
           {readiness.checks.map((check) => (
@@ -97,7 +132,7 @@ export default function LaunchReadinessPage() {
         <SectionHeading
           eyebrow="Operator runbook"
           title="What this page does not check"
-          description="The page is env-only. The following must be verified out-of-band before flipping production traffic."
+          description="The page is env-only for secrets. The following must be verified out-of-band before flipping production traffic."
         />
         <ul className="mt-4 list-disc space-y-2 pl-6 text-sm leading-7 text-slate-300">
           <li>
@@ -112,19 +147,16 @@ export default function LaunchReadinessPage() {
             <code className="font-mono text-cyan-200">/api/webhooks/stripe</code> and de-dupes on retry.
           </li>
           <li>
-            <strong className="text-white">S3 vault scan Lambda:</strong> deploy{" "}
-            <code className="font-mono text-cyan-200">infra/s3-vault-scan-lambda/</code> with ClamAV layer; verify
-            object notifications fire.
+            <strong className="text-white">S3 presign smoke:</strong> with staging keys set, run{" "}
+            <code className="font-mono text-cyan-200">
+              pnpm staging:verify -- --probe-http --probe-presign
+            </code>{" "}
+            against a running dev server.
           </li>
           <li>
             <strong className="text-white">Domain DNS:</strong> follow{" "}
             <code className="font-mono text-cyan-200">docs/PRODUCTION_DOMAIN_VERIFICATION.md</code> for the Vercel
             attach.
-          </li>
-          <li>
-            <strong className="text-white">CSP / security headers:</strong> spot-check{" "}
-            <code className="font-mono text-cyan-200">curl -I</code> on the production origin against{" "}
-            <code className="font-mono text-cyan-200">packages/security/src/index.ts</code>.
           </li>
         </ul>
         <div className="mt-5">

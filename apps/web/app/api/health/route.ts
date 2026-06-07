@@ -21,6 +21,15 @@ export async function GET(request: Request) {
     }
   }
 
+  let catalogApplicationCount: number | undefined;
+  if (probe === "all" || probe === "catalog") {
+    try {
+      catalogApplicationCount = await db.application.count({ where: { visibility: "PUBLIC" } });
+    } catch {
+      catalogApplicationCount = -1;
+    }
+  }
+
   if (probe === "redis" || probe === "all") {
     redisStatus = await pingRateLimitRedis();
   }
@@ -31,6 +40,8 @@ export async function GET(request: Request) {
     time: new Date().toISOString(),
     vaultMutationRateLimit: vaultRateLimitBackend(),
     vaultRedisStrict: isRedisStrict(),
+    catalogBootstrapEnv: process.env.GITHUB_MOCK_MODE === "1" ? "mock" : "live",
+    ...(typeof catalogApplicationCount === "number" ? { catalogApplicationCount } : {}),
     ...(probe === "db" || probe === "all" ? { db: dbStatus } : {}),
     ...(probe === "redis" || probe === "all" ? { redis: redisStatus } : {}),
   };

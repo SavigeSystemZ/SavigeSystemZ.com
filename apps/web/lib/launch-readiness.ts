@@ -107,6 +107,8 @@ export function evaluateProductionLaunchReadiness(
     requiredSecret(env, "STRIPE_SECRET_KEY", "Stripe secret key", 16),
     requiredSecret(env, "STRIPE_WEBHOOK_SECRET", "Stripe webhook signing secret", 16),
     requiredString(env, "AWS_S3_RELEASE_BUCKET", "S3 release bucket"),
+    requiredString(env, "AWS_S3_MEDIA_BUCKET", "S3 application media bucket"),
+    presignEnabled(env),
     requiredString(env, "AWS_S3_VAULT_BUCKET", "S3 vault bucket"),
     requiredSecret(env, "AWS_ACCESS_KEY_ID", "AWS access key id", 16),
     requiredSecret(env, "AWS_SECRET_ACCESS_KEY", "AWS secret access key", 32),
@@ -166,6 +168,19 @@ function optionalSecret(
     return { key, label, status: "weak", detail: `Should be at least ${minLength} characters.` };
   }
   return { key, label, status: "ok" };
+}
+
+function presignEnabled(env: NodeJS.ProcessEnv): ProductionEnvCheck {
+  const value = env.AWS_S3_PRESIGN_ENABLED?.trim();
+  if (!value || value === "0" || value.toLowerCase() === "false") {
+    return {
+      key: "AWS_S3_PRESIGN_ENABLED",
+      label: "S3 presign enabled",
+      status: "missing",
+      detail: "Set AWS_S3_PRESIGN_ENABLED=1 for owner upload lanes.",
+    };
+  }
+  return { key: "AWS_S3_PRESIGN_ENABLED", label: "S3 presign enabled", status: "ok" };
 }
 
 export function evaluateArchiveLaunchReadiness(input: {

@@ -247,6 +247,29 @@ export function ApplicationMediaManager() {
     }
   }
 
+  async function setCatalogScreenshot(id: string) {
+    setBusyItemId(id);
+    setError("");
+    setInfo("");
+
+    try {
+      const res = await fetch(`/api/admin/application-media/${id}/set-catalog-screenshot`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        setError("Could not promote media to catalog screenshot.");
+        return;
+      }
+
+      setInfo("Set as primary catalog screenshot.");
+      await load();
+    } finally {
+      setBusyItemId(null);
+    }
+  }
+
   async function uploadToS3() {
     if (!uploadFile) {
       setError("Choose a media file before uploading.");
@@ -508,14 +531,24 @@ export function ApplicationMediaManager() {
                     </p>
                     <h3 className="mt-2 text-xl font-semibold text-white">{item.title}</h3>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => void removeMedia(item.id)}
-                    disabled={busy}
-                    className="action-secondary text-xs disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void setCatalogScreenshot(item.id)}
+                      disabled={busy}
+                      className="action-secondary text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Set as catalog screenshot
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void removeMedia(item.id)}
+                      disabled={busy}
+                      className="action-secondary text-xs disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid gap-3 md:grid-cols-2">
