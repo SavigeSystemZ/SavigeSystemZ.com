@@ -22,7 +22,19 @@
 - Admin UI at **`/admin/code`** (gated by `requireOwner()`). Model: `CodeRepository` + enums. Sync via `lib/github-client.ts` + `lib/code-repository.ts`.
 - APIs: `GET/POST /api/admin/code`, `PATCH /api/admin/code/[id]` (link apps), `POST /api/admin/code/[id]` (sync), `DELETE /api/admin/code/[id]` (untrack).
 - `Application.codeRepositoryId` (optional FK, `onDelete: SetNull`) — a repo can power multiple apps; when PUBLIC, its metadata surfaces on `/applications/[slug]`.
-- Env: `GITHUB_TOKEN` optional — required only for private repos or to raise the 60 req/hr anonymous GitHub rate limit.
+- Env: `GITHUB_TOKEN` optional — required only for private repos or to raise the 60 req/hr anonymous GitHub rate limit. Bulk bootstrap: `pnpm code:bootstrap` (sync org repos → seed apps → seed releases/media).
+
+## Catalog integrity + staging probes
+
+- **`pnpm code:verify-catalog`** — asserts 52 org repos → public apps → media → v0.1.0 releases (`lib/verify-catalog-completeness.ts`). Use `GITHUB_MOCK_MODE=1` in CI.
+- **`pnpm staging:verify`** — env checklist for Stripe + S3 presign; add **`-- --probe-http --probe-presign`** to hit live `/api/health` and owner presign routes (`lib/staging-probes.ts`).
+- Screenshot tiers: cached PNG (`public/showcase/screenshots/`), manual override (`public/showcase/manual/{slug}/`), GitHub Open Graph fallback (`lib/catalog-showcase-media.ts`).
+- Admin lane: **`POST /api/admin/application-media/[id]/set-catalog-screenshot`** promotes uploaded media to the catalog screenshot URL.
+
+## E2E notes
+
+- Canonical reuse: **`E2E_PORT=43907 pnpm test:e2e`** when `pnpm dev:web` is already on 43907 (Playwright loads owner secrets from `.env.local`).
+- CI-style fresh server: stop the local dev server first, then **`CI=1 E2E_PORT=3456 OWNER_ACCESS_CODE=e2e-owner-code OWNER_LOGIN_SECRET=e2e-owner-secret-change-me-32chars pnpm test:e2e`** — Next.js 16 blocks a second `next dev` in the same app directory while one is running.
 
 ## Files to touch for common tasks
 

@@ -2,6 +2,116 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-06-07 — Presign probes + full E2E validation
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**173 / 173**)
+- **Build**: PASS
+
+### Catalog + E2E
+- **`pnpm code:verify-catalog`**: 52/52 OK (Postgres localhost:5433)
+- **Playwright (reuse dev server 43907)**: **86 passed**, 1 skipped (`stripe-webhook-signed`), 0 failed
+- **Fix**: `critical.spec.ts` home smoke uses `SavigeSystemZ home` + `Explore the catalog` (catalog runway added duplicate `SavigeSystemZ` link matches)
+
+### Operator tooling
+- **`pnpm staging:verify -- --probe-http --probe-presign`**: HTTP + presign route probes (exit 1 until Stripe/S3 env configured — expected locally)
+
+---
+
+## 2026-06-07 — Staging readiness + home runway + CI hardening
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**170 / 170**)
+- **Build**: PASS
+
+### Catalog + E2E
+- **`pnpm code:verify-catalog`**: 52/52 OK (Postgres localhost:5433)
+- **Playwright**: catalog-coverage (52 HTTP + 5 browser samples) + flagship-catalog 4/4 pass against live dev server on 43907
+
+### Operator tooling
+- **`pnpm verify:release`**: `check:all` + `code:verify-catalog`
+- **`scripts/land-catalog-completion.sh`**: 8 themed commits for the completion-plan diff
+- **`docs/CATALOG_OPERATIONS.md`**: bootstrap, verify, staging probes, E2E
+
+---
+
+## 2026-06-07 — World-Class Site Completion Plan (all phases)
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**167 / 167**)
+- **Build**: PASS
+
+### Catalog integrity
+- **`pnpm code:verify-catalog`**: validates repos → apps → media → v0.1.0 releases
+- **CI E2E**: `GITHUB_MOCK_MODE=1 pnpm code:bootstrap && pnpm code:verify-catalog` before Playwright
+- **Mock screenshots**: placeholder PNGs written in mock mode for CI stability
+- **Sitemap**: `/repos`, `/downloads`, dynamic `/repos/[slug]` + `/applications/[slug]`
+
+### UI + enrichment
+- **`ApplicationPreviewImage`**: unified next/image on downloads, archive cards/detail
+- **`catalog-enrichment.ts`**: GitHub metadata + README excerpt on detail pages
+- **Admin**: `POST /api/admin/application-media/[id]/set-catalog-screenshot`
+- **Catalog search/filter** on `/applications`
+
+### CI additions
+- **`catalog-coverage.spec.ts`**: smoke all catalog slugs (commerce + image)
+- **Lighthouse job**: `@lhci/cli` on home, applications, detail, downloads, repos
+- **A11y**: ledgerloop + vetraxis detail routes added
+
+### Staging blockers (operator)
+- Stripe test keys + webhook secret
+- AWS S3 media/release buckets + `AWS_S3_PRESIGN_ENABLED=1`
+
+---
+
+## 2026-06-07 — GitHub Sponsors donate + repository screenshots
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**157 / 157**)
+- **Build**: PASS
+
+### Screenshot + media pipeline
+- **`pnpm code:fetch-screenshots`**: 52/52 downloaded to `public/showcase/screenshots/`
+- **`pnpm code:seed-releases`**: 52 media created, 52 media updated (hero SVG + repository preview JPG)
+- Live verify: `/applications/immortality` shows `showcase/screenshots/immortality`, GitHub Sponsors link, donate checkout
+
+### E2E
+- **Flagship catalog**: 4/4 pass (GitHub Sponsors + Download/Purchase/Donate panel)
+
+---
+
+## 2026-06-07 — GitHub org mirror + flagship bootstrap + full E2E green
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**146 / 146**)
+- **Build**: PASS
+
+### E2E (`DATABASE_URL=postgresql://ssz:dev@localhost:5433/savige E2E_PORT=43907 GITHUB_MOCK_MODE=1`)
+- **Playwright**: **80 passed**, 1 skipped (`stripe-webhook-signed` — no Stripe secrets)
+- **Flagship catalog**: 4/4 pass (`flagship-catalog.spec.ts`)
+- **Fixes**: API session helper for owner login; admin publish form scoping; repos upsert seed; webhook repo casing; dev auth rate limit
+
+### Data bootstrap (`pnpm code:bootstrap`)
+- **CodeRepository (PUBLIC)**: 52 org repos
+- **Application**: 12 flagship apps linked to repos
+- **ApplicationVersion / Media / ReleaseAsset**: 12 versions, 12 media, 15 assets
+
+### Runtime
+- Dev server: `http://127.0.0.1:43907/`
+- Postgres: `localhost:5433/savige` healthy
+
+---
+
 ## 2026-04-29 — ownership unblocked + M7 slice 6 + /repos index + admin JSON size sweep
 
 ### Code quality gates (`pnpm check:all`)

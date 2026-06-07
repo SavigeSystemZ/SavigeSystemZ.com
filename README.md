@@ -90,10 +90,13 @@ After **`pnpm dev:web`**, open the site from your Desktop: run **`./installer/de
 
 ```bash
 pnpm check:all
-pnpm --filter web test:e2e
+pnpm verify:release          # check:all + code:verify-catalog (52/52)
+pnpm --filter web test:e2e   # see docs/CATALOG_OPERATIONS.md for E2E_PORT notes
 ```
 
-Set `CI=1` for E2E if you want Playwright to always start a dedicated dev server (see `apps/web/playwright.config.ts`). The suite includes **axe** scans on key public routes (`tests/e2e/a11y.spec.ts`) and **API authz** checks including owner-only `/api/vault` (with **AES-256-GCM** persistence when `VAULT_ENCRYPTION_KEY` is set — see `docs/VAULT.md`). Stripe webhook behavior is covered by unit tests (`tests/unit/stripe-webhook-*.ts`), a **501** guard E2E, and an **optional** signed POST spec (`tests/e2e/stripe-webhook-signed.spec.ts`, skipped without secrets). See `docs/STRIPE_WEBHOOK_TESTING.md` and workflow `.github/workflows/stripe-webhook-smoke.yml`.
+**Catalog bootstrap / verify:** `pnpm code:bootstrap` then `pnpm code:verify-catalog` — full operator runbook in **[docs/CATALOG_OPERATIONS.md](docs/CATALOG_OPERATIONS.md)**.
+
+Set `CI=1` for E2E if you want Playwright to always start a dedicated dev server (see `apps/web/playwright.config.ts`). Stop any running `pnpm dev:web` first — Next.js 16 blocks a second `next dev` in the same app directory. The suite includes **axe** scans on key public routes (`tests/e2e/a11y.spec.ts`) and **API authz** checks including owner-only `/api/vault` (with **AES-256-GCM** persistence when `VAULT_ENCRYPTION_KEY` is set — see `docs/VAULT.md`). Stripe webhook behavior is covered by unit tests (`tests/unit/stripe-webhook-*.ts`), a **501** guard E2E, and an **optional** signed POST spec (`tests/e2e/stripe-webhook-signed.spec.ts`, skipped without secrets). See `docs/STRIPE_WEBHOOK_TESTING.md` and workflow `.github/workflows/stripe-webhook-smoke.yml`.
 
 ## Commerce and downloads
 

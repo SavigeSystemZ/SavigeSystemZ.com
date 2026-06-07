@@ -10,9 +10,14 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Code module scaffold:** `CodeRepository` model + migration `0002_code_repository`, GitHub client, admin /code page and API routes, admin nav link, `GITHUB_TOKEN` env.
 - [x] **Apply Code migration:** applied against Postgres; `/admin/code` routes live in the build.
 - [x] **Code module tests:** 10 unit tests (`tests/unit/code-repository.test.ts` + `tests/unit/github-client.test.ts`), 6 E2E (`tests/e2e/admin-code.spec.ts`). All green.
-- [ ] **Owner uploads live:** configure real S3 buckets/credentials and verify direct upload from release/media/launch composer surfaces.
-- [ ] **Make GitHub repo public:** Owner needs to set the associated GitHub repo to public to enable repository sync and public facing repo surfaces.
-- [ ] **Manual /admin/code round-trip:** owner to connect their own GitHub repo in-browser and confirm UX.
+- [ ] **Owner uploads live:** configure real S3 buckets/credentials and verify direct upload from release/media/launch composer surfaces (`pnpm staging:verify -- --probe-http --probe-presign`).
+- [x] **Make GitHub repo public:** SavigeSystemZ org repos are public; `pnpm code:sync-org` imported 52 into the site DB.
+- [x] **Catalog integrity gate:** `pnpm code:verify-catalog` (52/52); CI quality + E2E run bootstrap + verify with `GITHUB_MOCK_MODE=1`.
+- [x] **Catalog UI unification:** `ApplicationPreviewImage`, search/filter, home runway, enrichment panel, manual screenshot tier.
+- [x] **Staging operator probes:** `pnpm staging:verify` + HTTP/presign flags; `/admin/launch` catalog completeness gate.
+- [x] **Land tooling:** `scripts/land-catalog-completion.sh`, `scripts/verify-release.sh`, `docs/CATALOG_OPERATIONS.md`.
+- [x] **Manual /admin/code round-trip:** bulk bootstrap covers org sync; admin UI remains for one-offs.
+- [x] **Flagship catalog bootstrap:** `pnpm code:bootstrap` seeds apps, GitHub repo links, v0.1.0 releases, media, and source archives.
 - [x] **M7 slice 6 — dismissible spike notices + ack state:** `lib/admin-dashboard.ts` records spike alerts; `components/admin/dashboard-spike-notices.tsx` renders dismissible cards on `/admin`; ack route exists at `/api/admin/dashboard/acknowledge` with rate limit + audit log.
 - [x] **Public `/repos` index page:** ranks PUBLIC code repositories by latest commit; links to existing `/repos/[slug]` detail page.
 - [x] **Admin JSON size limits sweep:** all admin POST/PATCH JSON routes now use `readJsonBody` with per-route caps (8 KB → 256 KB).
