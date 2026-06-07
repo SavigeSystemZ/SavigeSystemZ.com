@@ -18,8 +18,9 @@ echo "Running Prisma generate + migrate + seed..."
 cd apps/web
 pnpm exec prisma generate
 pnpm exec prisma migrate deploy
-pnpm exec prisma db seed 2>/dev/null || true
 cd ../..
+echo "Bootstrapping foundry catalog from GitHub..."
+DATABASE_URL="$DATABASE_URL" pnpm code:bootstrap || echo "Bootstrap skipped or partially failed — run 'pnpm code:bootstrap' manually."
 
 echo ""
 echo "Postgres is ready. Starting dev server..."

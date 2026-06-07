@@ -40,6 +40,9 @@ step "4. Apply pending migrations"
 export DATABASE_URL="postgresql://ssz:dev@localhost:5433/savige"
 pnpm --filter web exec prisma migrate deploy
 
+step "4b. Catalog integrity (mock GitHub — matches CI)"
+GITHUB_MOCK_MODE=1 pnpm --filter web code:verify-catalog -- --require-ui-catalog
+
 step "5. Quality gate"
 pnpm check:all
 
