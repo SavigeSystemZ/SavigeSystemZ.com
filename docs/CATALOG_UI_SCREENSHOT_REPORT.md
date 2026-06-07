@@ -1,6 +1,6 @@
 # Catalog UI screenshot report
 
-Generated: 2026-06-07T20:27:08.557Z
+Generated: 2026-06-07T21:02:59.084Z
 
 Site: http://127.0.0.1:43907
 
@@ -9,15 +9,16 @@ Site: http://127.0.0.1:43907
 | Metric | Count |
 |--------|------:|
 | Catalog applications | 52 |
-| Live app UI captured | 4 |
+| Live app UI captured | 5 |
 | Catalog detail captured | 0 |
-| Needs operator action | 48 |
+| Needs operator action | 47 |
 
 ## Live app UI captures
 
 - **CandleCompass** (`candlecompass`) — `/showcase/manual/candlecompass/preview.png` from http://127.0.0.1:3967
 - **IdeaForge** (`ideaforge`) — `/showcase/manual/ideaforge/preview.png` from http://127.0.0.1:41287
 - **LedgerLoop** (`ledgerloop`) — `/showcase/manual/ledgerloop/preview.png` from http://127.0.0.1:3847
+- **PharmPhreak** (`pharmphreak`) — `/showcase/manual/pharmphreak/preview.png` from http://127.0.0.1:38224
 - **SavigeSystemZ.com** (`savigesystemz-com`) — `/showcase/manual/savigesystemz-com/preview.png` from http://127.0.0.1:43907
 
 
@@ -72,8 +73,10 @@ Site: http://127.0.0.1:43907
 
 ### DeepWeave (`deepweave`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38205.
+- **Expected URL:** http://127.0.0.1:38205
+- **Start hint:** cd /home/whyte/.MyAppZ/DeepWeave && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### EtherTrain-44 (`ethertrain-44`)
 
@@ -88,13 +91,17 @@ Site: http://127.0.0.1:43907
 
 ### FlipHole (`fliphole`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38207.
+- **Expected URL:** http://127.0.0.1:38207
+- **Start hint:** cd /home/whyte/.MyAppZ/FlipHole && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### ForgeCouncil (`forgecouncil`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38208.
+- **Expected URL:** http://127.0.0.1:38208
+- **Start hint:** cd /home/whyte/.MyAppZ/ForgeCouncil && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### FWST (`fwst`)
 
@@ -130,8 +137,10 @@ Site: http://127.0.0.1:43907
 
 ### LuxeLogic (`luxelogic`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38301.
+- **Expected URL:** http://127.0.0.1:38301
+- **Start hint:** cd /home/whyte/.MyAppZ/LuxeLogic && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### MetaCommander-44 (`metacommander-44`)
 
@@ -150,8 +159,10 @@ Site: http://127.0.0.1:43907
 
 ### ModPilot (`modpilot`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:18080.
+- **Expected URL:** http://127.0.0.1:18080
+- **Start hint:** cd /home/whyte/.MyAppZ/ModPilot && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### OmniForgeNexus-44 (`omniforgenexus-44`)
 
@@ -160,23 +171,22 @@ Site: http://127.0.0.1:43907
 
 ### Orignym (`orignym`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38215.
+- **Expected URL:** http://127.0.0.1:38215
+- **Start hint:** cd /home/whyte/.MyAppZ/Orignym && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### PalmOracle (`palmoracle`)
 
 - **Status:** app_no_http_surface
 - **Detail:** No local launch URL in registry or sibling .env.example.
 
-### PharmPhreak (`pharmphreak`)
-
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
-
 ### PromptMage (`promptmage`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38216.
+- **Expected URL:** http://127.0.0.1:38216
+- **Start hint:** cd /home/whyte/.MyAppZ/PromptMage && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### RSIGlobe (`rsiglobe`)
 
@@ -195,8 +205,10 @@ Site: http://127.0.0.1:43907
 
 ### SavigeAI (`savigeai`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38200.
+- **Expected URL:** http://127.0.0.1:38200
+- **Start hint:** cd /home/whyte/.MyAppZ/SavigeAI && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### SavOpZ (`savopz`)
 
@@ -205,8 +217,10 @@ Site: http://127.0.0.1:43907
 
 ### ShadowCall (`shadowcall`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38218.
+- **Expected URL:** http://127.0.0.1:38218
+- **Start hint:** cd /home/whyte/.MyAppZ/ShadowCall && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### Shards of Savige: The First Crown (`sos-the-first-crown`)
 
@@ -230,8 +244,10 @@ Site: http://127.0.0.1:43907
 
 ### SteadyStack (`steadystack`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:38219.
+- **Expected URL:** http://127.0.0.1:38219
+- **Start hint:** cd /home/whyte/.MyAppZ/SteadyStack && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### TechPulseBriefs-44 (`techpulsebriefs-44`)
 
@@ -250,8 +266,10 @@ Site: http://127.0.0.1:43907
 
 ### VERITAS (`veritas`)
 
-- **Status:** app_no_http_surface
-- **Detail:** No local launch URL in registry or sibling .env.example.
+- **Status:** app_not_running
+- **Detail:** Dev server not responding at http://127.0.0.1:46300.
+- **Expected URL:** http://127.0.0.1:46300
+- **Start hint:** cd /home/whyte/.MyAppZ/Veritas && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start
 
 ### Vetraxis (`vetraxis`)
 

@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-07T20:27:08.557Z",
+  "generatedAt": "2026-06-07T21:02:59.084Z",
   "siteUrl": "http://127.0.0.1:43907",
   "totals": {
     "seeds": 52,
-    "appUiCaptured": 4,
+    "appUiCaptured": 5,
     "catalogCaptured": 0,
-    "blocked": 48
+    "blocked": 47
   },
   "results": [
     {
@@ -97,9 +97,11 @@
       "slug": "deepweave",
       "githubRepo": "DeepWeave",
       "name": "DeepWeave",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38205",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/DeepWeave && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38205."
     },
     {
       "slug": "ethertrain-44",
@@ -122,17 +124,21 @@
       "slug": "fliphole",
       "githubRepo": "FlipHole",
       "name": "FlipHole",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38207",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/FlipHole && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38207."
     },
     {
       "slug": "forgecouncil",
       "githubRepo": "ForgeCouncil",
       "name": "ForgeCouncil",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38208",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/ForgeCouncil && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38208."
     },
     {
       "slug": "fwst",
@@ -210,9 +216,11 @@
       "slug": "luxelogic",
       "githubRepo": "LuxeLogic",
       "name": "LuxeLogic",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38301",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/LuxeLogic && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38301."
     },
     {
       "slug": "metacommander-44",
@@ -242,9 +250,11 @@
       "slug": "modpilot",
       "githubRepo": "ModPilot",
       "name": "ModPilot",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:18080",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/ModPilot && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:18080."
     },
     {
       "slug": "omniforgenexus-44",
@@ -258,9 +268,11 @@
       "slug": "orignym",
       "githubRepo": "Orignym",
       "name": "Orignym",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38215",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/Orignym && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38215."
     },
     {
       "slug": "palmoracle",
@@ -274,17 +286,22 @@
       "slug": "pharmphreak",
       "githubRepo": "PharmPhreak",
       "name": "PharmPhreak",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_ui_captured",
+      "launchUrl": "http://127.0.0.1:38224",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/PharmPhreak && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Live app UI captured from http://127.0.0.1:38224.",
+      "appScreenshotPath": "/showcase/manual/pharmphreak/preview.png"
     },
     {
       "slug": "promptmage",
       "githubRepo": "PromptMage",
       "name": "PromptMage",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38216",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/PromptMage && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38216."
     },
     {
       "slug": "rsiglobe",
@@ -314,9 +331,11 @@
       "slug": "savigeai",
       "githubRepo": "SavigeAI",
       "name": "SavigeAI",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38200",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/SavigeAI && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38200."
     },
     {
       "slug": "savigesystemz-com",
@@ -341,9 +360,11 @@
       "slug": "shadowcall",
       "githubRepo": "ShadowCall",
       "name": "ShadowCall",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38218",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/ShadowCall && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38218."
     },
     {
       "slug": "sos-the-first-crown",
@@ -381,9 +402,11 @@
       "slug": "steadystack",
       "githubRepo": "SteadyStack",
       "name": "SteadyStack",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38219",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/SteadyStack && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:38219."
     },
     {
       "slug": "techpulsebriefs-44",
@@ -413,9 +436,11 @@
       "slug": "veritas",
       "githubRepo": "VERITAS",
       "name": "VERITAS",
-      "status": "app_no_http_surface",
-      "surface": "unknown",
-      "detail": "No local launch URL in registry or sibling .env.example."
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:46300",
+      "surface": "web",
+      "startHint": "cd /home/whyte/.MyAppZ/Veritas && inspect .env.example / ops/LOCAL_DEV_PORTS.md / README for dev start",
+      "detail": "Dev server not responding at http://127.0.0.1:46300."
     },
     {
       "slug": "vetraxis",
