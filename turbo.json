@@ -1,5 +1,16 @@
 {
   "$schema": "https://turborepo.com/schema.json",
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "OWNER_LOGIN_SECRET",
+    "OWNER_ACCESS_CODE",
+    "SITE_URL",
+    "SITE_PORT",
+    "GITHUB_MOCK_MODE",
+    "GITHUB_TOKEN",
+    "GITHUB_WEBHOOK_SECRET",
+    "VAULT_ENCRYPTION_KEY"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
@@ -12,6 +23,13 @@
       "outputs": [
         ".next/**",
         "dist/**"
+      ],
+      "env": [
+        "DATABASE_URL",
+        "OWNER_LOGIN_SECRET",
+        "OWNER_ACCESS_CODE",
+        "SITE_URL",
+        "SITE_PORT"
       ]
     },
     "lint": {
