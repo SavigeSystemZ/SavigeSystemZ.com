@@ -187,6 +187,70 @@ function mapPublicCodeRepository(row: CodeRepositoryRow | null | undefined): Pub
   };
 }
 
+export type PublicCodeRepositoryWithCatalogRecord = PublicCodeRepositoryRecord & {
+  linkedApplicationSlug: string | null;
+  previewMediaUrl: string | null;
+};
+
+export async function listPublicReposWithCatalog(): Promise<PublicCodeRepositoryWithCatalogRecord[]> {
+  try {
+    const rows = await db.codeRepository.findMany({
+      where: { visibility: "PUBLIC" },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        description: true,
+        visibility: true,
+        storageBackend: true,
+        githubUrl: true,
+        githubOwner: true,
+        githubRepo: true,
+        defaultBranch: true,
+        primaryLanguage: true,
+        starCount: true,
+        forkCount: true,
+        openIssueCount: true,
+        latestCommitSha: true,
+        latestCommitMessage: true,
+        latestCommitAt: true,
+        applications: {
+          where: { visibility: "PUBLIC" },
+          select: {
+            slug: true,
+            media: {
+              orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+              select: { mediaUrl: true, title: true },
+            },
+          },
+          take: 1,
+        },
+      },
+      orderBy: [{ latestCommitAt: "desc" }, { updatedAt: "desc" }],
+    });
+
+    const results: PublicCodeRepositoryWithCatalogRecord[] = [];
+    for (const row of rows) {
+      const mapped = mapPublicCodeRepository(row);
+      if (!mapped) continue;
+      const app = row.applications[0];
+      const screenshot = app?.media.find(
+        (item) =>
+          item.mediaUrl.includes("/screenshots/") ||
+          item.title.toLowerCase().includes("repository preview"),
+      );
+      results.push({
+        ...mapped,
+        linkedApplicationSlug: app?.slug ?? null,
+        previewMediaUrl: screenshot?.mediaUrl ?? app?.media[0]?.mediaUrl ?? null,
+      });
+    }
+    return results;
+  } catch {
+    return [];
+  }
+}
+
 export async function listPublicRepos(): Promise<PublicCodeRepositoryRecord[]> {
   try {
     const rows = await db.codeRepository.findMany({
@@ -398,7 +462,7 @@ export async function getPublicCatalogWithReleases(): Promise<PublicApplicationD
       orderBy: [{ featured: "desc" }, { name: "asc" }],
       include: {
         media: {
-          orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
         },
         versions: {
           orderBy: [{ createdAt: "desc" }],
@@ -438,7 +502,7 @@ export async function getPublicApplicationWithReleasesBySlug(
       where: { slug, visibility: "PUBLIC" },
       include: {
         media: {
-          orderBy: [{ featured: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
         },
         versions: {
           orderBy: [{ createdAt: "desc" }],

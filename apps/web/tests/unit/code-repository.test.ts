@@ -25,16 +25,19 @@ vi.mock("@/lib/github-client", () => ({
   parseGithubRepoRef: vi.fn(),
   fetchGithubRepo: vi.fn(),
   fetchGithubLatestCommit: vi.fn(),
+  listGithubOrgRepos: vi.fn(),
 }));
 
 import { db } from "@/lib/db";
 import {
   fetchGithubLatestCommit,
   fetchGithubRepo,
+  listGithubOrgRepos,
   parseGithubRepoRef,
 } from "@/lib/github-client";
 import {
   createCodeRepositoryFromGithub,
+  importOrgCodeRepositoriesFromGithub,
   setCodeRepositoryApplicationLinks,
   syncCodeRepository,
 } from "@/lib/code-repository";
@@ -58,6 +61,7 @@ const mockDb = db as unknown as {
 const mockParse = parseGithubRepoRef as unknown as ReturnType<typeof vi.fn>;
 const mockFetchRepo = fetchGithubRepo as unknown as ReturnType<typeof vi.fn>;
 const mockFetchCommit = fetchGithubLatestCommit as unknown as ReturnType<typeof vi.fn>;
+const mockListOrgRepos = listGithubOrgRepos as unknown as ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   for (const fn of Object.values(mockDb.codeRepository)) fn.mockReset();
@@ -66,6 +70,7 @@ beforeEach(() => {
   mockParse.mockReset();
   mockFetchRepo.mockReset();
   mockFetchCommit.mockReset();
+  mockListOrgRepos.mockReset();
 });
 
 afterEach(() => {
@@ -234,5 +239,73 @@ describe("setCodeRepositoryApplicationLinks", () => {
       where: { codeRepositoryId: "repo_1", id: { notIn: ["__none__"] } },
       data: { codeRepositoryId: null },
     });
+  });
+});
+
+describe("importOrgCodeRepositoriesFromGithub", () => {
+  it("creates new repositories from org listing", async () => {
+    mockListOrgRepos.mockResolvedValue([
+      {
+        fullName: "SavigeSystemZ/Immortality",
+        name: "Immortality",
+        owner: "SavigeSystemZ",
+        description: "Longevity science intelligence platform",
+        htmlUrl: "https://github.com/SavigeSystemZ/Immortality",
+        homepage: null,
+        defaultBranch: "main",
+        language: "TypeScript",
+        stargazersCount: 3,
+        forksCount: 1,
+        openIssuesCount: 0,
+        visibility: "public",
+        pushedAt: "2026-06-01T00:00:00Z",
+      },
+    ]);
+    mockDb.codeRepository.findFirst.mockResolvedValue(null);
+    mockDb.codeRepository.create.mockResolvedValue({ id: "repo_new", slug: "savigesystemz-immortality" });
+
+    const result = await importOrgCodeRepositoriesFromGithub("SavigeSystemZ");
+
+    expect(result.created).toBe(1);
+    expect(result.updated).toBe(0);
+    expect(mockDb.codeRepository.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          slug: "savigesystemz-immortality",
+          visibility: "PUBLIC",
+          githubOwner: "SavigeSystemZ",
+          githubRepo: "Immortality",
+        }),
+      }),
+    );
+  });
+
+  it("updates existing repositories instead of duplicating", async () => {
+    mockListOrgRepos.mockResolvedValue([
+      {
+        fullName: "SavigeSystemZ/SavigeSystemZ.com",
+        name: "SavigeSystemZ.com",
+        owner: "SavigeSystemZ",
+        description: "Flagship software foundry website",
+        htmlUrl: "https://github.com/SavigeSystemZ/SavigeSystemZ.com",
+        homepage: null,
+        defaultBranch: "main",
+        language: "TypeScript",
+        stargazersCount: 0,
+        forksCount: 0,
+        openIssuesCount: 0,
+        visibility: "public",
+        pushedAt: "2026-06-07T00:00:00Z",
+      },
+    ]);
+    mockDb.codeRepository.findFirst.mockResolvedValue({ id: "repo_existing", latestCommitSha: "abc" });
+    mockDb.codeRepository.update.mockResolvedValue({ id: "repo_existing" });
+
+    const result = await importOrgCodeRepositoriesFromGithub("SavigeSystemZ");
+
+    expect(result.created).toBe(0);
+    expect(result.updated).toBe(1);
+    expect(mockDb.codeRepository.update).toHaveBeenCalled();
+    expect(mockDb.codeRepository.create).not.toHaveBeenCalled();
   });
 });

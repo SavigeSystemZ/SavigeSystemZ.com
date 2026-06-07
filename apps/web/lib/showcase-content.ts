@@ -118,21 +118,21 @@ export const releaseLanes: ShowcaseLane[] = [
 export const pricingPlans: ShowcasePlan[] = [
   {
     name: "Launch Drop",
-    price: "From $49",
-    summary: "Public-ready releases, installer bundles, and focused utilities distributed through the flagship catalog.",
-    bullets: ["One-click checkout", "Release notes + detail page", "Signed delivery path", "Ideal for tools and standalone apps"],
+    price: "TBD",
+    summary: "Public catalog entries for applications, games, and books — pricing will be published when each lane opens.",
+    bullets: ["Catalog discovery", "Release notes", "GitHub source mirror", "Pricing TBD"],
   },
   {
     name: "Operator Stack",
-    price: "Scoped build",
+    price: "TBD",
     summary: "Custom platforms, internal tools, containers, automation, and environment bootstrap systems.",
-    bullets: ["Discovery and architecture pass", "Secure delivery workflow", "Private milestones", "Best for teams and internal operations"],
+    bullets: ["Discovery pass", "Secure delivery workflow", "Private milestones", "Pricing TBD"],
   },
   {
     name: "Foundry Partnership",
-    price: "Retainer / milestone",
+    price: "TBD",
     summary: "A deeper build lane for product strategy, release management, platform hardening, and ongoing iteration.",
-    bullets: ["Roadmap ownership", "Admin + analytics surfaces", "Launch support", "Best for long-lived products"],
+    bullets: ["Roadmap ownership", "Admin + analytics surfaces", "Launch support", "Pricing TBD"],
   },
 ];
 
@@ -237,6 +237,125 @@ const showcaseBySlug: Record<string, ShowcaseApplication> = {
       },
     ],
   },
+  immortality: {
+    label: "Longevity intelligence",
+    headline: "Research-grounded longevity intelligence — compounds, protocols, and evidence in one operator surface.",
+    audience: "Biohackers, longevity researchers, and health-conscious operators",
+    priceModel: "Licensed access or private deployment",
+    releaseChannel: "Controlled rollout",
+    operationalFocus:
+      "Immortality aggregates longevity science signals, compound references, and AI-assisted research workflows into a cohesive intelligence platform.",
+    highlights: ["ORACLE AI", "Compound database", "Research aggregation", "Protocol tracking"],
+    surfaces: ["Research cockpit", "Compound explorer", "AI assistant", "Evidence pipeline"],
+    stack: ["TypeScript", "Next.js", "AI orchestration", "Structured knowledge base"],
+    pillars: [
+      {
+        title: "Evidence-first research",
+        description: "Ground longevity decisions in structured compound data and aggregated research signals.",
+      },
+      {
+        title: "ORACLE AI layer",
+        description: "AI-assisted synthesis across protocols, compounds, and emerging longevity science.",
+      },
+      {
+        title: "Operator continuity",
+        description: "Track protocols and research threads without losing context between sessions.",
+      },
+    ],
+    releaseMoments: [
+      { stage: "R1", title: "Intelligence baseline", description: "Core compound database and research aggregation surfaces." },
+      { stage: "R2", title: "ORACLE integration", description: "AI-assisted research workflows and protocol guidance." },
+      { stage: "R3", title: "Licensed rollout", description: "Controlled access for qualified operators and collaborators." },
+    ],
+  },
+  ledgerloop: {
+    label: "Finance platform",
+    headline: "Close the loop between spending, accounts, and actionable financial clarity.",
+    audience: "Operators, households, and small teams managing complex finances",
+    priceModel: "Public release with premium modules",
+    releaseChannel: "Direct download",
+    operationalFocus:
+      "LedgerLoop is built for repeatable financial workflows — imports, categorization, reporting, and long-running ledger discipline.",
+    highlights: ["Ledger automation", "Account linking", "Reporting", "Audit-friendly exports"],
+    surfaces: ["Dashboard", "Transaction pipeline", "Reports", "Automation rules"],
+    stack: ["TypeScript", "Next.js", "Prisma", "PostgreSQL"],
+    pillars: [
+      { title: "Ledger discipline", description: "Keep accounts, categories, and running balances coherent over time." },
+      { title: "Automation lane", description: "Reduce manual categorization with rules and imports." },
+      { title: "Reporting clarity", description: "Export and summarize financial state for operators." },
+    ],
+    releaseMoments: [
+      { stage: "R1", title: "Core ledger", description: "Accounts, transactions, and baseline reporting." },
+      { stage: "R2", title: "Automation packs", description: "Rules, imports, and recurring workflow helpers." },
+      { stage: "R3", title: "Premium modules", description: "Advanced reporting and multi-entity support." },
+    ],
+  },
+  "savigesystemz-com": {
+    label: "Foundry platform",
+    headline: "The public storefront and private operator console for the entire SavigeSystemZ product line.",
+    audience: "Buyers, collaborators, and the platform owner",
+    priceModel: "Open source (MIT)",
+    releaseChannel: "Self-hosted or managed deploy",
+    operationalFocus:
+      "Next.js monorepo powering catalog pages, commerce, signed downloads, admin operations, vault storage, and GitHub repository mirroring.",
+    highlights: ["Public catalog", "Owner admin", "Signed downloads", "Code mirroring"],
+    surfaces: ["Applications", "Archive", "Admin console", "GitHub repos"],
+    stack: ["Next.js 16", "Prisma", "PostgreSQL", "Stripe", "S3"],
+    pillars: [
+      { title: "Unified foundry shell", description: "One platform for public discovery and private operator control." },
+      { title: "Release discipline", description: "Commerce, entitlements, signed downloads, and audit trails built in." },
+      { title: "Code transparency", description: "Mirror GitHub repos with README rendering and source cards on app pages." },
+    ],
+    releaseMoments: [
+      { stage: "R1", title: "Catalog + admin", description: "Public applications and owner operations console." },
+      { stage: "R2", title: "Commerce lane", description: "Checkout, licenses, and signed artifact delivery." },
+      { stage: "R3", title: "Production deploy", description: "DNS attach, live Stripe, and S3-backed uploads." },
+    ],
+  },
+  etherweave: {
+    label: "Wireless security",
+    headline: "Professional wireless assessment workflows — recon, capture, analysis, and reporting in one surface.",
+    audience: "Authorized security testers, researchers, and wireless operators",
+    priceModel: "Licensed rollout",
+    releaseChannel: "Controlled access",
+    operationalFocus:
+      "Etherweave-Nexus delivers feature parity between GUI and CLI paths for wireless security operations with hardware-aware performance tuning.",
+    highlights: ["802.11 assessment", "GPU acceleration", "GUI + CLI parity", "Encrypted loot storage"],
+    surfaces: ["Wireless recon", "Capture pipeline", "Analysis cockpit", "Report export"],
+    stack: ["Python", "PyQt6", "CUDA", "SQLite"],
+    pillars: [
+      { title: "Operator-grade UX", description: "Responsive GUI with thread-safe long-running operations." },
+      { title: "Hardware awareness", description: "GPU thermal guards and wireless chipset detection." },
+      { title: "Secure evidence handling", description: "Encrypted storage for handshakes and sensitive capture material." },
+    ],
+    releaseMoments: [
+      { stage: "R1", title: "Assessment baseline", description: "Recon, inventory, and capture fundamentals." },
+      { stage: "R2", title: "GPU-accelerated analysis", description: "Performance-tuned analysis pipelines." },
+      { stage: "R3", title: "Licensed deployment", description: "Controlled rollout for authorized operators." },
+    ],
+  },
+  vetraxis: {
+    label: "Case orchestration",
+    headline: "Organize evidence, timelines, and AI-assisted guidance for disability case preparation.",
+    audience: "Veterans, advocates, and case preparation teams",
+    priceModel: "Subscription or scoped deployment",
+    releaseChannel: "Private beta",
+    operationalFocus:
+      "Vetraxis structures the complexity of VA disability cases into guided workflows with document tracking and AI-assisted review.",
+    highlights: ["Case timelines", "Document tracking", "AI guidance", "Structured evidence"],
+    surfaces: ["Case dashboard", "Document vault", "AI assistant", "Submission prep"],
+    stack: ["TypeScript", "Next.js", "AI integration", "Secure storage"],
+    pillars: [
+      { title: "Structured case flow", description: "Break complex disability cases into manageable stages." },
+      { title: "Evidence organization", description: "Keep documents and timelines linked to each claim element." },
+      { title: "AI-assisted review", description: "Guidance helpers without replacing human judgment." },
+    ],
+    releaseMoments: [
+      { stage: "R1", title: "Case workspace", description: "Timelines, documents, and basic AI guidance." },
+      { stage: "R2", title: "Advocate tooling", description: "Multi-case views and collaboration hooks." },
+      { stage: "R3", title: "Beta rollout", description: "Controlled access for veterans and advocates." },
+    ],
+  },
   "stack-launcher": {
     label: "Bootstrap engine",
     headline: "Spin up opinionated environments, service bundles, and repeatable workstation setups without hand-tuning every host.",
@@ -289,26 +408,13 @@ export function getShowcaseApplication(
     label: "Flagship build",
     headline: `${app.name} is positioned as a launch-ready system inside the SavigeSystemZ foundry.`,
     audience: "Operators, buyers, and technical evaluators",
-    priceModel: "Catalog and private delivery",
+    priceModel: "TBD",
     releaseChannel: "Flexible",
-    operationalFocus: app.summary,
+    operationalFocus: app.details ?? app.summary,
     highlights: ["Catalog ready", "Release aware", "Operational control"],
     surfaces: ["Detail page", "Purchase flow", "Release history"],
     stack: ["Next.js", "Prisma", "Signed delivery"],
-    pillars: [
-      {
-        title: "Public-facing discovery",
-        description: "Every app gets a polished landing path with clear positioning and routes into purchase or inquiry.",
-      },
-      {
-        title: "Operational fit",
-        description: "Applications are framed as systems with release cadence, delivery rules, and administrative control.",
-      },
-      {
-        title: "Secure continuity",
-        description: "The surrounding platform supports identity, audit trails, and controlled artifact delivery.",
-      },
-    ],
+    pillars: buildPillarsFromApplication(app),
     releaseMoments: [
       {
         stage: "R1",
@@ -338,7 +444,46 @@ export function getShowcaseApplication(
     highlights: app.highlights?.length ? app.highlights : fallback.highlights,
     surfaces: app.surfaceAreas?.length ? app.surfaceAreas : fallback.surfaces,
     stack: app.stackItems?.length ? app.stackItems : fallback.stack,
-    pillars: fallback.pillars,
+    pillars: buildPillarsFromApplication(app, fallback.pillars),
     releaseMoments: fallback.releaseMoments,
   };
+}
+
+function buildPillarsFromApplication(
+  app: ApplicationRecord,
+  fallback?: ShowcaseApplication["pillars"],
+): ShowcaseApplication["pillars"] {
+  const highlights = app.highlights ?? [];
+  const details = app.details ?? app.summary;
+  if (highlights.length >= 3) {
+    return highlights.slice(0, 3).map((title, index) => ({
+      title,
+      description:
+        index === 0
+          ? details
+          : `${title} is part of the ${app.name} story inside the SavigeSystemZ catalog and GitHub mirror.`,
+    }));
+  }
+  if (highlights.length > 0) {
+    return highlights.map((title, index) => ({
+      title,
+      description: index === 0 ? details : `${title} — catalog capability for ${app.name}.`,
+    }));
+  }
+  return (
+    fallback ?? [
+      {
+        title: "Public-facing discovery",
+        description: "Every app gets a polished landing path with clear positioning and routes into purchase or inquiry.",
+      },
+      {
+        title: "Operational fit",
+        description: "Applications are framed as systems with release cadence, delivery rules, and administrative control.",
+      },
+      {
+        title: "Secure continuity",
+        description: "The surrounding platform supports identity, audit trails, and controlled artifact delivery.",
+      },
+    ]
+  );
 }

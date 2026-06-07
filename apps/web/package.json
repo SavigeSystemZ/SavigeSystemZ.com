@@ -20,7 +20,18 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:seed": "prisma db seed",
     "prisma:push": "prisma db push",
-    "vault:reencrypt": "tsx scripts/vault-reencrypt.ts"
+    "vault:reencrypt": "tsx scripts/vault-reencrypt.ts",
+    "code:sync-org": "tsx scripts/sync-github-org-repos.ts",
+    "code:seed-apps": "tsx scripts/seed-flagship-applications.ts",
+    "code:generate-showcases": "tsx scripts/generate-catalog-showcases.ts",
+    "code:fetch-screenshots": "tsx scripts/fetch-catalog-screenshots.ts",
+    "code:capture-ui-screenshots": "tsx scripts/capture-catalog-ui-screenshots.ts",
+    "code:discover-launches": "tsx scripts/discover-catalog-launches.ts",
+    "code:refresh-showcase": "tsx scripts/capture-catalog-ui-screenshots.ts -- --allow-partial && tsx scripts/seed-flagship-releases.ts",
+    "code:seed-releases": "tsx scripts/seed-flagship-releases.ts",
+    "code:verify-catalog": "tsx scripts/verify-catalog-completeness.ts",
+    "staging:verify": "tsx scripts/verify-staging-readiness.ts",
+    "lighthouse:ci": "lhci autorun"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1022.0",
@@ -41,6 +52,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10",
+    "@lhci/cli": "^0.14.0",
     "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",

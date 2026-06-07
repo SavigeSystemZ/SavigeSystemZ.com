@@ -1,4 +1,7 @@
+import { buildMockOrgRepoSummaries } from "@/lib/github-mock-catalog";
+
 const GITHUB_API = "https://api.github.com";
+
 const MOCK_REPO = {
   owner: "octocat",
   name: "hello-world",
@@ -32,6 +35,10 @@ export type GithubReadme = {
   content: string;
 };
 
+export function isGithubMockMode(): boolean {
+  return process.env.GITHUB_MOCK_MODE === "1" || process.env.GITHUB_MOCK_MODE?.toLowerCase() === "true";
+}
+
 function githubHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
@@ -41,10 +48,6 @@ function githubHeaders(): Record<string, string> {
   const token = process.env.GITHUB_TOKEN?.trim();
   if (token) headers.Authorization = `Bearer ${token}`;
   return headers;
-}
-
-function isGithubMockMode(): boolean {
-  return process.env.GITHUB_MOCK_MODE === "1" || process.env.GITHUB_MOCK_MODE?.toLowerCase() === "true";
 }
 
 async function ghFetch<T>(path: string): Promise<T> {
@@ -66,6 +69,63 @@ export function parseGithubRepoRef(input: string): { owner: string; repo: string
   const slashMatch = trimmed.match(/^([^/\s]+)\/([^/\s]+)$/);
   if (slashMatch) return { owner: slashMatch[1], repo: slashMatch[2] };
   return null;
+}
+
+export async function listGithubOrgRepos(org: string): Promise<GithubRepoSummary[]> {
+  if (isGithubMockMode()) {
+    return buildMockOrgRepoSummaries(org);
+  }
+
+  type RawRepo = {
+    name: string;
+    full_name: string;
+    description: string | null;
+    html_url: string;
+    homepage: string | null;
+    default_branch: string | null;
+    language: string | null;
+    stargazers_count: number;
+    forks_count: number;
+    open_issues_count: number;
+    visibility: string | null;
+    pushed_at: string | null;
+    private: boolean;
+    owner: { login: string };
+  };
+
+  const results: GithubRepoSummary[] = [];
+  for (let page = 1; page <= 10; page += 1) {
+    const res = await fetch(
+      `${GITHUB_API}/orgs/${encodeURIComponent(org)}/repos?per_page=100&page=${page}&type=public&sort=updated`,
+      { headers: githubHeaders(), cache: "no-store" },
+    );
+    if (!res.ok) {
+      throw new Error(`GitHub /orgs/${org}/repos → ${res.status} ${res.statusText}`);
+    }
+    const raw = (await res.json()) as RawRepo[];
+    if (raw.length === 0) break;
+    for (const row of raw) {
+      if (row.private) continue;
+      const visibility = row.visibility === "public" || row.visibility === "private" ? row.visibility : "public";
+      results.push({
+        fullName: row.full_name,
+        name: row.name,
+        owner: row.owner.login,
+        description: row.description,
+        htmlUrl: row.html_url,
+        homepage: row.homepage,
+        defaultBranch: row.default_branch,
+        language: row.language,
+        stargazersCount: row.stargazers_count,
+        forksCount: row.forks_count,
+        openIssuesCount: row.open_issues_count,
+        visibility,
+        pushedAt: row.pushed_at,
+      });
+    }
+    if (raw.length < 100) break;
+  }
+  return results;
 }
 
 export async function fetchGithubRepo(owner: string, repo: string): Promise<GithubRepoSummary> {

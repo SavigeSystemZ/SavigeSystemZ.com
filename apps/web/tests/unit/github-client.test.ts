@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseGithubRepoRef } from "@/lib/github-client";
+import { listGithubOrgRepos, parseGithubRepoRef } from "@/lib/github-client";
 
 describe("parseGithubRepoRef", () => {
   it("accepts `owner/repo` shorthand", () => {
@@ -29,5 +29,15 @@ describe("parseGithubRepoRef", () => {
     expect(parseGithubRepoRef("justone")).toBeNull();
     expect(parseGithubRepoRef("too/many/slashes")).toBeNull();
     expect(parseGithubRepoRef("https://gitlab.com/alice/portfolio")).toBeNull();
+  });
+});
+
+describe("listGithubOrgRepos (mock mode)", () => {
+  it("returns deterministic org repos when GITHUB_MOCK_MODE=1", async () => {
+    process.env.GITHUB_MOCK_MODE = "1";
+    const repos = await listGithubOrgRepos("SavigeSystemZ");
+    expect(repos.length).toBeGreaterThanOrEqual(50);
+    expect(repos.some((repo) => repo.fullName === "SavigeSystemZ/Immortality")).toBe(true);
+    delete process.env.GITHUB_MOCK_MODE;
   });
 });

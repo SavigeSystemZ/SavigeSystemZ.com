@@ -3,7 +3,9 @@ import { db } from "@/lib/db";
 import {
   fetchGithubLatestCommit,
   fetchGithubRepo,
+  listGithubOrgRepos,
   parseGithubRepoRef,
+  type GithubRepoSummary,
 } from "@/lib/github-client";
 
 export const codeRepositoryCreateSchema = z.object({
@@ -35,6 +37,132 @@ function toSlug(owner: string, repo: string): string {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 64);
+}
+
+export type ImportOrgCodeRepositoriesResult = {
+  org: string;
+  created: number;
+  updated: number;
+  linked: number;
+  skipped: number;
+  errors: Array<{ repo: string; error: string }>;
+};
+
+function repoImportData(repo: GithubRepoSummary, visibility: "PUBLIC" | "PRIVATE" | "DRAFT") {
+  const slug = toSlug(repo.owner, repo.name);
+  return {
+    slug,
+    name: repo.name,
+    description: repo.description ?? null,
+    provider: "GITHUB" as const,
+    visibility,
+    storageBackend: "GITHUB" as const,
+    githubOwner: repo.owner,
+    githubRepo: repo.name,
+    githubUrl: repo.htmlUrl,
+    defaultBranch: repo.defaultBranch ?? null,
+    homepageUrl: repo.homepage ?? null,
+    primaryLanguage: repo.language ?? null,
+    starCount: repo.stargazersCount,
+    forkCount: repo.forksCount,
+    openIssueCount: repo.openIssuesCount,
+    latestCommitAt: repo.pushedAt ? new Date(repo.pushedAt) : null,
+    syncStatus: "OK" as const,
+    syncError: null,
+    lastSyncedAt: new Date(),
+  };
+}
+
+export async function importOrgCodeRepositoriesFromGithub(
+  org: string,
+  options?: {
+    visibility?: "PUBLIC" | "PRIVATE" | "DRAFT";
+    linkApplicationsBySlug?: boolean;
+    fetchLatestCommits?: boolean;
+  },
+): Promise<ImportOrgCodeRepositoriesResult> {
+  const visibility = options?.visibility ?? "PUBLIC";
+  const repos = await listGithubOrgRepos(org);
+  const result: ImportOrgCodeRepositoriesResult = {
+    org,
+    created: 0,
+    updated: 0,
+    linked: 0,
+    skipped: 0,
+    errors: [],
+  };
+
+  for (const repo of repos) {
+    try {
+      const data = repoImportData(repo, visibility);
+      const existing = await db.codeRepository.findFirst({
+        where: {
+          OR: [
+            { slug: data.slug },
+            { provider: "GITHUB", githubOwner: repo.owner, githubRepo: repo.name },
+          ],
+        },
+      });
+
+      let latestCommitSha: string | null = existing?.latestCommitSha ?? null;
+      let latestCommitMessage: string | null = existing?.latestCommitMessage ?? null;
+      let latestCommitAt = data.latestCommitAt;
+
+      if (options?.fetchLatestCommits) {
+        const latest = await fetchGithubLatestCommit(repo.owner, repo.name, repo.defaultBranch);
+        if (latest) {
+          latestCommitSha = latest.sha;
+          latestCommitMessage = latest.message;
+          latestCommitAt = latest.committedAt ? new Date(latest.committedAt) : latestCommitAt;
+        }
+      }
+
+      const row = existing
+        ? await db.codeRepository.update({
+            where: { id: existing.id },
+            data: {
+              ...data,
+              latestCommitSha,
+              latestCommitMessage,
+              latestCommitAt,
+            },
+          })
+        : await db.codeRepository.create({
+            data: {
+              ...data,
+              latestCommitSha,
+              latestCommitMessage,
+            },
+          });
+
+      if (existing) result.updated += 1;
+      else result.created += 1;
+
+      if (options?.linkApplicationsBySlug) {
+        const candidates = [
+          repo.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, ""),
+          data.slug,
+          data.slug.replace(`${org.toLowerCase()}-`, ""),
+        ];
+        const app = await db.application.findFirst({
+          where: { slug: { in: candidates } },
+          select: { id: true, codeRepositoryId: true },
+        });
+        if (app && app.codeRepositoryId !== row.id) {
+          await db.application.update({
+            where: { id: app.id },
+            data: { codeRepositoryId: row.id },
+          });
+          result.linked += 1;
+        }
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      result.errors.push({ repo: `${repo.owner}/${repo.name}`, error: message });
+    }
+  }
+
+  return result;
 }
 
 export async function createCodeRepositoryFromGithub(input: CodeRepositoryCreateInput) {
