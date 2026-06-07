@@ -4,6 +4,9 @@
       "url": [
         "http://127.0.0.1:43907/",
         "http://127.0.0.1:43907/applications",
+        "http://127.0.0.1:43907/applications/immortality",
+        "http://127.0.0.1:43907/downloads",
+        "http://127.0.0.1:43907/repos",
         "http://127.0.0.1:43907/archive",
         "http://127.0.0.1:43907/bio",
         "http://127.0.0.1:43907/pricing",

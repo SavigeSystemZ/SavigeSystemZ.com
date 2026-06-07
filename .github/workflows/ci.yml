@@ -33,7 +33,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
       - name: Prisma generate + migrate
-        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && GITHUB_MOCK_MODE=1 pnpm code:bootstrap && pnpm code:verify-catalog
         env:
           DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
       - run: pnpm lint
@@ -71,10 +71,13 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
-      - name: Prisma generate, migrate, seed
-        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm --filter web exec prisma db seed
+      - name: Prisma generate, migrate, bootstrap catalog
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm code:bootstrap && pnpm code:verify-catalog
         env:
           DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
+          GITHUB_MOCK_MODE: "1"
+          OWNER_ACCESS_CODE: e2e-owner-code
+          OWNER_LOGIN_SECRET: e2e-owner-secret-change-me-32chars
       - name: Install Playwright browser
         run: pnpm --filter web exec playwright install --with-deps chromium
       - name: End-to-end tests
@@ -86,3 +89,54 @@ jobs:
           DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
           E2E_PORT: "3456"
           VAULT_ENCRYPTION_KEY: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+          GITHUB_MOCK_MODE: "1"
+          GITHUB_WEBHOOK_SECRET: e2e-github-webhook-secret
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: ssz
+          POSTGRES_PASSWORD: dev
+          POSTGRES_DB: savige
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ssz -d savige"
+          --health-interval 3s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.8.1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile=false
+      - name: Prisma migrate + bootstrap catalog
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm code:bootstrap
+        env:
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
+          GITHUB_MOCK_MODE: "1"
+      - name: Production build
+        run: pnpm build:web
+        env:
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
+          SITE_URL: http://127.0.0.1:43907
+          SITE_PORT: "43907"
+      - name: Start web server for Lighthouse
+        run: pnpm --filter web exec next start -H 127.0.0.1 -p 43907 &
+        env:
+          DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
+          SITE_URL: http://127.0.0.1:43907
+      - name: Wait for server
+        run: npx --yes wait-on http://127.0.0.1:43907/api/health --timeout 120000
+      - name: Lighthouse CI
+        run: pnpm --filter web lighthouse:ci
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.GITHUB_TOKEN }}
