@@ -33,7 +33,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
       - name: Prisma generate + migrate
-        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && GITHUB_MOCK_MODE=1 pnpm code:bootstrap && pnpm code:verify-catalog
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && GITHUB_MOCK_MODE=1 pnpm code:bootstrap && pnpm --filter web code:verify-catalog -- --require-ui-catalog
         env:
           DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
       - run: pnpm lint
@@ -72,7 +72,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile=false
       - name: Prisma generate, migrate, bootstrap catalog
-        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm code:bootstrap && pnpm code:verify-catalog
+        run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm code:bootstrap && pnpm --filter web code:verify-catalog -- --require-ui-catalog
         env:
           DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
           GITHUB_MOCK_MODE: "1"

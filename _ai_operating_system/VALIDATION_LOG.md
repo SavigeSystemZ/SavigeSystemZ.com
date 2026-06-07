@@ -2,6 +2,23 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-06-07 — Land batch committed (8 commits on main)
+
+### Commits
+- `fe3b0a4` feat(catalog): 52-repo verify pipeline + bootstrap scripts
+- `18f8cc2` feat(catalog): preview media, search, runway, showcase tiers + 52 ui-catalog PNGs
+- `2225d89` feat(commerce): donate lane + commerce panel
+- `7c89cb4` feat(admin): staging probes + catalog screenshot promotion
+- `0adb8e5` ci: bootstrap catalog verify + Lighthouse URLs
+- `e1007d9` test(e2e): catalog coverage + rate-limit stability
+- `a496968` docs: CATALOG_OPERATIONS + handoff
+- `89db0b0` chore: verify-release + land-catalog-completion.sh
+
+### Post-commit verify
+- **`pnpm verify:release`**: PASS (180 Vitest, 52/52 ui-catalog gate)
+
+---
+
 ## 2026-06-07 — Presign probes + full E2E validation
 
 ### Code quality gates (`pnpm check:all`)
