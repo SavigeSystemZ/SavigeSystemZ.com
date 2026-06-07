@@ -5,6 +5,10 @@ on:
     branches: ["**"]
   pull_request:
 
+env:
+  OWNER_ACCESS_CODE: e2e-owner-code
+  OWNER_LOGIN_SECRET: e2e-owner-secret-change-me-32chars
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -134,6 +138,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://ssz:dev@localhost:5432/savige
           SITE_URL: http://127.0.0.1:43907
+          OWNER_ACCESS_CODE: e2e-owner-code
+          OWNER_LOGIN_SECRET: e2e-owner-secret-change-me-32chars
       - name: Wait for server
         run: npx --yes wait-on http://127.0.0.1:43907/api/health --timeout 120000
       - name: Lighthouse CI
