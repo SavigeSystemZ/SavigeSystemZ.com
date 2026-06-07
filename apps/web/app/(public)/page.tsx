@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SectionHeading } from "@savige/ui";
-import { ApplicationMediaGallery } from "@/components/application-media-gallery";
+import { FeaturedCatalogRunway } from "@/components/featured-catalog-runway";
 import { ArchiveEntryCard } from "@/components/archive-entry-card";
 import { AppShowcaseCard } from "@/components/app-showcase-card";
 import { Hero } from "@/components/hero";
@@ -24,7 +24,7 @@ export default async function Home() {
   ]);
   const featuredApps = appCatalog.filter((app) => app.featured);
   const featuredArchiveEntries = archiveEntries.filter((entry) => entry.featured);
-  const visualRunway = (featuredApps[0] ?? appCatalog[0])?.media ?? [];
+  const runwayApps = featuredApps.length > 0 ? featuredApps : appCatalog.slice(0, 5);
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-8 px-4 py-6 pb-12 sm:px-6 lg:py-8">
@@ -33,6 +33,28 @@ export default async function Home() {
         featuredCount={featuredApps.length}
         archiveCount={archiveEntries.length}
       />
+
+      {appCatalog.length > 0 ? (
+        <section className="reveal flex flex-wrap items-center justify-between gap-4 rounded-[1.5rem] border border-white/10 bg-white/[0.03] px-5 py-4">
+          <p className="text-sm text-slate-300">
+            <span className="display-title text-2xl font-semibold tracking-[-0.04em] text-white">
+              {appCatalog.length}
+            </span>{" "}
+            systems in the foundry catalog — applications, games, and books mirrored from GitHub.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/applications" className="action-primary text-sm">
+              Browse catalog
+            </Link>
+            <Link href="/downloads" className="action-secondary text-sm">
+              Release center
+            </Link>
+            <Link href="/repos" className="action-secondary text-sm">
+              Source repos
+            </Link>
+          </div>
+        </section>
+      ) : null}
 
       <section className="reveal grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="surface-panel glow-hover rounded-[2rem] p-6 sm:p-8">
@@ -72,8 +94,8 @@ export default async function Home() {
       <section className="reveal surface-panel glow-hover rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Flagship catalog"
-          title="Applications with stronger narrative, release context, and buyer pathways."
-          description="Each catalog entry is treated like a system, not just a project tile. That means positioning, release discipline, and a clear route into detail, delivery, or commissioning work."
+          title="Front-page systems with full narrative, release context, and buyer pathways."
+          description="Immortality, LedgerLoop, SavigeSystemZ.com, Etherweave, and Vetraxis lead the catalog — each with detailed positioning, GitHub repository snapshots, showcase art, and routes into download, purchase, and donate flows."
           action={
             <Link href="/applications" className="action-secondary text-sm">
               Browse all applications
@@ -90,11 +112,11 @@ export default async function Home() {
       <section className="reveal surface-panel rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
           eyebrow="Visual runway"
-          title="The catalog now carries visual identity instead of only text."
-          description="Flagship media frames let each application feel like a system with its own command deck, release language, and buyer-facing atmosphere."
+          title="Repository snapshots from every front-page flagship system."
+          description="Each featured application carries a GitHub repository snapshot plus foundry showcase art — with descriptive captions covering language, branch, and catalog context."
         />
         <div className="mt-8">
-          <ApplicationMediaGallery items={visualRunway} />
+          <FeaturedCatalogRunway apps={runwayApps} />
         </div>
       </section>
 

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SectionHeading } from "@savige/ui";
+import { ApplicationPreviewImage } from "@/components/application-preview-image";
 import { getPublicArchiveEntryBySlug } from "@/lib/archive-resolver";
 import { archiveCategoryThemes } from "@/lib/archive-taxonomy";
 
@@ -69,15 +70,26 @@ export default async function ArchiveDetailPage(props: { params: Promise<{ slug:
             </div>
           </div>
 
-          <div className={`relative min-h-[24rem] overflow-hidden rounded-[1.9rem] border border-white/10 ${theme}`}>
-            {entry.previewImageUrl ? (
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url(${entry.previewImageUrl})` }}
+          <div className={`relative overflow-hidden rounded-[1.9rem] border border-white/10 ${theme}`}>
+            {entry.previewImageUrl || entry.previewThumbnailUrl ? (
+              <ApplicationPreviewImage
+                media={[
+                  {
+                    id: `${entry.id}-preview`,
+                    title: entry.title,
+                    altText: entry.title,
+                    description: entry.summary,
+                    mediaUrl: entry.previewImageUrl ?? entry.previewThumbnailUrl ?? "",
+                    thumbnailUrl: entry.previewThumbnailUrl ?? entry.previewImageUrl ?? null,
+                    featured: entry.featured,
+                    sortOrder: 0,
+                    createdAt: entry.createdAt,
+                  },
+                ]}
+                alt={entry.title}
+                variant="hero"
               />
             ) : null}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.9)_84%)]" />
             <div className="relative flex min-h-[24rem] flex-col justify-between p-6 sm:p-7">
               <div className="grid gap-3 sm:grid-cols-2">
                 {[

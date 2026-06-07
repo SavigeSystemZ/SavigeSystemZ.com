@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeading } from "@savige/ui";
+import { ApplicationPreviewImage } from "@/components/application-preview-image";
 import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 import { getShowcaseApplication, releaseLanes } from "@/lib/showcase-content";
 
@@ -49,28 +50,11 @@ export default async function DownloadsPage() {
           const showcase = getShowcaseApplication(app);
           const latestVersion = app.versions[0];
           const visibleAssetCount = app.versions.reduce((count, version) => count + version.assets.length, 0);
-          const preview = app.media[0] ?? null;
 
           return (
             <article key={app.id} className="surface-panel rounded-[1.8rem] p-6">
-              {preview ? (
-                <div className="relative min-h-[13rem] overflow-hidden rounded-[1.5rem] border border-white/8 bg-slate-950/70">
-                  <div
-                    aria-hidden="true"
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${preview.thumbnailUrl ?? preview.mediaUrl})` }}
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.86)_84%)]" />
-                  <div className="relative flex min-h-[13rem] items-end p-4">
-                    <div>
-                      <p className="text-[0.68rem] uppercase tracking-[0.26em] text-cyan-100/70">Release visual</p>
-                      <p className="mt-2 text-sm font-medium text-white">{preview.title}</p>
-                    </div>
-                  </div>
-                </div>
-              ) : null}
-
-              <div className={`flex items-center justify-between gap-4 ${preview ? "mt-5" : ""}`}>
+              <ApplicationPreviewImage media={app.media} alt={app.name} showCaption variant="card" />
+              <div className="mt-5 flex items-center justify-between gap-4">
                 <h2 className="display-title text-2xl font-semibold tracking-[-0.04em] text-white">{app.name}</h2>
                 <span className="text-[0.72rem] uppercase tracking-[0.28em] text-cyan-100/70">
                   {showcase.releaseChannel}

@@ -1,0 +1,26 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="120" y1="80" x2="1480" y2="820" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#040810"/><stop offset="0.55" stop-color="#0a1628"/><stop offset="1" stop-color="#020617"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 160) rotate(130) scale(640 700)">
+      <stop stop-color="#67e8f9" stop-opacity="0.42"/><stop offset="1" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+  <g opacity="0.16" stroke="#67e8f9" stroke-opacity="0.55">
+    <path d="M0 112.5H1600"/><path d="M0 225H1600"/><path d="M0 337.5H1600"/><path d="M0 450H1600"/><path d="M0 562.5H1600"/><path d="M0 675H1600"/><path d="M0 787.5H1600"/>
+    <path d="M200 0V900"/><path d="M400 0V900"/><path d="M600 0V900"/><path d="M800 0V900"/><path d="M1000 0V900"/><path d="M1200 0V900"/><path d="M1400 0V900"/>
+  </g>
+  <rect x="120" y="120" width="760" height="360" rx="28" fill="#08131c" fill-opacity="0.9" stroke="hsl(286 70% 56%)" stroke-opacity="0.45"/>
+  <rect x="920" y="120" width="560" height="360" rx="28" fill="#091720" fill-opacity="0.86" stroke="hsl(316 52% 40%)" stroke-opacity="0.38"/>
+  <rect x="120" y="520" width="1360" height="260" rx="28" fill="#091720" fill-opacity="0.82" stroke="#67e8f9" stroke-opacity="0.28"/>
+  <text x="160" y="210" fill="#67e8f9" font-family="ui-sans-serif, system-ui, sans-serif" font-size="30" font-weight="700" letter-spacing="0.22em">APPLICATION</text>
+  <text x="160" y="290" fill="#f8fafc" font-family="ui-sans-serif, system-ui, sans-serif" font-size="56" font-weight="700">ModPilot</text>
+  <text x="160" y="360" fill="#cbd5e1" font-family="ui-sans-serif, system-ui, sans-serif" font-size="26">Shell</text>
+  <text x="960" y="240" fill="#e2e8f0" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="600">GitHub mirror</text>
+  <text x="960" y="300" fill="#94a3b8" font-family="ui-monospace, monospace" font-size="24">ModPilot</text>
+  <text x="160" y="620" fill="#e2e8f0" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="600">ModPilot — a SavigeSystemZ application tracked in the foundry catalog with mirrored GitHub sour…</text>
+  <text x="160" y="860" fill="#67e8f9" fill-opacity="0.85" font-family="ui-sans-serif, system-ui, sans-serif" font-size="34" font-weight="700" letter-spacing="0.2em">SAVIGESYSTEMZ</text>
+</svg>

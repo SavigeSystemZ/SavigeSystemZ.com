@@ -9,6 +9,7 @@ const STATIC_PATHS = [
   "/applications",
   "/archive",
   "/downloads",
+  "/repos",
   "/pricing",
   "/bio",
   "/services",
@@ -25,13 +26,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
   }));
 
-  const [apps, archives] = await Promise.all([
+  const [apps, archives, repos] = await Promise.all([
     db.application.findMany({
       where: { visibility: "PUBLIC" },
       select: { slug: true, updatedAt: true },
       orderBy: { updatedAt: "desc" },
     }),
     db.archiveEntry.findMany({
+      where: { visibility: "PUBLIC" },
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    }),
+    db.codeRepository.findMany({
       where: { visibility: "PUBLIC" },
       select: { slug: true, updatedAt: true },
       orderBy: { updatedAt: "desc" },
@@ -48,5 +54,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: entry.updatedAt,
   }));
 
-  return [...staticEntries, ...catalogEntries, ...archiveEntries];
+  const repoEntries: MetadataRoute.Sitemap = repos.map((repo) => ({
+    url: `${base}/repos/${repo.slug}`,
+    lastModified: repo.updatedAt,
+  }));
+
+  return [...staticEntries, ...catalogEntries, ...archiveEntries, ...repoEntries];
 }

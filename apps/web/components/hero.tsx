@@ -50,6 +50,9 @@ export function Hero({ catalogCount, featuredCount, archiveCount }: HeroProps) {
             <Link href="/archive" className="action-secondary">
               Browse the archive
             </Link>
+            <Link href="/repos" className="action-secondary">
+              Browse source repos
+            </Link>
             <Link href="/services" className="action-secondary">
               Commission a build
             </Link>

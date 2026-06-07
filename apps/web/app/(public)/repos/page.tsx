@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Panel, SectionHeading, StatusChip } from "@savige/ui";
-import { listPublicRepos } from "@/lib/catalog-resolver";
+import { listPublicReposWithCatalog } from "@/lib/catalog-resolver";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +34,7 @@ function formatRelative(iso: string | null): string {
 }
 
 export default async function PublicReposPage() {
-  const repos = await listPublicRepos();
+  const repos = await listPublicReposWithCatalog();
 
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-6 pb-12 sm:px-6 lg:py-8">
@@ -61,6 +62,17 @@ export default async function PublicReposPage() {
         <section className="mt-6 grid gap-4 lg:grid-cols-2">
           {repos.map((repo) => (
             <Panel key={repo.id} className="flex h-full flex-col gap-4 rounded-[1.6rem] p-5">
+              {repo.previewMediaUrl ? (
+                <div className="relative min-h-[10rem] overflow-hidden rounded-[1.2rem] border border-white/8 bg-slate-950/80">
+                  <Image
+                    src={repo.previewMediaUrl}
+                    alt={`${repo.name} repository preview`}
+                    fill
+                    sizes="(min-width: 1024px) 420px, 100vw"
+                    className="object-contain object-center bg-slate-950"
+                  />
+                </div>
+              ) : null}
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-lg font-semibold text-white">{repo.name}</h2>
                 {repo.primaryLanguage ? (
@@ -97,6 +109,11 @@ export default async function PublicReposPage() {
                 <Link href={`/repos/${repo.slug}`} className="action-primary text-xs">
                   Open repository
                 </Link>
+                {repo.linkedApplicationSlug ? (
+                  <Link href={`/applications/${repo.linkedApplicationSlug}`} className="action-secondary text-xs">
+                    View catalog entry
+                  </Link>
+                ) : null}
                 {repo.githubUrl ? (
                   <a
                     href={repo.githubUrl}

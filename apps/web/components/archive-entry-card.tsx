@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ArchiveEntryRecord } from "@/lib/archive-catalog";
+import { ApplicationPreviewImage } from "@/components/application-preview-image";
 import { archiveCategoryThemes } from "@/lib/archive-taxonomy";
 
 type ArchiveEntryCardProps = {
@@ -12,20 +13,30 @@ function isExternalUrl(value: string): boolean {
 
 export function ArchiveEntryCard({ entry }: ArchiveEntryCardProps) {
   const theme = archiveCategoryThemes[entry.category];
-  const previewUrl = entry.previewThumbnailUrl ?? entry.previewImageUrl;
+  const previewMedia =
+    entry.previewThumbnailUrl || entry.previewImageUrl
+      ? [
+          {
+            id: `${entry.id}-preview`,
+            title: entry.title,
+            altText: entry.title,
+            description: entry.summary,
+            mediaUrl: entry.previewThumbnailUrl ?? entry.previewImageUrl ?? "",
+            thumbnailUrl: entry.previewThumbnailUrl ?? entry.previewImageUrl ?? null,
+            featured: entry.featured,
+            sortOrder: 0,
+            createdAt: entry.createdAt,
+          },
+        ]
+      : undefined;
 
   return (
     <article className="surface-panel group flex h-full flex-col gap-5 p-6">
-      <div className={`relative min-h-[14rem] overflow-hidden rounded-[1.5rem] border border-white/8 ${theme}`}>
-        {previewUrl ? (
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-[1.03]"
-            style={{ backgroundImage: `url(${previewUrl})` }}
-          />
-        ) : null}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.86)_84%)]" />
-        <div className="relative flex min-h-[14rem] flex-col justify-between p-5">
+      <div className={`relative overflow-hidden rounded-[1.5rem] border border-white/8 ${theme}`}>
+        {previewMedia ? (
+          <ApplicationPreviewImage media={previewMedia} alt={entry.title} variant="hero" />
+        ) : (
+          <div className="relative flex min-h-[14rem] flex-col justify-between p-5">
           <div className="flex flex-wrap items-center gap-2 text-[0.68rem] font-semibold uppercase tracking-[0.26em] text-slate-100/85">
             <span className="rounded-full border border-white/15 bg-white/[0.08] px-3 py-1">
               {entry.categoryLabel}
@@ -43,6 +54,7 @@ export function ArchiveEntryCard({ entry }: ArchiveEntryCardProps) {
             <p className="mt-2 text-sm font-medium text-white">{entry.artifactFormat ?? "Structured archive lane"}</p>
           </div>
         </div>
+        )}
       </div>
 
       <div>

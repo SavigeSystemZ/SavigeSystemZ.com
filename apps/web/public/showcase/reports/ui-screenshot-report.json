@@ -1,0 +1,447 @@
+{
+  "generatedAt": "2026-06-07T20:27:08.557Z",
+  "siteUrl": "http://127.0.0.1:43907",
+  "totals": {
+    "seeds": 52,
+    "appUiCaptured": 4,
+    "catalogCaptured": 0,
+    "blocked": 48
+  },
+  "results": [
+    {
+      "slug": "aegiswire-44",
+      "githubRepo": "AegisWire-44",
+      "name": "AegisWire-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "bluwraith",
+      "githubRepo": "BluWraith",
+      "name": "BluWraith",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "budgetbeacon",
+      "githubRepo": "BudgetBeacon",
+      "name": "BudgetBeacon",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "candlecompass",
+      "githubRepo": "CandleCompass",
+      "name": "CandleCompass",
+      "status": "app_ui_captured",
+      "launchUrl": "http://127.0.0.1:3967",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/CandleCompass/app/ui-next && npm run dev (PLAYWRIGHT_PORT default 3967)",
+      "detail": "Live app UI captured from http://127.0.0.1:3967.",
+      "appScreenshotPath": "/showcase/manual/candlecompass/preview.png"
+    },
+    {
+      "slug": "cleanoutconnect",
+      "githubRepo": "CleanoutConnect",
+      "name": "CleanoutConnect",
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:3000",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/CleanoutConnect && pnpm dev (NEXT_PUBLIC_APP_URL in .env.example)",
+      "detail": "Dev server not responding at http://127.0.0.1:3000."
+    },
+    {
+      "slug": "cleanoutconnect-44",
+      "githubRepo": "CleanoutConnect-44",
+      "name": "CleanoutConnect-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "codeseal",
+      "githubRepo": "CodeSeal",
+      "name": "CodeSeal",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "companionvault-44",
+      "githubRepo": "CompanionVault-44",
+      "name": "CompanionVault-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "contextcore",
+      "githubRepo": "ContextCore",
+      "name": "ContextCore",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "coupleswealthos-44",
+      "githubRepo": "CouplesWealthOS-44",
+      "name": "CouplesWealthOS-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "deepweave",
+      "githubRepo": "DeepWeave",
+      "name": "DeepWeave",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "ethertrain-44",
+      "githubRepo": "EtherTrain-44",
+      "name": "EtherTrain-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "etherweave",
+      "githubRepo": "etherweave",
+      "name": "etherweave",
+      "status": "app_no_http_surface",
+      "surface": "desktop",
+      "startHint": "PyQt6 GUI — launch Etherweave-Nexus desktop app; no HTTP dev surface",
+      "detail": "Wireless security platform is desktop-first (PyQt6 + CLI). Screenshot via OS capture outside this script."
+    },
+    {
+      "slug": "fliphole",
+      "githubRepo": "FlipHole",
+      "name": "FlipHole",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "forgecouncil",
+      "githubRepo": "ForgeCouncil",
+      "name": "ForgeCouncil",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "fwst",
+      "githubRepo": "FWST",
+      "name": "FWST",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "gamst",
+      "githubRepo": "GAMST",
+      "name": "GAMST",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "gh-gcast",
+      "githubRepo": "gh-gcast",
+      "name": "gh-gcast",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "ghostz",
+      "githubRepo": "GhostZ",
+      "name": "GhostZ",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "guardianintel-44",
+      "githubRepo": "GuardianIntel-44",
+      "name": "GuardianIntel-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "ideaforge",
+      "githubRepo": "IdeaForge",
+      "name": "IdeaForge",
+      "status": "app_ui_captured",
+      "launchUrl": "http://127.0.0.1:41287",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/IdeaForge && pnpm dev (see .env.example APP_PORT / SITE_URL)",
+      "detail": "Live app UI captured from http://127.0.0.1:41287.",
+      "appScreenshotPath": "/showcase/manual/ideaforge/preview.png"
+    },
+    {
+      "slug": "immortality",
+      "githubRepo": "Immortality",
+      "name": "Immortality",
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:3777",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/Immortality && pnpm dev (see .env.example NEXT_PUBLIC_APP_URL)",
+      "detail": "Dev server not responding at http://127.0.0.1:3777."
+    },
+    {
+      "slug": "ledgerloop",
+      "githubRepo": "LedgerLoop",
+      "name": "LedgerLoop",
+      "status": "app_ui_captured",
+      "launchUrl": "http://127.0.0.1:3847",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/LedgerLoop && pnpm dev (PORT=3847 in .env.example)",
+      "detail": "Live app UI captured from http://127.0.0.1:3847.",
+      "appScreenshotPath": "/showcase/manual/ledgerloop/preview.png"
+    },
+    {
+      "slug": "luxelogic",
+      "githubRepo": "LuxeLogic",
+      "name": "LuxeLogic",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "metacommander-44",
+      "githubRepo": "MetaCommander-44",
+      "name": "MetaCommander-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "metascope",
+      "githubRepo": "MetaScope",
+      "name": "MetaScope",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "mfst",
+      "githubRepo": "MFST",
+      "name": "MFST",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "modpilot",
+      "githubRepo": "ModPilot",
+      "name": "ModPilot",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "omniforgenexus-44",
+      "githubRepo": "OmniForgeNexus-44",
+      "name": "OmniForgeNexus-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "orignym",
+      "githubRepo": "Orignym",
+      "name": "Orignym",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "palmoracle",
+      "githubRepo": "PalmOracle",
+      "name": "PalmOracle",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "pharmphreak",
+      "githubRepo": "PharmPhreak",
+      "name": "PharmPhreak",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "promptmage",
+      "githubRepo": "PromptMage",
+      "name": "PromptMage",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "rsiglobe",
+      "githubRepo": "RSIGlobe",
+      "name": "RSIGlobe",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "sacst",
+      "githubRepo": "SACST",
+      "name": "SACST",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "sact",
+      "githubRepo": "SACT",
+      "name": "SACT",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "savigeai",
+      "githubRepo": "SavigeAI",
+      "name": "SavigeAI",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "savigesystemz-com",
+      "githubRepo": "SavigeSystemZ.com",
+      "name": "SavigeSystemZ.com",
+      "status": "app_ui_captured",
+      "launchUrl": "http://127.0.0.1:43907",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/SavigeSystemZ.com && pnpm dev:web",
+      "detail": "Live app UI captured from http://127.0.0.1:43907.",
+      "appScreenshotPath": "/showcase/manual/savigesystemz-com/preview.png"
+    },
+    {
+      "slug": "savopz",
+      "githubRepo": "SavOpZ",
+      "name": "SavOpZ",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "shadowcall",
+      "githubRepo": "ShadowCall",
+      "name": "ShadowCall",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "sos-the-first-crown",
+      "githubRepo": "SOSTheFirstCrown",
+      "name": "Shards of Savige: The First Crown",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "shardsofsavige",
+      "githubRepo": "ShardsOfSavige",
+      "name": "ShardsOfSavige",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "siliconledger",
+      "githubRepo": "SiliconLedger",
+      "name": "SiliconLedger",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "sipher",
+      "githubRepo": "Sipher",
+      "name": "Sipher",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "steadystack",
+      "githubRepo": "SteadyStack",
+      "name": "SteadyStack",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "techpulsebriefs-44",
+      "githubRepo": "TechPulseBriefs-44",
+      "name": "TechPulseBriefs-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "theeclecticexchange-44",
+      "githubRepo": "TheEclecticExchange-44",
+      "name": "TheEclecticExchange-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "vdo-44",
+      "githubRepo": "VDO-44",
+      "name": "VDO-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "veritas",
+      "githubRepo": "VERITAS",
+      "name": "VERITAS",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "vetraxis",
+      "githubRepo": "Vetraxis",
+      "name": "Vetraxis",
+      "status": "app_not_running",
+      "launchUrl": "http://127.0.0.1:38222",
+      "surface": "web",
+      "startHint": "cd ~/.MyAppZ/Vetraxis && docker compose / ops stack (APP_PORT=38222 — ops/LOCAL_DEV_PORTS.md)",
+      "detail": "Dev server not responding at http://127.0.0.1:38222."
+    },
+    {
+      "slug": "vulnflow-44",
+      "githubRepo": "VulnFlow-44",
+      "name": "VulnFlow-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    },
+    {
+      "slug": "wraiths-44",
+      "githubRepo": "wraiths-44",
+      "name": "wraiths-44",
+      "status": "app_no_http_surface",
+      "surface": "unknown",
+      "detail": "No local launch URL in registry or sibling .env.example."
+    }
+  ]
+}

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Panel, SectionHeading, StatusChip } from "@savige/ui";
-import { AppShowcaseCard } from "@/components/app-showcase-card";
+import { CatalogSearchFilter } from "@/components/catalog-search-filter";
+import { getCatalogKindFromApplication } from "@/lib/catalog-from-repos";
 import { getPublicCatalogWithReleases } from "@/lib/catalog-resolver";
 import { foundryLanes } from "@/lib/showcase-content";
 
@@ -10,29 +11,34 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Applications",
-  description: "Browse the SavigeSystemZ software catalog and product detail pages.",
+  description: "Browse the SavigeSystemZ software catalog — applications, games, and books from the GitHub org.",
 };
 
 export default async function ApplicationsPage() {
   const appCatalog = await getPublicCatalogWithReleases();
+  const applications = appCatalog.filter((app) => getCatalogKindFromApplication(app) === "application");
+  const games = appCatalog.filter((app) => getCatalogKindFromApplication(app) === "game");
+  const books = appCatalog.filter((app) => getCatalogKindFromApplication(app) === "book");
+
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 pb-12 sm:px-6 lg:py-8">
       <Panel className="rounded-[2rem] p-6 sm:p-8">
         <SectionHeading
-          eyebrow="Applications"
-          title="Catalog entries positioned like real systems, not dead portfolio tiles."
-          description="This surface is built to hold launch-ready applications, internal tools, install kits, and operator software with enough context for buyers, collaborators, and technical evaluators to understand what each system is for."
+          eyebrow="Catalog"
+          title="Every SavigeSystemZ GitHub repo — applications, games, and books — in one foundry catalog."
+          description="Each entry mirrors public source from the org, ships with showcase media and a v0.1.0 release lane, and lists pricing as TBD until commercial lanes are opened."
           action={
             <Link href="/downloads" className="action-secondary text-sm">
               Jump to downloads
             </Link>
           }
         />
-        <div className="reveal-stagger mt-8 grid gap-4 sm:grid-cols-3">
+        <div className="reveal-stagger mt-8 grid gap-4 sm:grid-cols-4">
           {[
-            { value: `${appCatalog.length}`, label: "public systems" },
-            { value: `${appCatalog.filter((app) => app.featured).length}`, label: "featured launches" },
-            { value: "Flexible", label: "delivery models" },
+            { value: `${appCatalog.length}`, label: "total entries" },
+            { value: `${applications.length}`, label: "applications" },
+            { value: `${games.length}`, label: "games" },
+            { value: `${books.length}`, label: "books" },
           ].map((metric) => (
             <div key={metric.label} className="glow-hover rounded-[1.5rem] border border-white/8 bg-white/[0.03] p-5">
               <p className="display-title text-3xl font-semibold tracking-[-0.05em] text-white">{metric.value}</p>
@@ -42,13 +48,7 @@ export default async function ApplicationsPage() {
         </div>
       </Panel>
 
-      <section className="mt-8">
-        <div className="reveal-stagger grid gap-4 md:grid-cols-2">
-          {appCatalog.map((app) => (
-            <AppShowcaseCard key={app.id} app={app} />
-          ))}
-        </div>
-      </section>
+      <CatalogSearchFilter applications={applications} games={games} books={books} />
 
       <section className="reveal-stagger mt-8 grid gap-4 xl:grid-cols-3">
         {foundryLanes.map((lane) => (

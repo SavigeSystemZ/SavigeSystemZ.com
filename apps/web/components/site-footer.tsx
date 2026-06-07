@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { getDonateConfig } from "@/lib/donate-config";
 
 const footerGroups = [
   {
     title: "Explore",
     links: [
       { href: "/applications", label: "Applications" },
+      { href: "/repos", label: "Repositories" },
       { href: "/archive", label: "Archive" },
       { href: "/downloads", label: "Downloads" },
       { href: "/pricing", label: "Pricing" },
@@ -22,6 +24,8 @@ const footerGroups = [
 ];
 
 export function SiteFooter() {
+  const donate = getDonateConfig();
+
   return (
     <footer className="border-t border-white/8 bg-slate-950/80" aria-label="Site footer">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -35,6 +39,24 @@ export function SiteFooter() {
               Built by Michael Spaulding (Sys Sav) to present applications, release artifacts, engineering systems,
               and secure internal workflows without splitting the story across separate tools.
             </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={donate.externalUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="action-secondary text-xs"
+              >
+                GitHub Sponsors
+              </a>
+              <a
+                href="https://github.com/SavigeSystemZ"
+                target="_blank"
+                rel="noreferrer"
+                className="action-secondary text-xs"
+              >
+                SavigeSystemZ org
+              </a>
+            </div>
             <p className="mt-6 text-xs uppercase tracking-[0.28em] text-slate-500">
               Secure by default. Releases traceable. Operator-first.
             </p>

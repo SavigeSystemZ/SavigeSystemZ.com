@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
       // GitHub user-content (avatars, repo OG images surfaced from the code module).
       { protocol: "https", hostname: "avatars.githubusercontent.com" },
       { protocol: "https", hostname: "raw.githubusercontent.com" },
+      { protocol: "https", hostname: "opengraph.githubassets.com" },
     ],
   },
 };
