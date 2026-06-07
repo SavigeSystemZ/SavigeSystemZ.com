@@ -2,6 +2,24 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-06-07 — Push + showcase refresh + CI lockfile fix
+
+### Operator moves executed
+- `pnpm code:discover-launches` — 5 live / 19 with URL / 52 total
+- `pnpm code:capture-ui-screenshots -- --apps-only --allow-partial` — 5 manual UI captures (incl. PharmPhreak)
+- `pnpm code:seed-releases` — 104 media rows updated
+- `git push origin main` — 11 commits through `9fd8483`
+
+### Local validation
+- **`pnpm verify:release`**: PASS (180 Vitest, 52/52 ui-catalog)
+- **E2E** (`E2E_PORT=43907`, owner secrets from `.env.local`): **86 passed / 1 skipped**
+
+### CI follow-up
+- First push failed: `pnpm-lock.yaml` was gitignored → tracked lockfile + `--frozen-lockfile` in workflows
+- `stripe-webhook-smoke.yml`: removed invalid job-level `secrets` conditional
+
+---
+
 ## 2026-06-07 — Land batch committed (8 commits on main)
 
 ### Commits

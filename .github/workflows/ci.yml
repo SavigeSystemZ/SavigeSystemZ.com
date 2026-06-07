@@ -31,7 +31,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm install --frozen-lockfile
       - name: Prisma generate + migrate
         run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && GITHUB_MOCK_MODE=1 pnpm code:bootstrap && pnpm --filter web code:verify-catalog -- --require-ui-catalog
         env:
@@ -70,7 +70,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm install --frozen-lockfile
       - name: Prisma generate, migrate, bootstrap catalog
         run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm code:bootstrap && pnpm --filter web code:verify-catalog -- --require-ui-catalog
         env:
@@ -117,7 +117,7 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile=false
+      - run: pnpm install --frozen-lockfile
       - name: Prisma migrate + bootstrap catalog
         run: pnpm --filter web exec prisma generate && pnpm --filter web exec prisma migrate deploy && pnpm code:bootstrap
         env:

@@ -8,8 +8,6 @@ coverage
 .env.*
 !.env.example
 !infra/.env.staging.example
-pnpm-lock.yaml
-apps/web/pnpm-lock.yaml
 apps/web/dev.db
 apps/web/prisma/*.db
 apps/web/e2e.db

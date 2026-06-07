@@ -76,6 +76,13 @@ export const CATALOG_LAUNCH_REGISTRY: CatalogLaunchEntry[] = [
     startHint: "cd ~/.MyAppZ/IdeaForge && pnpm dev (see .env.example APP_PORT / SITE_URL)",
   },
   {
+    slug: "pharmphreak",
+    githubRepo: "PharmPhreak",
+    launchUrl: "http://127.0.0.1:38224",
+    surface: "web",
+    startHint: "cd ~/.MyAppZ/PharmPhreak && docker compose / ops stack (see PORTS_REGISTRY.md APP_PORT 38224)",
+  },
+  {
     slug: "cleanoutconnect",
     githubRepo: "CleanoutConnect",
     launchUrl: "http://127.0.0.1:3000",

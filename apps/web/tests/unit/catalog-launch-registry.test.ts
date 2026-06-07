@@ -72,6 +72,11 @@ describe("catalog-launch-registry", () => {
     expect(inferLaunchUrlFromWorkspacePortsRegistry(md, "Vetraxis")).toBe("http://127.0.0.1:38222");
   });
 
+  it("resolves pharmphreak compose port from registry", () => {
+    const entry = getCatalogLaunchEntry("pharmphreak", "PharmPhreak");
+    expect(entry?.launchUrl).toBe("http://127.0.0.1:38224");
+  });
+
   it("normalizes localhost to 127.0.0.1", () => {
     expect(normalizeLaunchUrl("http://localhost:3000/")).toBe("http://127.0.0.1:3000");
   });
