@@ -16,6 +16,8 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **Catalog UI unification:** `ApplicationPreviewImage`, search/filter, home runway, enrichment panel, manual screenshot tier.
 - [x] **Staging operator probes:** `pnpm staging:verify` + HTTP/presign flags; `/admin/launch` catalog completeness gate.
 - [x] **Land tooling:** `scripts/land-catalog-completion.sh`, `scripts/verify-release.sh`, `docs/CATALOG_OPERATIONS.md`.
+- [x] **Catalog pushed + CI green:** land batch on `origin/main`; quality/e2e/lighthouse jobs pass; `pnpm-lock.yaml` tracked.
+- [x] **Launch discovery + UI capture ops:** `catalog-launch-registry.ts`, `pnpm code:discover-launches`, `pnpm code:capture-ui-screenshots`, 5 live manual-tier screenshots.
 - [x] **Manual /admin/code round-trip:** bulk bootstrap covers org sync; admin UI remains for one-offs.
 - [x] **Flagship catalog bootstrap:** `pnpm code:bootstrap` seeds apps, GitHub repo links, v0.1.0 releases, media, and source archives.
 - [x] **M7 slice 6 — dismissible spike notices + ack state:** `lib/admin-dashboard.ts` records spike alerts; `components/admin/dashboard-spike-notices.tsx` renders dismissible cards on `/admin`; ack route exists at `/api/admin/dashboard/acknowledge` with rate limit + audit log.

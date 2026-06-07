@@ -2,6 +2,23 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-06-07 — Session wrap (CI green, tree clean)
+
+### Final state
+- **HEAD:** `621ac96` — `main` synced with `origin/main`, working tree clean
+- **GitHub Actions:** quality ✅ · e2e ✅ · lighthouse ✅ (after lockfile, owner-secret, turbo passthrough, webhook casing fixes)
+
+### Commits pushed this session (high level)
+- Catalog land batch (`fe3b0a4`…`89db0b0`) + CI ui-catalog gate + launch discovery + showcase refresh
+- CI/deps: `pnpm-lock.yaml` tracked, frozen installs, PharmPhreak registry
+- Fixes: `OWNER_LOGIN_SECRET` at build, `turbo.json` env passthrough, case-insensitive webhook sync
+
+### Local gates (last run)
+- **`pnpm verify:release`**: PASS
+- **E2E** (`E2E_PORT=43907`): **86 passed / 1 skipped**
+
+---
+
 ## 2026-06-07 — Push + showcase refresh + CI lockfile fix
 
 ### Operator moves executed
