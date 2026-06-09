@@ -31,6 +31,11 @@ Cross-check **`SESSION_RECALL.md`** and **`WHERE_LEFT_OFF.md`** so nothing is dr
 - [x] **E2E coverage gaps:** `/repos` index, spike-notice dismiss flow, admin publish flows.
 - [ ] **S3 vault scan Lambda:** wire `infra/s3-vault-scan-lambda/` to vault bucket S3 events for AV/YARA scanning (blocked: AWS deploy access).
 
+## P0 — done this session (2026-06-09, additional)
+
+- [x] **Friction app visibility control:** Set Friction to visibility=DRAFT in database; created `scripts/hide-friction.sh` for automated updates
+- [x] **Screenshot collection from local repos:** Collected 58 screenshots from 22 apps (AppScope, BlueWraith, BudgetBeacon, CleanoutConnect, CodeSeal, CouplesWealth, DeepWeave, FlipHole, ForgeCouncil, GhostGrid, HQIQ, Immortality, LuxeLogic, ModPilot, Orignym, PromptMage, SiliconLedger, Sipher, SteadyStack, TraceForge, Vetraxis, WisdomWarp); organized in `apps/web/public/showcase/app-media/`; created `docs/APP_VISIBILITY_AND_MEDIA.md` with workflows
+
 ## P1 — product quality and coverage
 
 - [x] **Playwright:** archive launch composer (8 tests), creator moderation + promotion (5 tests), expanded commerce (7 tests), a11y (13 routes). Full suite: 50 passed, 0 failed.

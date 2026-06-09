@@ -1,13 +1,24 @@
 # Where Left Off
 
-- **Timestamp:** 2026-06-09 (session wrap — P0/P1 comprehensive delivery)
-- **HEAD:** `9f64c54` on `main` — pushed to `origin/main`
-- **Status:** All P0 items complete + most P1 items complete; full validation suite green (187 unit tests, lint, typecheck, build).
-- **Session Focus:** Resumed with P0 backlog execution; delivered resume page, S3 setup guide, Postgres implementation guide, verified all webhook + repo integrations working.
+- **Timestamp:** 2026-06-09 (session wrap — P0 delivery + Friction removal + screenshot collection)
+- **HEAD:** `85ce506` on `main` — pushed to `origin/main`
+- **Status:** All P0 items complete, Friction app hidden, 58 screenshots collected from 22 apps; full validation suite green (187 unit tests, lint, typecheck, build).
+- **Session Focus:** P0 comprehensive delivery (resume, S3 guide, Postgres guide) + Friction app removal (visibility=DRAFT, scripts) + screenshot collection (58 PNGs from local repos to public/showcase/app-media/).
 
 ## Delivered This Session
 
 ### P0 — Launch Readiness (All Complete ✓)
+
+**Friction App Removal & Screenshot Collection (2026-06-09)**
+- Friction app set to visibility=DRAFT, hidden from public catalog
+- Created `scripts/hide-friction.sh` for automated DB update
+- Created `scripts/copy-app-screenshots.sh` for screenshot copy
+- Collected 58 screenshots from 22 local app repos (3 per app max)
+- All screenshots organized in `apps/web/public/showcase/app-media/{slug}/`
+- Created `docs/APP_VISIBILITY_AND_MEDIA.md` for visibility + media workflows
+- Commit: `85ce506` (chore: hide Friction app and collect 58 screenshots)
+
+### P0 — Launch Readiness (Earlier in session — All Complete ✓)
 
 1. **Resume Page + Email Contact** (complete, awaiting DB migration)
    - Public `/resume` route with 15+ years professional background, experience sections, skills categorization, featured projects
@@ -105,5 +116,5 @@
 - Two 6000–10000 word production guides (S3, Postgres)
 - Full test suite green, build successful
 
-**Last updated:** 2026-06-09 15:00 UTC (session wrap)
+**Last updated:** 2026-06-09 17:30 UTC (session wrap — Friction + screenshots complete)
 

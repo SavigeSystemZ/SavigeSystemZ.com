@@ -4,7 +4,7 @@
 
 | # | Risk | Impact | Likelihood | Mitigation |
 |---|------|--------|-----------|------------|
-| R1 | **No git remote configured** — local-only commits could be lost | High | Medium | Add remote, push regularly; backup `.MyAppZ/` |
+| R1 | **No git remote configured** ✅ RESOLVED — `origin/main` exists, commits pushed | High | Low (resolved) | Maintain push discipline |
 | R2 | **S3 buckets not wired** — release/media/vault uploads return 501 | Medium | Certain | Configure real AWS buckets + credentials in env |
 | R3 | **SQLite in dev, Postgres in prod** — migration SQL divergence | High | High | Do not reuse SQLite migration SQL; regenerate when switching provider |
 | R4 | **Domain routing unverified** — savigesystemz.com may point to wrong app | High | Medium | Follow `docs/PRODUCTION_DOMAIN_VERIFICATION.md` before launch |

@@ -1,14 +1,14 @@
 # Current Project Status
 
-- **Last Updated**: 2026-06-09 (P0/P1 comprehensive delivery session wrap)
+- **Last Updated**: 2026-06-09 (P0 delivery + Friction removal + screenshot collection)
 - **Primary working directory**: `/home/whyte/.MyAppZ/SavigeSystemZ.com`
-- **Current phase**: **P0 complete**, P1 mostly complete; production readiness documentation finished
+- **Current phase**: **P0 complete**, P1 mostly complete, Friction app hidden, screenshots collected; production readiness documentation finished
 - **Canonical local dev URL**: http://127.0.0.1:43907/
-- **Git**: `origin/main` at commit **`9f64c54`** (pushed)
-- **Next session owner**: user resumes with optional Stripe/S3 real credential configuration
+- **Git**: `origin/main` at commit **`85ce506`** (pushed)
+- **Next session owner**: user can continue with optional Phase 2 structure improvements or move to production credential configuration
 
 ## Current objective (completed)
-P0 launch readiness sprint: resume page + contact form, S3 setup guide, Postgres production implementation guide. Full test suite green.
+P0 launch readiness sprint: resume page + contact form, S3 setup guide, Postgres production implementation guide, Friction app removal, 58-app screenshot collection. Full test suite green.
 
 ## Recently completed (this session — 2026-06-09)
 
@@ -20,6 +20,13 @@ P0 launch readiness sprint: resume page + contact form, S3 setup guide, Postgres
 - **Postgres implementation guide** (`docs/POSTGRES_IMPLEMENTATION.md`): 10,000+ words covering local dev → staging → production cutover with rollback plans
 - **Schema clean**: Postgres provider already configured; migrations are native (since 2026-04-07)
 
+### Friction Removal & Screenshot Collection (Complete)
+- **Friction app hidden**: Set visibility=DRAFT; not displayed on /applications, home, or /repos
+- **Screenshot collection**: 58 PNGs from 22 local app repos into `apps/web/public/showcase/app-media/`
+- **Helper scripts**: `scripts/hide-friction.sh` (DB update), `scripts/copy-app-screenshots.sh` (copy utility)
+- **Documentation**: `docs/APP_VISIBILITY_AND_MEDIA.md` (removal guide + media workflows)
+- **Commits**: `85ce506` (Friction + screenshots) + `4fb7bf1` (P0 handoff)
+
 ### P1 Verification (All Complete)
 - **Public `/repos/[slug]`**: Existing implementation verified working; README render + tree viewer; tests passing
 - **GitHub webhook (`/api/webhooks/github`)**: Verified existing implementation with HMAC verification, rate limiting, audit logging
@@ -30,7 +37,7 @@ P0 launch readiness sprint: resume page + contact form, S3 setup guide, Postgres
 - **Lint**: ESLint clean
 - **TypeScript**: Strict, no errors
 - **Build**: Successful; 33 routes (○ static, ƒ dynamic, ⚡ edge)
-- **Commit**: `9f64c54` pushed to `origin/main`
+- **Commits**: `85ce506` (Friction + screenshots) pushed to `origin/main`
 
 ## Next steps (picking up whenever, priority order)
 
@@ -63,4 +70,8 @@ P0 launch readiness sprint: resume page + contact form, S3 setup guide, Postgres
 - `apps/web/prisma/schema.prisma` — added `ContactSubmission` model
 - `docs/S3_SETUP.md` — new comprehensive S3 guide
 - `docs/POSTGRES_IMPLEMENTATION.md` — new comprehensive Postgres guide
+- `docs/APP_VISIBILITY_AND_MEDIA.md` — new Friction removal + media guide
+- `scripts/hide-friction.sh` — automated Friction visibility update
+- `scripts/copy-app-screenshots.sh` — screenshot copy utility
+- `apps/web/public/showcase/app-media/{22-slug-dirs}` — 58 screenshot files (3 per app)
 

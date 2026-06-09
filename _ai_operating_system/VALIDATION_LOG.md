@@ -2,6 +2,31 @@
 
 Records the outcome of `pnpm check:all` and system coherence checks at key milestones.
 
+## 2026-06-09 — P0 delivery + Friction removal + screenshot collection
+
+### Final state
+- **HEAD:** `85ce506` — `main` synced with `origin/main`, working tree clean
+- **Commits:** `9f64c54` (P0 delivery), `4fb7bf1` (handoff), `85ce506` (Friction + screenshots)
+
+### Code quality gates (`pnpm check:all`)
+- **Lint**: PASS
+- **Typecheck**: PASS
+- **Vitest**: PASS (**187 / 187**)
+- **Build**: PASS
+
+### Files changed
+- Resume page + contact form + S3 + Postgres guides
+- Friction app visibility control scripts
+- 58 screenshot files from 22 local app repos
+- 63 files changed, 534 insertions
+
+### Validation
+- Full test suite green (187 unit tests)
+- All routes compile successfully
+- 2 new commits committed and pushed
+
+---
+
 ## 2026-06-07 — Session wrap (CI green, tree clean)
 
 ### Final state
