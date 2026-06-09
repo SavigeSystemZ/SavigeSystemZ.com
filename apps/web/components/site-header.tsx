@@ -7,6 +7,7 @@ const links = [
   { href: "/repos", label: "GitHub Repos" },
   { href: "/downloads", label: "Downloads" },
   { href: "/pricing", label: "Pricing" },
+  { href: "/resume", label: "Resume" },
   { href: "/creator", label: "Creator" },
   { href: "/bio", label: "Bio" },
   { href: "/services", label: "Request Project" },
